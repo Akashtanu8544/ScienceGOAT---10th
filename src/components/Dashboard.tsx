@@ -1,28 +1,123 @@
 import React, { useState } from 'react';
-import { BarChart2, ChevronRight, BookOpen, FileText, HelpCircle, Flame, ScrollText, Video, Search, X } from 'lucide-react';
+import { BarChart2, ChevronRight, BookOpen, FileText, HelpCircle, Flame, ScrollText, Video, Search, X, Activity } from 'lucide-react';
 import { QUIZ_QUESTIONS_DATA } from '../data/quizData';
+import { CHAPTERS_DATA } from '../data/chaptersData';
 
 interface DashboardProps {
   onSelectOption: (option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS') => void;
   completedChaptersCount: number;
+  completedChapters?: number[];
   isDarkMode: boolean;
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
 
+interface SubjectProgressRingProps {
+  title: string;
+  subtitle: string;
+  icon: string;
+  completed: number;
+  total: number;
+  strokeColor: string;
+  colorClass: string;
+  badgeBg: string;
+  isDarkMode: boolean;
+  onClick: () => void;
+}
+
+const SubjectProgressRing: React.FC<SubjectProgressRingProps> = ({
+  title,
+  subtitle,
+  icon,
+  completed,
+  total,
+  strokeColor,
+  colorClass,
+  badgeBg,
+  isDarkMode,
+  onClick,
+}) => {
+  const percent = Math.round((completed / (total || 1)) * 100);
+  const size = 52;
+  const strokeWidth = 4.5;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percent / 100) * circumference;
+
+  return (
+    <div
+      onClick={onClick}
+      className={`p-3 rounded-2xl border flex flex-col items-center justify-between text-center transition-all cursor-pointer group active:scale-95 shadow-sm hover:shadow-md ${
+        isDarkMode
+          ? 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+          : 'bg-white/90 border-slate-200/90 hover:border-blue-300'
+      }`}
+    >
+      {/* Progress Ring with Center Icon & Percentage */}
+      <div className="relative w-13 h-13 flex items-center justify-center my-0.5">
+        <svg width={size} height={size} className="transform -rotate-90">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            fill="transparent"
+            className={isDarkMode ? 'text-slate-800' : 'text-slate-100'}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={strokeColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            fill="transparent"
+            className="transition-all duration-700 ease-out"
+          />
+        </svg>
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-sm leading-none group-hover:scale-110 transition-transform">{icon}</span>
+          <span className={`text-[9px] font-black mt-0.5 ${colorClass}`}>
+            {percent}%
+          </span>
+        </div>
+      </div>
+
+      {/* Label and Progress Subtext */}
+      <div className="mt-1 space-y-0.5 w-full">
+        <div className={`text-[11px] font-black tracking-tight leading-tight truncate ${
+          isDarkMode ? 'text-slate-100' : 'text-slate-900'
+        }`}>
+          {title}
+        </div>
+        <div className={`text-[9px] font-black px-1.5 py-0.5 rounded-full inline-block border ${badgeBg}`}>
+          {completed}/{total} अध्याय
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({
   onSelectOption,
   completedChaptersCount,
+  completedChapters = [],
   isDarkMode,
   searchQuery,
   onSearchChange,
 }) => {
-  // Daily Quiz State
-  const [questionIndex, setQuestionIndex] = useState<number>(() => {
-    const today = new Date();
-    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
-    return dayOfYear % QUIZ_QUESTIONS_DATA.length;
-  });
+  // Calculate Subject Completion
+  const chemistryChapters = CHAPTERS_DATA.filter((c) => c.subject === 'chemistry');
+  const physicsChapters = CHAPTERS_DATA.filter((c) => c.subject === 'physics');
+  const biologyChapters = CHAPTERS_DATA.filter((c) => c.subject === 'biology');
+
+  const chemistryCompleted = chemistryChapters.filter((c) => completedChapters.includes(c.id)).length;
+  const physicsCompleted = physicsChapters.filter((c) => completedChapters.includes(c.id)).length;
+  const biologyCompleted = biologyChapters.filter((c) => completedChapters.includes(c.id)).length;
 
   const options = [
     {
@@ -158,6 +253,73 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <X className="w-3 h-3" />
           </button>
         )}
+      </div>
+
+      {/* Performance Overview Section (Small Progress Rings for Physics, Chemistry, Biology) */}
+      <div className={`p-3.5 rounded-3xl border shadow-md space-y-2.5 backdrop-blur-2xl ${
+        isDarkMode
+          ? 'bg-slate-900/80 border-slate-800'
+          : 'bg-white/80 border-white/80 shadow-slate-200/50'
+      }`}>
+        <div className="flex items-center justify-between px-1">
+          <h3 className={`text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
+            isDarkMode ? 'text-slate-300' : 'text-slate-700'
+          }`}>
+            <Activity className="w-3.5 h-3.5 text-amber-500" />
+            <span>प्रदर्शन अवलोकन (Performance Overview)</span>
+          </h3>
+          <button
+            onClick={() => onSelectOption('PROGRESS')}
+            className="text-[10px] font-black text-amber-500 hover:underline flex items-center gap-0.5"
+          >
+            <span>रिपोर्ट देखें</span>
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {/* Physics Ring */}
+          <SubjectProgressRing
+            title="भौतिकी"
+            subtitle="Physics"
+            icon="⚡"
+            completed={physicsCompleted}
+            total={physicsChapters.length}
+            strokeColor="#A855F7"
+            colorClass="text-purple-600 dark:text-purple-400"
+            badgeBg="bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-400/30"
+            isDarkMode={isDarkMode}
+            onClick={() => onSelectOption('PROGRESS')}
+          />
+
+          {/* Chemistry Ring */}
+          <SubjectProgressRing
+            title="रसायन"
+            subtitle="Chemistry"
+            icon="🧪"
+            completed={chemistryCompleted}
+            total={chemistryChapters.length}
+            strokeColor="#0284C7"
+            colorClass="text-sky-600 dark:text-sky-400"
+            badgeBg="bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-400/30"
+            isDarkMode={isDarkMode}
+            onClick={() => onSelectOption('PROGRESS')}
+          />
+
+          {/* Biology Ring */}
+          <SubjectProgressRing
+            title="जीव विज्ञान"
+            subtitle="Biology"
+            icon="🧬"
+            completed={biologyCompleted}
+            total={biologyChapters.length}
+            strokeColor="#10B981"
+            colorClass="text-emerald-600 dark:text-emerald-400"
+            badgeBg="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-400/30"
+            isDarkMode={isDarkMode}
+            onClick={() => onSelectOption('PROGRESS')}
+          />
+        </div>
       </div>
 
       {/* Daily Quiz Feature Section (Ultra Minimalistic) */}

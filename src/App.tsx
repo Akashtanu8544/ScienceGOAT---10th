@@ -218,6 +218,7 @@ export default function App() {
                 <Dashboard
                   onSelectOption={handleSelectOption}
                   completedChaptersCount={(progress?.completedChapters || []).length}
+                  completedChapters={progress?.completedChapters || []}
                   isDarkMode={isDarkMode}
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}
