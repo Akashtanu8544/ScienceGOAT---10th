@@ -96,6 +96,18 @@ export interface VideoLecture {
   keyTakeaways: string[];
 }
 
+export interface GlossaryTerm {
+  id: string;
+  termHindi: string;
+  termEnglish: string;
+  subject: SubjectType;
+  chapterNumber?: number;
+  chapterNameHindi?: string;
+  definitionHindi: string;
+  exampleOrFormula?: string;
+  keyTag?: string;
+}
+
 export interface UserProfile {
   name: string;
   district: string;

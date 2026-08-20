@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { BarChart2, ChevronRight, BookOpen, FileText, HelpCircle, Flame, ScrollText, Video, Search, X, Activity } from 'lucide-react';
+import { BarChart2, ChevronRight, BookOpen, FileText, HelpCircle, Flame, ScrollText, Video, Search, X, Activity, BookMarked } from 'lucide-react';
 import { QUIZ_QUESTIONS_DATA } from '../data/quizData';
 import { CHAPTERS_DATA } from '../data/chaptersData';
 
 interface DashboardProps {
-  onSelectOption: (option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS') => void;
+  onSelectOption: (option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY') => void;
   completedChaptersCount: number;
   completedChapters?: number[];
   isDarkMode: boolean;
@@ -319,6 +319,40 @@ export const Dashboard: React.FC<DashboardProps> = ({
             isDarkMode={isDarkMode}
             onClick={() => onSelectOption('PROGRESS')}
           />
+        </div>
+      </div>
+
+      {/* Science Glossary Feature Card */}
+      <div
+        onClick={() => onSelectOption('GLOSSARY')}
+        className={`p-3.5 rounded-2xl border shadow-md relative overflow-hidden backdrop-blur-2xl transition-all cursor-pointer group active:scale-[0.99] ${
+          isDarkMode
+            ? 'bg-gradient-to-r from-slate-900/90 via-amber-950/20 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60'
+            : 'bg-gradient-to-r from-amber-50/90 via-yellow-50/60 to-amber-100/70 border-amber-300/80 hover:border-amber-400 shadow-amber-500/5'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+              📚
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>विज्ञान शब्दावली</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-md">
+                  Glossary
+                </span>
+              </h3>
+              <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                कक्षा 10वीं के मुख्य वैज्ञानिक शब्द व परिभाषाएं
+              </p>
+            </div>
+          </div>
+
+          <button className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black transition-all flex items-center gap-1 shrink-0 shadow-sm group-hover:shadow-amber-500/25">
+            <span>खोलें</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 

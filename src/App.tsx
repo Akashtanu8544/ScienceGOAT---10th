@@ -10,6 +10,7 @@ import { PYQView } from './components/PYQView';
 import { ImportantQuestionsView } from './components/ImportantQuestionsView';
 import { VideoLecturesView } from './components/VideoLecturesView';
 import { ProgressTrackerView } from './components/ProgressTrackerView';
+import { GlossaryView } from './components/GlossaryView';
 import { ShareModal } from './components/ShareModal';
 import { MoreAppsModal } from './components/MoreAppsModal';
 import { GitHubConfigModal } from './components/GitHubConfigModal';
@@ -30,7 +31,7 @@ import { Search, X, FileText } from 'lucide-react';
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [currentView, setCurrentView] = useState<
-    'Dashboard' | 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'VIDEOS' | 'PROGRESS'
+    'Dashboard' | 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY'
   >('Dashboard');
 
   const [selectedChapterForNotes, setSelectedChapterForNotes] = useState<number | undefined>(undefined);
@@ -72,7 +73,7 @@ export default function App() {
   };
 
   const handleSelectOption = (
-    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS'
+    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY'
   ) => {
     if (option === 'SHARE') {
       setIsShareModalOpen(true);
@@ -98,10 +99,10 @@ export default function App() {
       {/* App Opening Splash Screen */}
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
-      {/* 3D Honeycomb Background */}
+      {/* Interactive Honeycomb Canvas Background */}
       <HoneycombBackground isDarkMode={isDarkMode} />
 
-      {/* Side Drawer Menu */}
+      {/* Main Drawer Menu */}
       <SideDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
@@ -112,103 +113,92 @@ export default function App() {
         onOpenGitHubConfig={() => setIsGitHubConfigOpen(true)}
       />
 
-      {/* Centered Mobile Shell */}
-      <div className={`w-full max-w-md min-h-screen shadow-2xl relative flex flex-col pb-20 transition-colors backdrop-blur-sm ${
-        isDarkMode ? 'bg-slate-950/25 sm:border-x sm:border-slate-800/80' : 'bg-slate-100/25 sm:border-x sm:border-white/50'
-      }`}>
-        {/* Header */}
+      {/* Mobile Frame Container */}
+      <div className="w-full max-w-md min-h-screen flex flex-col relative z-10 shadow-2xl">
+        {/* Sticky Top Header */}
         <Header
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
           onOpenDrawer={() => setIsDrawerOpen(true)}
         />
 
-        {/* Main Content Viewport */}
-        <main className="relative z-10 flex-1 px-3.5 py-2 space-y-3">
-          {/* Global Search Overlay */}
-          {searchQuery.trim().length > 0 ? (
-            <div className={`rounded-3xl p-4 border shadow-2xl space-y-3.5 backdrop-blur-2xl ${
-              isDarkMode ? 'bg-slate-900/90 border-slate-700/80' : 'bg-white/90 border-white/80'
-            }`}>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-                <h3 className="text-xs font-black text-amber-500 flex items-center gap-1.5">
-                  <Search className="w-3.5 h-3.5" />
-                  <span>खोज परिणाम: '{searchQuery}'</span>
+        {/* Dynamic Main Body Content Area */}
+        <main className="flex-1 px-3.5 pt-3 pb-24 overflow-y-auto custom-scrollbar">
+          {searchQuery ? (
+            /* Search Results Overlay View */
+            <div className="space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-xs font-black uppercase text-amber-500 tracking-wider">
+                  खोज परिणाम ("{searchQuery}")
                 </h3>
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-[10px] font-bold text-slate-500 hover:text-slate-800 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800"
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold"
                 >
-                  बंद करें ✕
+                  <X className="w-3.5 h-3.5" />
+                  रद्द करें
                 </button>
               </div>
 
-              {/* Filtered Chapters */}
+              {/* Filtered Notes Search Results */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">📖 सम्बंधित अध्याय व नोट्स:</h4>
-                <div className="grid grid-cols-1 gap-2">
-                  {CHAPTERS_DATA.filter(
-                    (c) =>
-                      c.titleHindi.includes(searchQuery) ||
-                      c.description.includes(searchQuery) ||
-                      c.titleEnglish.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).slice(0, 5).map((ch) => (
-                    <div
-                      key={ch.id}
-                      onClick={() => {
-                        setSearchQuery('');
-                        handleOpenChapterNotes(ch.id);
-                      }}
-                      className={`cursor-pointer p-3 rounded-2xl border flex items-center justify-between transition-all active:scale-98 ${
-                        isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-amber-500/50' : 'bg-slate-50/90 border-slate-200 hover:border-blue-400'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-2xl">{ch.icon3D}</span>
-                        <div>
-                          <div className="text-[10px] font-black text-amber-500">अध्याय {ch.chapterNumber}</div>
-                          <div className="text-xs font-bold">{ch.titleHindi}</div>
-                        </div>
+                {CHAPTERS_DATA.filter(
+                  (c) =>
+                    c.titleHindi.includes(searchQuery) ||
+                    c.titleEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    c.description.includes(searchQuery)
+                ).map((ch) => (
+                  <div
+                    key={ch.id}
+                    onClick={() => {
+                      setSearchQuery('');
+                      handleOpenChapterNotes(ch.id);
+                    }}
+                    className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-amber-500' : 'bg-white border-slate-200 hover:border-blue-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl">{ch.icon3D}</span>
+                      <div>
+                        <div className="text-xs font-bold">{ch.titleHindi}</div>
+                        <div className="text-[10px] text-slate-400">{ch.unit}</div>
                       </div>
-                      <span className="text-[10px] text-blue-600 dark:text-amber-400 font-extrabold flex items-center gap-0.5">
-                        <FileText className="w-3 h-3" />
-                        नोट्स →
-                      </span>
                     </div>
-                  ))}
-                </div>
+                    <span className="text-xs font-extrabold text-amber-500 flex items-center gap-1">
+                      <FileText className="w-3.5 h-3.5" />
+                      नोट्स →
+                    </span>
+                  </div>
+                ))}
               </div>
 
-              {/* Filtered Video Lectures */}
-              <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800">
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">🎥 सम्बंधित वीडियो व्याख्यान:</h4>
-                <div className="grid grid-cols-1 gap-2">
-                  {VIDEO_LECTURES_DATA.filter(
-                    (v) =>
-                      v.title.includes(searchQuery) ||
-                      v.teacherName.includes(searchQuery)
-                  ).slice(0, 3).map((vid) => (
-                    <div
-                      key={vid.id}
-                      onClick={() => {
-                        setSearchQuery('');
-                        setCurrentView('VIDEOS');
-                      }}
-                      className={`cursor-pointer p-3 rounded-2xl border flex items-center justify-between transition-all active:scale-98 ${
-                        isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-amber-500/50' : 'bg-slate-50/90 border-slate-200 hover:border-blue-400'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-xl">🎥</span>
-                        <div>
-                          <div className="text-xs font-bold truncate max-w-[200px]">{vid.title}</div>
-                          <div className="text-[10px] text-slate-400">{vid.teacherName} • {vid.duration}</div>
-                        </div>
+              {/* Search Video Lectures */}
+              <div className="space-y-2 pt-2">
+                <div className="text-[11px] font-bold text-slate-400">वीडियो व्याख्यान:</div>
+                {VIDEO_LECTURES_DATA.filter((v) =>
+                  v.title.includes(searchQuery) || v.topics.some((t) => t.includes(searchQuery))
+                ).map((vid) => (
+                  <div
+                    key={vid.id}
+                    onClick={() => {
+                      setSearchQuery('');
+                      setCurrentView('VIDEOS');
+                    }}
+                    className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl">🎥</span>
+                      <div>
+                        <div className="text-xs font-bold truncate max-w-[200px]">{vid.title}</div>
+                        <div className="text-[10px] text-slate-400">{vid.teacherName} • {vid.duration}</div>
                       </div>
-                      <span className="text-[10px] text-amber-500 font-extrabold">देखें →</span>
                     </div>
-                  ))}
-                </div>
+                    <span className="text-[10px] text-amber-500 font-extrabold">देखें →</span>
+                  </div>
+                ))}
               </div>
             </div>
           ) : (
@@ -293,11 +283,16 @@ export default function App() {
                   isDarkMode={isDarkMode}
                 />
               )}
+
+              {currentView === 'GLOSSARY' && (
+                <GlossaryView
+                  onBack={() => setCurrentView('Dashboard')}
+                  isDarkMode={isDarkMode}
+                />
+              )}
             </>
           )}
         </main>
-
-
 
         {/* Bottom Navigation */}
         <BottomNavigation

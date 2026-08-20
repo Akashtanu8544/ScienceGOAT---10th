@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Chapter } from '../types';
-import { Download, ArrowLeft, ChevronRight, Check, Search, X } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Search, X, ExternalLink, RefreshCw, FileText } from 'lucide-react';
 
 interface BookViewerProps {
   chapters: Chapter[];
@@ -8,6 +8,7 @@ interface BookViewerProps {
   onSelectChapterNotes: (chapterId: number) => void;
   customBooksUrl?: string;
   isDarkMode: boolean;
+  initialChapterId?: number;
 }
 
 export const BookViewer: React.FC<BookViewerProps> = ({
@@ -15,20 +16,23 @@ export const BookViewer: React.FC<BookViewerProps> = ({
   onBack,
   onSelectChapterNotes,
   isDarkMode,
+  initialChapterId,
 }) => {
-  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
-  const [downloadedChapters, setDownloadedChapters] = useState<Record<number, boolean>>({});
+  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(() => {
+    if (initialChapterId) {
+      return chapters.find((c) => c.id === initialChapterId) || null;
+    }
+    return null;
+  });
+
   const [subjectFilter, setSubjectFilter] = useState<'chemistry' | 'biology' | 'physics'>('chemistry');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleDownload = (e: React.MouseEvent, chId: number) => {
-    e.stopPropagation();
-    setDownloadedChapters((prev) => ({ ...prev, [chId]: true }));
-  };
+  const [useGoogleDocs, setUseGoogleDocs] = useState<boolean>(true);
 
   const filteredChapters = chapters.filter((ch) => {
     const matchesSubject = ch.subject === subjectFilter;
-    const matchesSearch = searchQuery.trim() === '' ||
+    const matchesSearch =
+      searchQuery.trim() === '' ||
       ch.titleHindi.includes(searchQuery) ||
       ch.titleEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ch.description.includes(searchQuery);
@@ -115,7 +119,6 @@ export const BookViewer: React.FC<BookViewerProps> = ({
             <div className="text-center py-8 text-xs text-slate-400">कोई अध्याय नहीं मिला</div>
           ) : (
             filteredChapters.map((ch) => {
-              const isDownloaded = downloadedChapters[ch.id];
               return (
                 <div
                   key={ch.id}
@@ -144,20 +147,12 @@ export const BookViewer: React.FC<BookViewerProps> = ({
                     </div>
                   </div>
 
-                  {/* Right Download / Open Button */}
+                  {/* Right Arrow / Action Button */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={(e) => handleDownload(e, ch.id)}
-                      className={`p-2 rounded-xl transition-colors ${
-                        isDownloaded
-                          ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40'
-                          : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800'
-                      }`}
-                      title={isDownloaded ? 'डाउनलोड पूरा हुआ' : 'अध्याय डाउनलोड करें'}
-                    >
-                      {isDownloaded ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
-                    </button>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <span className="text-[11px] font-black px-2.5 py-1 rounded-xl bg-blue-600 text-white shadow-sm flex items-center gap-1">
+                      <span>पढ़ें</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </span>
                   </div>
                 </div>
               );
@@ -168,72 +163,79 @@ export const BookViewer: React.FC<BookViewerProps> = ({
     );
   }
 
-  /* LEVEL 2: CHAPTER BOOK READER PAGE */
+  /* LEVEL 2: FULL PAGE SCROLLABLE NCERT PDF VIEWER */
+  const pdfEmbedUrl = useGoogleDocs
+    ? `https://docs.google.com/gview?url=${encodeURIComponent(selectedChapter.pdfUrl)}&embedded=true`
+    : selectedChapter.pdfUrl;
+
   return (
-    <div className="space-y-3.5 animate-fadeIn">
-      {/* Header Bar */}
-      <div className={`p-3.5 rounded-3xl border shadow-sm flex items-center justify-between gap-2 backdrop-blur-md ${
-        isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/90 border-slate-200'
+    <div className="flex flex-col h-[calc(100vh-135px)] space-y-2 animate-fadeIn -mx-1">
+      {/* Chapter Reader Control Header */}
+      <div className={`p-2.5 rounded-2xl border shadow-sm flex items-center justify-between gap-2 shrink-0 backdrop-blur-md ${
+        isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/95 border-slate-200'
       }`}>
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => setSelectedChapter(null)}
-            className={`p-2 rounded-2xl border text-xs font-bold transition-all flex items-center ${
-              isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+            className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center shrink-0 ${
+              isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
             }`}
+            title="अध्याय सूची पर वापस जाएँ"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="min-w-0">
-            <h2 className={`text-xs sm:text-sm font-black truncate ${
+            <h2 className={`text-xs font-black truncate ${
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}>
-              अध्याय {selectedChapter.chapterNumber} : {selectedChapter.titleHindi}
+              अध्याय {selectedChapter.chapterNumber}: {selectedChapter.titleHindi}
             </h2>
-            <p className="text-[10px] text-blue-600 font-bold">NCERT / RBSE पाठ्यपुस्तक</p>
+            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold">NCERT Class 10th PDF Reader</p>
           </div>
         </div>
 
-        <button
-          onClick={() => onSelectChapterNotes(selectedChapter.id)}
-          className="px-3.5 py-2 rounded-2xl bg-blue-600 text-white font-black text-xs shadow-md hover:bg-blue-700 shrink-0 transition-transform active:scale-95"
-        >
-          नोट्स देखें
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => onSelectChapterNotes(selectedChapter.id)}
+            className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] shadow-sm flex items-center gap-1 transition-transform active:scale-95"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>नोट्स</span>
+          </button>
+
+          <button
+            onClick={() => setUseGoogleDocs((prev) => !prev)}
+            className={`p-1.5 rounded-xl border text-[11px] font-bold transition-all flex items-center gap-1 ${
+              isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}
+            title="पीडीएफ व्युअर बदलें (Switch PDF Server)"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden sm:inline">{useGoogleDocs ? 'गूगल' : 'डायरेक्ट'}</span>
+          </button>
+
+          <a
+            href={selectedChapter.pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center ${
+              isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400' : 'bg-blue-50 border-blue-200 text-blue-700'
+            }`}
+            title="पीडीएफ नए टैब में खोलें"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
       </div>
 
-      {/* Book Reader Card */}
-      <div className={`p-5 rounded-3xl border shadow-md space-y-4 backdrop-blur-md ${
-        isDarkMode ? 'bg-slate-900/80 border-slate-800 text-slate-200' : 'bg-white/90 border-slate-200 text-slate-800'
-      }`}>
-        <div className="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-start gap-3">
-          <div className="text-3xl shrink-0 p-2 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800">
-            {selectedChapter.icon3D}
-          </div>
-          <div>
-            <span className="text-[11px] font-black text-blue-600 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-              इकाई: {selectedChapter.unit} • कुल भार: {selectedChapter.weightage} अंक
-            </span>
-            <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1.5">
-              {selectedChapter.titleHindi}
-            </h1>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              {selectedChapter.description}
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-3 text-xs sm:text-sm font-medium leading-relaxed">
-          <p>
-            राजस्थान माध्यमिक शिक्षा बोर्ड (RBSE) अजमेर द्वारा कक्षा 10 विज्ञान हेतु स्वीकृत नवीन NCERT पाठ्यक्रम के अनुसार इस अध्याय का अध्ययन नीचे दिया गया है।
-          </p>
-          <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 font-semibold space-y-1">
-            <div className="font-extrabold text-blue-700 dark:text-blue-300 text-xs">📖 ई-बुक विशेष हस्तलिखित नोट्स</div>
-            <p className="text-slate-700 dark:text-slate-300">
-              इस अध्याय के प्रत्येक टॉपिक के हस्तलिखित नोट्स तथा प्रश्नोत्तर देखने के लिए "नोट्स देखें" बटन दबाएं।
-            </p>
-          </div>
-        </div>
+      {/* Full Page PDF Iframe Viewer between Sticky Header and Footer */}
+      <div className="flex-1 w-full rounded-2xl overflow-hidden border shadow-inner relative bg-slate-200 dark:bg-slate-900 flex flex-col min-h-0">
+        <iframe
+          src={pdfEmbedUrl}
+          title={`NCERT Chapter ${selectedChapter.chapterNumber} PDF`}
+          className="w-full h-full border-none flex-1"
+          allow="fullscreen"
+        />
       </div>
     </div>
   );

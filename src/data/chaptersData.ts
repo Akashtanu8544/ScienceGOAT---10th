@@ -34,7 +34,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
     weightage: 5,
     icon3D: '⚒️',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch03.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc103.pdf',
     description: 'धातुओं व अधातुओं के भौतिक व रासायनिक गुणधर्म, आयनिक यौगिक, भर्जन व निस्तापन, संक्षारण एवं मिश्रधातु।'
   },
   {
@@ -46,7 +46,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
     weightage: 7,
     icon3D: '💎',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch04.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc104.pdf',
     description: 'सहसंयोजी आबंध, संतृप्त व असंतृप्त हाइड्रोकार्बन, सजातीय श्रेणी, इथेनॉल व एथनोइक अम्ल, साबुन एवं अपमार्जक।'
   },
   {
@@ -58,7 +58,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 2: सजीव जगत',
     weightage: 8,
     icon3D: '🫀',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch05.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc105.pdf',
     description: 'पोषण (स्वपोषी व विषमपोषी), श्वसन तंत्र, मानव हृदय एवं परिसंचरण तंत्र, मानव उत्सर्जन तंत्र व वृक्काणु (नेफ्रॉन)।'
   },
   {
@@ -70,7 +70,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 2: सजीव जगत',
     weightage: 6,
     icon3D: '🧠',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch06.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc106.pdf',
     description: 'तंत्रिका तंत्र, न्यूरॉन की संरचना, प्रतिवर्ती चाप, मानव मस्तिष्क, पादप हार्मोन व मानव अंतःस्रावी ग्रंथियां।'
   },
   {
@@ -82,7 +82,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 2: सजीव जगत',
     weightage: 7,
     icon3D: '🌱',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch07.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc107.pdf',
     description: 'अलैंगिक जनन (मुकुलन, विखंडन, पुनरुद्भवन), पुष्पी पौधों में लैंगिक जनन, मानव जनन तंत्र व यौन स्वास्थ्य।'
   },
   {
@@ -94,7 +94,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 2: सजीव जगत',
     weightage: 4,
     icon3D: '🧬',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch08.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc108.pdf',
     description: 'मेंडेल के आनुवंशिकता के नियम (एकसंकर व द्विसंकर संकरण), लिंग निर्धारण एवं आनुवंशिक लक्षण।'
   },
   {
@@ -106,7 +106,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 3: प्राकृतिक घटनाएं',
     weightage: 8,
     icon3D: '🔦',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch09.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc109.pdf',
     description: 'दर्पण सूत्र, आवर्धन, स्नेल का नियम, लेंस सूत्र, उत्तल व अवतल दर्पण/लेंस द्वारा प्रतिबिंब निर्माण।'
   },
   {
@@ -118,7 +118,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 3: प्राकृतिक घटनाएं',
     weightage: 4,
     icon3D: '👁️',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch10.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc110.pdf',
     description: 'मानव नेत्र की संरचना, दृष्टि दोष (निकट व दूर दृष्टि दोष) एवं उनका निवारण, प्रिज्म से प्रकाश का विक्षेपण, इंद्रधनुष।'
   },
   {
@@ -130,7 +130,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 4: विद्युत धारा का प्रभाव',
     weightage: 7,
     icon3D: '⚡',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch11.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc111.pdf',
     description: 'ओम का नियम (V=IR), प्रतिरोधकों का श्रेणीक्रम व पार्श्वक्रम संयोजन, जूल का तापीय नियम, विद्युत शक्ति (P=VI)।'
   },
   {
@@ -142,7 +142,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 4: विद्युत धारा का प्रभाव',
     weightage: 6,
     icon3D: '🧲',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch12.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc112.pdf',
     description: 'चुंबकीय क्षेत्र रेखाएं, दक्षिण-हस्त अंगुष्ठ नियम, परिनालिका, फ्लेमिंग का वामहस्त नियम, घरेलू विद्युत परिपथ।'
   },
   {
@@ -154,7 +154,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 5: प्राकृतिक संसाधन',
     weightage: 5,
     icon3D: '🌍',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch13.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc113.pdf',
     description: 'पारितंत्र के घटक, आहार श्रृंखला एवं जाल, 10% ऊर्जा प्रवाह का नियम, ओजोन परत का अपक्षय व कचरा प्रबंधन।'
   }
 ];
