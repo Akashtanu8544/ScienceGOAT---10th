@@ -22,7 +22,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
     weightage: 7,
     icon3D: '🧫',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch02.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc102.pdf',
     description: 'pH पैमाना, सूचक, अम्ल-क्षारक के रासायनिक गुण, साधारण नमक, प्लास्टर ऑफ पेरिस, बेकिंग सोडा व धावन सोडा।'
   },
   {
