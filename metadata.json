@@ -1,0 +1,6 @@
+{
+  "name": "Science GOAT - 10",
+  "description": "Science GOAT - 10: राजस्थान बोर्ड कक्षा 10वीं हिंदी माध्यम विज्ञान ऐप - नोट्स, क्विज़, पिछले वर्षों के प्रश्न पत्र (PYQs), वीडियो लेक्चर्स, NCERT किताब एवं डिजिटल ट्रैकर।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

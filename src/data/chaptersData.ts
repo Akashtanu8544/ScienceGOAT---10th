@@ -1,0 +1,160 @@
+import { Chapter } from '../types';
+
+export const CHAPTERS_DATA: Chapter[] = [
+  {
+    id: 1,
+    chapterNumber: 1,
+    titleHindi: 'रासायनिक अभिक्रियाएं एवं समीकरण',
+    titleEnglish: 'Chemical Reactions and Equations',
+    subject: 'chemistry',
+    unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    weightage: 6,
+    icon3D: '🧪',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch01.pdf',
+    description: 'रासायनिक अभिक्रियाओं के प्रकार, संयोजन, वियोजन, विस्थापन, द्विविस्थापन, अपचयन-उपचयन (रेडॉक्स) तथा समीकरण संतुलित करना।'
+  },
+  {
+    id: 2,
+    chapterNumber: 2,
+    titleHindi: 'अम्ल, क्षारक एवं लवण',
+    titleEnglish: 'Acids, Bases and Salts',
+    subject: 'chemistry',
+    unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    weightage: 7,
+    icon3D: '🧫',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch02.pdf',
+    description: 'pH पैमाना, सूचक, अम्ल-क्षारक के रासायनिक गुण, साधारण नमक, प्लास्टर ऑफ पेरिस, बेकिंग सोडा व धावन सोडा।'
+  },
+  {
+    id: 3,
+    chapterNumber: 3,
+    titleHindi: 'धातु एवं अधातु',
+    titleEnglish: 'Metals and Non-metals',
+    subject: 'chemistry',
+    unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    weightage: 5,
+    icon3D: '⚒️',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch03.pdf',
+    description: 'धातुओं व अधातुओं के भौतिक व रासायनिक गुणधर्म, आयनिक यौगिक, भर्जन व निस्तापन, संक्षारण एवं मिश्रधातु।'
+  },
+  {
+    id: 4,
+    chapterNumber: 4,
+    titleHindi: 'कार्बन एवं उसके यौगिक',
+    titleEnglish: 'Carbon and its Compounds',
+    subject: 'chemistry',
+    unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    weightage: 7,
+    icon3D: '💎',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch04.pdf',
+    description: 'सहसंयोजी आबंध, संतृप्त व असंतृप्त हाइड्रोकार्बन, सजातीय श्रेणी, इथेनॉल व एथनोइक अम्ल, साबुन एवं अपमार्जक।'
+  },
+  {
+    id: 5,
+    chapterNumber: 5,
+    titleHindi: 'जैव प्रक्रम',
+    titleEnglish: 'Life Processes',
+    subject: 'biology',
+    unit: 'इकाई 2: सजीव जगत',
+    weightage: 8,
+    icon3D: '🫀',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch05.pdf',
+    description: 'पोषण (स्वपोषी व विषमपोषी), श्वसन तंत्र, मानव हृदय एवं परिसंचरण तंत्र, मानव उत्सर्जन तंत्र व वृक्काणु (नेफ्रॉन)।'
+  },
+  {
+    id: 6,
+    chapterNumber: 6,
+    titleHindi: 'नियंत्रण एवं समन्वय',
+    titleEnglish: 'Control and Coordination',
+    subject: 'biology',
+    unit: 'इकाई 2: सजीव जगत',
+    weightage: 6,
+    icon3D: '🧠',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch06.pdf',
+    description: 'तंत्रिका तंत्र, न्यूरॉन की संरचना, प्रतिवर्ती चाप, मानव मस्तिष्क, पादप हार्मोन व मानव अंतःस्रावी ग्रंथियां।'
+  },
+  {
+    id: 7,
+    chapterNumber: 7,
+    titleHindi: 'जीव जनन कैसे करते हैं?',
+    titleEnglish: 'How do Organisms Reproduce?',
+    subject: 'biology',
+    unit: 'इकाई 2: सजीव जगत',
+    weightage: 7,
+    icon3D: '🌱',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch07.pdf',
+    description: 'अलैंगिक जनन (मुकुलन, विखंडन, पुनरुद्भवन), पुष्पी पौधों में लैंगिक जनन, मानव जनन तंत्र व यौन स्वास्थ्य।'
+  },
+  {
+    id: 8,
+    chapterNumber: 8,
+    titleHindi: 'आनुवंशिकता',
+    titleEnglish: 'Heredity',
+    subject: 'biology',
+    unit: 'इकाई 2: सजीव जगत',
+    weightage: 4,
+    icon3D: '🧬',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch08.pdf',
+    description: 'मेंडेल के आनुवंशिकता के नियम (एकसंकर व द्विसंकर संकरण), लिंग निर्धारण एवं आनुवंशिक लक्षण।'
+  },
+  {
+    id: 9,
+    chapterNumber: 9,
+    titleHindi: 'प्रकाश – परावर्तन तथा अपवर्तन',
+    titleEnglish: 'Light - Reflection and Refraction',
+    subject: 'physics',
+    unit: 'इकाई 3: प्राकृतिक घटनाएं',
+    weightage: 8,
+    icon3D: '🔦',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch09.pdf',
+    description: 'दर्पण सूत्र, आवर्धन, स्नेल का नियम, लेंस सूत्र, उत्तल व अवतल दर्पण/लेंस द्वारा प्रतिबिंब निर्माण।'
+  },
+  {
+    id: 10,
+    chapterNumber: 10,
+    titleHindi: 'मानव नेत्र तथा रंगबिरंगा संसार',
+    titleEnglish: 'Human Eye and Colourful World',
+    subject: 'physics',
+    unit: 'इकाई 3: प्राकृतिक घटनाएं',
+    weightage: 4,
+    icon3D: '👁️',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch10.pdf',
+    description: 'मानव नेत्र की संरचना, दृष्टि दोष (निकट व दूर दृष्टि दोष) एवं उनका निवारण, प्रिज्म से प्रकाश का विक्षेपण, इंद्रधनुष।'
+  },
+  {
+    id: 11,
+    chapterNumber: 11,
+    titleHindi: 'विद्युत',
+    titleEnglish: 'Electricity',
+    subject: 'physics',
+    unit: 'इकाई 4: विद्युत धारा का प्रभाव',
+    weightage: 7,
+    icon3D: '⚡',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch11.pdf',
+    description: 'ओम का नियम (V=IR), प्रतिरोधकों का श्रेणीक्रम व पार्श्वक्रम संयोजन, जूल का तापीय नियम, विद्युत शक्ति (P=VI)।'
+  },
+  {
+    id: 12,
+    chapterNumber: 12,
+    titleHindi: 'विद्युत धारा के चुंबकीय प्रभाव',
+    titleEnglish: 'Magnetic Effects of Electric Current',
+    subject: 'physics',
+    unit: 'इकाई 4: विद्युत धारा का प्रभाव',
+    weightage: 6,
+    icon3D: '🧲',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch12.pdf',
+    description: 'चुंबकीय क्षेत्र रेखाएं, दक्षिण-हस्त अंगुष्ठ नियम, परिनालिका, फ्लेमिंग का वामहस्त नियम, घरेलू विद्युत परिपथ।'
+  },
+  {
+    id: 13,
+    chapterNumber: 13,
+    titleHindi: 'हमारा पर्यावरण',
+    titleEnglish: 'Our Environment',
+    subject: 'biology',
+    unit: 'इकाई 5: प्राकृतिक संसाधन',
+    weightage: 5,
+    icon3D: '🌍',
+    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch13.pdf',
+    description: 'पारितंत्र के घटक, आहार श्रृंखला एवं जाल, 10% ऊर्जा प्रवाह का नियम, ओजोन परत का अपक्षय व कचरा प्रबंधन।'
+  }
+];
