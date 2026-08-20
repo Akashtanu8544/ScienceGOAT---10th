@@ -10,7 +10,7 @@ export const CHAPTERS_DATA: Chapter[] = [
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
     weightage: 6,
     icon3D: '🧪',
-    pdfUrl: 'https://raw.githubusercontent.com/ncert-hindi/class10-science/main/ch01.pdf',
+    pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc101.pdf',
     description: 'रासायनिक अभिक्रियाओं के प्रकार, संयोजन, वियोजन, विस्थापन, द्विविस्थापन, अपचयन-उपचयन (रेडॉक्स) तथा समीकरण संतुलित करना।'
   },
   {
