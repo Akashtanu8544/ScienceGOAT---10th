@@ -28,7 +28,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   ];
 
   return (
-    <nav className={`shrink-0 sticky bottom-0 left-0 right-0 z-40 backdrop-blur-2xl border-t py-1.5 px-2 max-w-md landscape:max-w-full w-full mx-auto transition-all duration-200 ${
+    <nav className={`shrink-0 sticky bottom-0 left-0 right-0 z-40 backdrop-blur-2xl border-t py-1.5 px-2 max-w-md w-full mx-auto transition-all duration-200 ${
       isDarkMode
         ? 'bg-slate-900/95 border-slate-800/90 text-slate-400 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]'
         : 'bg-white/95 border-slate-200/90 text-slate-600 shadow-[0_-8px_20px_rgba(15,23,42,0.08)]'

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chapter, ChapterNotes } from '../types';
 import { generateNotesPDF } from '../services/pdfGenerator';
 import { StorageService } from '../services/db';
-import { engagementLogger } from '../services/engagementLogger';
 import { CHAPTERS_DATA } from '../data/chaptersData';
 import { NOTES_DATA } from '../data/notesData';
 import {
@@ -25,8 +24,7 @@ import {
   Circle,
   Lightbulb,
   Zap,
-  HelpCircle,
-  Type
+  HelpCircle
 } from 'lucide-react';
 
 interface NotesViewerProps {
@@ -71,37 +69,6 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
   const [completedChapters, setCompletedChapters] = useState<number[]>(() => {
     return StorageService.getProgress().completedChapters || [];
   });
-
-  // Font Size Control Slider State
-  const [fontSize, setFontSize] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem('rbse_notes_font_size');
-      return saved ? Number(saved) : 15;
-    } catch (e) {
-      return 15;
-    }
-  });
-
-  const handleFontSizeChange = (val: number) => {
-    setFontSize(val);
-    try {
-      localStorage.setItem('rbse_notes_font_size', String(val));
-    } catch (e) {}
-  };
-
-  // Log chapter engagement when opened
-  useEffect(() => {
-    if (selectedChapterId) {
-      const ch = chapters.find((c) => c.id === selectedChapterId);
-      if (ch) {
-        engagementLogger.log('notes_opened', {
-          chapterId: ch.id,
-          chapterTitle: ch.titleHindi,
-          subject: ch.subject
-        });
-      }
-    }
-  }, [selectedChapterId, chapters]);
 
   // Handle initial chapter selection if passed or updated
   useEffect(() => {
@@ -286,61 +253,6 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
           ))}
         </div>
 
-        {/* Font Size Readability Control Slider */}
-        <div
-          className={`p-3 rounded-2xl border shadow-sm space-y-2 backdrop-blur-md ${
-            isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <Type className="w-4 h-4 text-indigo-500 shrink-0" />
-              <span className={`text-xs font-black truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                फ़ॉन्ट आकार (Text Readability Size):
-              </span>
-              <span className="text-xs font-black text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
-                {fontSize}px
-              </span>
-            </div>
-
-            {/* Quick Preset Buttons */}
-            <div className="flex items-center gap-1 shrink-0">
-              {[13, 15, 18, 22].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => handleFontSizeChange(size)}
-                  className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all ${
-                    fontSize === size
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : isDarkMode
-                      ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 pt-0.5">
-            <span className="text-[10px] font-black text-slate-400">A-</span>
-            <input
-              type="range"
-              min={12}
-              max={26}
-              step={1}
-              value={fontSize}
-              onChange={(e) => handleFontSizeChange(Number(e.target.value))}
-              className="w-full h-2 bg-indigo-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-              title="फ़ॉन्ट आकार बदलें"
-            />
-            <span className="text-xs font-black text-slate-400">A+</span>
-          </div>
-        </div>
-
-        {/* Dynamic Font Size Scaled Content Wrapper */}
-        <div style={{ fontSize: `${fontSize}px` }} className="space-y-3.5">
         {/* 1. SECTION: CHAPTER SUMMARY */}
         {(activeTab === 'all' || activeTab === 'summary') && activeNotes.summaryHindi && (
           <div
@@ -623,7 +535,6 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
             ))}
           </div>
         )}
-        </div>
 
         {/* Bottom Chapter Switcher Navigation Footer */}
         <div
@@ -789,7 +700,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
       </div>
 
       {/* Chapter Notes Cards List */}
-      <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
+      <div className="space-y-2.5">
         {filteredChapters.length === 0 ? (
           <div className="text-center py-8 text-xs text-slate-400 font-bold">कोई नोट्स उपलब्ध नहीं हैं</div>
         ) : (

@@ -536,22 +536,6 @@ export const InAppPdfViewer: React.FC<InAppPdfViewerProps> = ({
               {Math.round(scale * 100)}%
             </button>
 
-            {/* Scale / Font Readability Slider */}
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg border bg-slate-100/80 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700">
-              <span className="text-[9px] font-black text-slate-400">A-</span>
-              <input
-                type="range"
-                min={60}
-                max={220}
-                step={10}
-                value={Math.round(scale * 100)}
-                onChange={(e) => setScale(Number(e.target.value) / 100)}
-                className="w-12 sm:w-16 h-1.5 bg-amber-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                title="PDF अक्षर एवं ज़ूम आकार बदलें"
-              />
-              <span className="text-[10px] font-black text-slate-400">A+</span>
-            </div>
-
             <button
               onClick={zoomIn}
               disabled={scale >= 2.5}

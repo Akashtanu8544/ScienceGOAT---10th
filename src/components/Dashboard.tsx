@@ -328,7 +328,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 landscape:grid-cols-3 sm:landscape:grid-cols-6 gap-3.5">
+        <div className="grid grid-cols-2 gap-3.5">
           {options.map((opt) => {
             return (
               <button

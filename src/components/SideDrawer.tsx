@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, Settings, Star, Share2, MessageSquare, X, Download } from 'lucide-react';
+import { Sun, Moon, Settings, Star, Share2, MessageSquare, X } from 'lucide-react';
 import { ScienceGoatLogo } from './ScienceGoatLogo';
 
 interface SideDrawerProps {
@@ -83,25 +83,6 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
           {/* Menu Options */}
           <div className="space-y-1.5">
-            <button
-              onClick={() => {
-                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-                  try { navigator.vibrate(10); } catch (e) {}
-                }
-                sessionStorage.removeItem('pwa_prompt_dismissed');
-                window.dispatchEvent(new Event('beforeinstallprompt'));
-                onClose();
-              }}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
-                isDarkMode
-                  ? 'bg-indigo-900/30 hover:bg-indigo-800/40 text-indigo-300 border-indigo-700/50 shadow-sm'
-                  : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border-indigo-200 shadow-2xs'
-              }`}
-            >
-              <Download className="w-4 h-4 text-indigo-500" />
-              <span className="font-bold">एप इंस्टॉल करें (Install PWA App)</span>
-            </button>
-
             <button
               onClick={() => {
                 if (typeof window !== 'undefined' && 'vibrate' in navigator) {

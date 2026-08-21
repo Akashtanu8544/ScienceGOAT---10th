@@ -4,7 +4,6 @@ import { InAppPdfViewer } from './InAppPdfViewer';
 import { getCachedPdf, saveCachedPdf, isPdfCached } from '../utils/pdfStorageCache';
 import { fetchPdfArrayBufferWithFallback } from '../services/pdfFetchService';
 import { prefetchPdfFileSizes } from '../services/pdfMetadataService';
-import { engagementLogger } from '../services/engagementLogger';
 import {
   ArrowLeft,
   Search,
@@ -14,8 +13,7 @@ import {
   DownloadCloud,
   CheckCircle,
   Loader2,
-  HardDrive,
-  Type
+  HardDrive
 } from 'lucide-react';
 
 interface BookViewerProps {
@@ -105,29 +103,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({
     return matchesSubject && matchesSearch;
   });
 
-  // Book Card Font Size Control Slider State
-  const [fontSize, setFontSize] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem('rbse_book_font_size');
-      return saved ? Number(saved) : 14;
-    } catch (e) {
-      return 14;
-    }
-  });
-
-  const handleFontSizeChange = (val: number) => {
-    setFontSize(val);
-    try {
-      localStorage.setItem('rbse_book_font_size', String(val));
-    } catch (e) {}
-  };
-
   const handleOpenChapterPdf = (ch: Chapter) => {
-    engagementLogger.log('pdf_opened', {
-      chapterId: ch.id,
-      chapterTitle: ch.titleHindi,
-      pdfUrl: ch.pdfUrl,
-    });
     setActivePdf({
       title: `अध्याय ${ch.chapterNumber}: ${ch.titleHindi}`,
       url: ch.pdfUrl,
@@ -330,59 +306,6 @@ export const BookViewer: React.FC<BookViewerProps> = ({
         ))}
       </div>
 
-      {/* Font Size Readability Control Slider */}
-      <div
-        className={`p-3 rounded-2xl border shadow-sm space-y-2 backdrop-blur-md ${
-          isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'
-        }`}
-      >
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <Type className="w-4 h-4 text-blue-500 shrink-0" />
-            <span className={`text-xs font-black truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-              फ़ॉन्ट आकार (Text Readability Size):
-            </span>
-            <span className="text-xs font-black text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
-              {fontSize}px
-            </span>
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div className="flex items-center gap-1 shrink-0">
-            {[12, 14, 16, 20].map((size) => (
-              <button
-                key={size}
-                onClick={() => handleFontSizeChange(size)}
-                className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all ${
-                  fontSize === size
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : isDarkMode
-                    ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 pt-0.5">
-          <span className="text-[10px] font-black text-slate-400">A-</span>
-          <input
-            type="range"
-            min={12}
-            max={24}
-            step={1}
-            value={fontSize}
-            onChange={(e) => handleFontSizeChange(Number(e.target.value))}
-            className="w-full h-2 bg-blue-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
-            title="फ़ॉन्ट आकार बदलें"
-          />
-          <span className="text-xs font-black text-slate-400">A+</span>
-        </div>
-      </div>
-
       {/* Page Inline Search Bar */}
       <div className="relative">
         <Search
@@ -414,7 +337,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({
       </div>
 
       {/* Numbered Chapters List */}
-      <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
+      <div className="space-y-2.5">
         {filteredChapters.length === 0 ? (
           <div
             className={`text-center py-8 text-xs font-bold ${
@@ -482,8 +405,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({
 
                     {/* Chapter Title */}
                     <h3
-                      style={{ fontSize: `${fontSize}px` }}
-                      className={`font-black truncate ${
+                      className={`text-xs sm:text-sm font-black truncate ${
                         isDarkMode ? 'text-white' : 'text-slate-900'
                       }`}
                     >

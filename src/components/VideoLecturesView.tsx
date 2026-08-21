@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { VideoLecture } from '../types';
 import { VIDEO_LECTURES_DATA } from '../data/videosData';
 import { AdMobRewardedModal } from './AdMobRewardedModal';
-import { engagementLogger } from '../services/engagementLogger';
 import { Play, ArrowLeft, Lock, Tv, Search, X } from 'lucide-react';
 
 interface VideoLecturesViewProps {
@@ -46,11 +45,6 @@ export const VideoLecturesView: React.FC<VideoLecturesViewProps> = ({
       setPendingVideoForAd(vid);
     } else {
       setSelectedVideo(vid);
-      engagementLogger.log('video_watched', {
-        videoId: vid.id,
-        videoTitle: vid.title,
-        subject: vid.subject,
-      });
     }
   };
 
@@ -62,11 +56,6 @@ export const VideoLecturesView: React.FC<VideoLecturesViewProps> = ({
         localStorage.setItem('rbse_unlocked_videos', JSON.stringify(updated));
       } catch (e) {}
       setSelectedVideo(pendingVideoForAd);
-      engagementLogger.log('video_watched', {
-        videoId: pendingVideoForAd.id,
-        videoTitle: pendingVideoForAd.title,
-        subject: pendingVideoForAd.subject,
-      });
       setPendingVideoForAd(null);
     }
   };
@@ -157,7 +146,7 @@ export const VideoLecturesView: React.FC<VideoLecturesViewProps> = ({
         </div>
 
         {/* Videos List */}
-        <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
+        <div className="space-y-2.5">
           {filteredVideos.map((vid) => {
             const isUnlocked = unlockedVideoIds.includes(vid.id);
             return (

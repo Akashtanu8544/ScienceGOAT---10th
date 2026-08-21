@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Chapter, MockExam, QuizQuestion, UserProgress } from '../types';
 import { AdMobRewardedModal } from './AdMobRewardedModal';
 import { StorageService } from '../services/db';
-import { engagementLogger } from '../services/engagementLogger';
 import { CHAPTERS_DATA } from '../data/chaptersData';
 import { QUIZ_QUESTIONS_DATA, MOCK_EXAMS_DATA } from '../data/quizData';
 import confetti from 'canvas-confetti';
@@ -145,12 +144,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
     setScore(0);
     setSecondsRemaining(exam.durationMinutes ? exam.durationMinutes * 60 : 900);
     setViewLevel('QUIZ_TEST');
-
-    engagementLogger.log('quiz_started', {
-      examId: exam.id,
-      examTitle: exam.title,
-      chapterId: selectedChapter.id,
-    });
   };
 
   const handleAdCompleted = () => {
@@ -180,15 +173,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
     StorageService.recordQuizScore(activeExam.id, totalScore, activeExam.questions.length);
     onProgressUpdate();
-
-    engagementLogger.log('quiz_attempt', {
-      examId: activeExam.id,
-      examTitle: activeExam.title,
-      chapterId: selectedChapter.id,
-      score: totalScore,
-      totalQuestions: activeExam.questions.length,
-      isPassed: totalScore / (activeExam.questions.length || 1) >= 0.7,
-    });
 
     if (totalScore / (activeExam.questions.length || 1) >= 0.7) {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });

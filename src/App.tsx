@@ -6,7 +6,6 @@ import { Dashboard } from './components/Dashboard';
 import { BottomNavigation } from './components/BottomNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { LoadingSpinner } from './components/LoadingSpinner';
-import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 
 import { CHAPTERS_DATA } from './data/chaptersData';
 import { VIDEO_LECTURES_DATA } from './data/videosData';
@@ -133,7 +132,7 @@ export default function App() {
       />
 
       {/* Mobile App Frame Container with fixed header/footer and scrollable middle */}
-      <div className="w-full max-w-md landscape:max-w-full h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden transition-all duration-300">
+      <div className="w-full max-w-md h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden">
         {/* Fixed Top Header */}
         <Header
           isDarkMode={isDarkMode}
@@ -317,9 +316,6 @@ export default function App() {
 
       {/* Global PDF Proxy Loading Spinner */}
       <LoadingSpinner isDarkMode={isDarkMode} />
-
-      {/* PWA Direct Install Prompt Banner */}
-      <PwaInstallPrompt isDarkMode={isDarkMode} />
 
       {/* Modals */}
       <Suspense fallback={null}>

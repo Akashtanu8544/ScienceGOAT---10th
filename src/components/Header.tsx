@@ -22,12 +22,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className={`shrink-0 sticky top-0 z-40 w-full max-w-md landscape:max-w-full mx-auto transition-all duration-200 backdrop-blur-xl border-b shadow-xl ${
+    <header className={`shrink-0 sticky top-0 z-40 w-full max-w-md mx-auto transition-all duration-200 backdrop-blur-xl border-b shadow-xl ${
       isDarkMode
         ? 'bg-slate-900/95 border-slate-800/90 text-white shadow-black/40'
         : 'bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 border-blue-500/40 text-white shadow-blue-900/20'
     }`}>
-      <div className="max-w-md landscape:max-w-full mx-auto px-3.5 py-2">
+      <div className="max-w-md mx-auto px-3.5 py-2">
         {/* Top Header Row */}
         <div className="flex items-center justify-between gap-2">
           {/* Left Drawer Menu Trigger + Science GOAT Text */}
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="w-5 h-5 text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
             </button>
 
-            <ScienceGoatLogo size="md" showText={true} showImage={true} />
+            <ScienceGoatLogo size="md" showText={true} showImage={false} />
           </div>
 
           {/* Right Action Buttons */}

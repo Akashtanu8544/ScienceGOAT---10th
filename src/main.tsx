@@ -3,8 +3,8 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Register Service Worker for offline caching and PWABuilder compliance
-if ('serviceWorker' in navigator) {
+// Register Service Worker for offline PDF caching and app Shell caching
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch((err) => {
       console.warn('Service Worker registration skipped:', err);

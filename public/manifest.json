@@ -1,17 +1,18 @@
 {
   "name": "Science GOAT - 10th Science RBSE",
   "short_name": "Science GOAT 10",
-  "id": "/",
+  "id": "com.sciencegoat.class10rbse",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": [
+    "window-controls-overlay",
     "standalone",
     "minimal-ui",
     "browser"
   ],
-  "orientation": "any",
-  "lang": "hi",
+  "orientation": "portrait",
+  "lang": "hi-IN",
   "dir": "ltr",
   "theme_color": "#4f46e5",
   "background_color": "#0f172a",
@@ -21,24 +22,10 @@
     "books",
     "productivity"
   ],
+  "iarc_rating_id": "e84b3a5d-482d-421e-8333-f002220d9124",
   "prefer_related_applications": false,
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "handle_links": "preferred",
+  "related_applications": [],
   "icons": [
-    {
-      "src": "/launchericon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
     {
       "src": "/pwa-192x192.png",
       "sizes": "192x192",
@@ -48,18 +35,6 @@
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/launchericon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/512.png",
-      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
@@ -73,29 +48,35 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/maskable-icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "/screenshot-1.png",
-      "sizes": "1080x1920",
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Science GOAT - Mobile Dashboard & Notes"
+      "label": "Science GOAT 10 - RBSE Dashboard & Study Material"
     },
     {
-      "src": "/screenshot-2.png",
-      "sizes": "1920x1080",
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Science GOAT - Desktop Dashboard & Online Quiz"
+      "label": "Science GOAT 10 - Desktop View"
     }
   ],
   "shortcuts": [
@@ -106,7 +87,7 @@
       "url": "/?view=Notes",
       "icons": [
         {
-          "src": "/launchericon-192x192.png",
+          "src": "/pwa-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -119,7 +100,7 @@
       "url": "/?view=Quiz",
       "icons": [
         {
-          "src": "/launchericon-192x192.png",
+          "src": "/pwa-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -132,7 +113,7 @@
       "url": "/?view=PYQ",
       "icons": [
         {
-          "src": "/launchericon-192x192.png",
+          "src": "/pwa-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -145,11 +126,69 @@
       "url": "/?view=IMPORTANT",
       "icons": [
         {
-          "src": "/launchericon-192x192.png",
+          "src": "/pwa-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
       ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/?action=open_notes",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+sciencegoat",
+      "url": "/?view=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/?action=share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "Science GOAT 10 Daily Tip",
+      "short_name": "Daily Tip",
+      "description": "विज्ञान की दैनिक परीक्षा टिप और महत्वपूर्ण सूत्र",
+      "tag": "daily-tip-widget",
+      "template": "widget-template",
+      "ms_ac_template": "widget-ac-template",
+      "data": "widget-data",
+      "type": "text/html",
+      "screenshots": [
+        {
+          "src": "/pwa-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "label": "Daily Tip Widget Preview"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note_url": "/?view=Notes"
+  },
+  "scope_extensions": [
+    {
+      "origin": "https://sciencegoat-10th.web.app"
     }
   ]
 }
