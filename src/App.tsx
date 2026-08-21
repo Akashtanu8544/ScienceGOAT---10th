@@ -1,33 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { HoneycombBackground } from './components/HoneycombBackground';
 import { Header } from './components/Header';
 import { SideDrawer } from './components/SideDrawer';
 import { Dashboard } from './components/Dashboard';
-import { BookViewer } from './components/BookViewer';
-import { NotesViewer } from './components/NotesViewer';
-import { QuizView } from './components/QuizView';
-import { PYQView } from './components/PYQView';
-import { ImportantQuestionsView } from './components/ImportantQuestionsView';
-import { VideoLecturesView } from './components/VideoLecturesView';
-import { ProgressTrackerView } from './components/ProgressTrackerView';
-import { GlossaryView } from './components/GlossaryView';
-import { ShareModal } from './components/ShareModal';
-import { MoreAppsModal } from './components/MoreAppsModal';
-import { GitHubConfigModal } from './components/GitHubConfigModal';
 import { BottomNavigation } from './components/BottomNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { LoadingSpinner } from './components/LoadingSpinner';
 
 import { CHAPTERS_DATA } from './data/chaptersData';
-import { NOTES_DATA } from './data/notesData';
-import { QUIZ_QUESTIONS_DATA, MOCK_EXAMS_DATA } from './data/quizData';
-import { PYQ_PAPERS_DATA } from './data/pyqData';
-import { IMPORTANT_QUESTIONS_DATA } from './data/importantQuestionsData';
 import { VIDEO_LECTURES_DATA } from './data/videosData';
 
 import { StorageService } from './services/db';
 import { UserProgress, GitHubConfig } from './types';
-import { X, FileText } from 'lucide-react';
+import { X, FileText, Sparkles } from 'lucide-react';
+
+// Lazy loaded secondary views and modals to optimize critical path & LCP performance
+const BookViewer = lazy(() => import('./components/BookViewer').then((m) => ({ default: m.BookViewer })));
+const NotesViewer = lazy(() => import('./components/NotesViewer').then((m) => ({ default: m.NotesViewer })));
+const QuizView = lazy(() => import('./components/QuizView').then((m) => ({ default: m.QuizView })));
+const PYQView = lazy(() => import('./components/PYQView').then((m) => ({ default: m.PYQView })));
+const ImportantQuestionsView = lazy(() =>
+  import('./components/ImportantQuestionsView').then((m) => ({ default: m.ImportantQuestionsView }))
+);
+const VideoLecturesView = lazy(() =>
+  import('./components/VideoLecturesView').then((m) => ({ default: m.VideoLecturesView }))
+);
+const ProgressTrackerView = lazy(() =>
+  import('./components/ProgressTrackerView').then((m) => ({ default: m.ProgressTrackerView }))
+);
+const GlossaryView = lazy(() => import('./components/GlossaryView').then((m) => ({ default: m.GlossaryView })));
+const ShareModal = lazy(() => import('./components/ShareModal').then((m) => ({ default: m.ShareModal })));
+const MoreAppsModal = lazy(() => import('./components/MoreAppsModal').then((m) => ({ default: m.MoreAppsModal })));
+const GitHubConfigModal = lazy(() =>
+  import('./components/GitHubConfigModal').then((m) => ({ default: m.GitHubConfigModal }))
+);
+
+const ViewLoadingFallback = ({ isDarkMode }: { isDarkMode: boolean }) => (
+  <div className="flex flex-col items-center justify-center min-h-[300px] gap-3 text-center animate-fadeIn py-12">
+    <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center animate-spin">
+      <Sparkles className="w-5 h-5 text-amber-500" />
+    </div>
+    <span className={`text-xs font-black ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+      सामग्री लोड हो रही है...
+    </span>
+  </div>
+);
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -204,7 +221,7 @@ export default function App() {
             </div>
           ) : (
             /* Views Router */
-            <>
+            <Suspense fallback={<ViewLoadingFallback isDarkMode={isDarkMode} />}>
               {currentView === 'Dashboard' && (
                 <Dashboard
                   onSelectOption={handleSelectOption}
@@ -229,7 +246,6 @@ export default function App() {
               {currentView === 'Notes' && (
                 <NotesViewer
                   chapters={CHAPTERS_DATA}
-                  notesData={NOTES_DATA}
                   initialChapterId={selectedChapterForNotes}
                   onBack={() => setCurrentView('Dashboard')}
                   onProgressUpdate={refreshProgress}
@@ -240,8 +256,6 @@ export default function App() {
               {currentView === 'Quiz' && (
                 <QuizView
                   chapters={CHAPTERS_DATA}
-                  questionsData={QUIZ_QUESTIONS_DATA}
-                  mockExamsData={MOCK_EXAMS_DATA}
                   progress={progress}
                   onBack={() => setCurrentView('Dashboard')}
                   onProgressUpdate={refreshProgress}
@@ -252,7 +266,6 @@ export default function App() {
 
               {currentView === 'PYQ' && (
                 <PYQView
-                  papers={PYQ_PAPERS_DATA}
                   onBack={() => setCurrentView('Dashboard')}
                   customPyqUrl={githubConfig.customPyqJsonUrl}
                   isDarkMode={isDarkMode}
@@ -261,7 +274,6 @@ export default function App() {
 
               {currentView === 'IMPORTANT' && (
                 <ImportantQuestionsView
-                  questions={IMPORTANT_QUESTIONS_DATA}
                   onBack={() => setCurrentView('Dashboard')}
                   isDarkMode={isDarkMode}
                 />
@@ -269,7 +281,6 @@ export default function App() {
 
               {currentView === 'VIDEOS' && (
                 <VideoLecturesView
-                  videos={VIDEO_LECTURES_DATA}
                   onBack={() => setCurrentView('Dashboard')}
                   onOpenNotes={handleOpenChapterNotes}
                   isDarkMode={isDarkMode}
@@ -291,7 +302,7 @@ export default function App() {
                   isDarkMode={isDarkMode}
                 />
               )}
-            </>
+            </Suspense>
           )}
         </main>
 
@@ -307,22 +318,24 @@ export default function App() {
       <LoadingSpinner isDarkMode={isDarkMode} />
 
       {/* Modals */}
-      {isShareModalOpen && (
-        <ShareModal onClose={() => setIsShareModalOpen(false)} isDarkMode={isDarkMode} />
-      )}
+      <Suspense fallback={null}>
+        {isShareModalOpen && (
+          <ShareModal onClose={() => setIsShareModalOpen(false)} isDarkMode={isDarkMode} />
+        )}
 
-      {isMoreAppsModalOpen && (
-        <MoreAppsModal onClose={() => setIsMoreAppsModalOpen(false)} isDarkMode={isDarkMode} />
-      )}
+        {isMoreAppsModalOpen && (
+          <MoreAppsModal onClose={() => setIsMoreAppsModalOpen(false)} isDarkMode={isDarkMode} />
+        )}
 
-      {isGitHubConfigOpen && (
-        <GitHubConfigModal
-          config={githubConfig}
-          onSave={(updated) => setGithubConfig(updated)}
-          onClose={() => setIsGitHubConfigOpen(false)}
-          isDarkMode={isDarkMode}
-        />
-      )}
+        {isGitHubConfigOpen && (
+          <GitHubConfigModal
+            config={githubConfig}
+            onSave={(updated) => setGithubConfig(updated)}
+            onClose={() => setIsGitHubConfigOpen(false)}
+            isDarkMode={isDarkMode}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

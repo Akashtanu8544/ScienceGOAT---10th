@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { VideoLecture } from '../types';
+import { VIDEO_LECTURES_DATA } from '../data/videosData';
 import { AdMobRewardedModal } from './AdMobRewardedModal';
 import { Play, ArrowLeft, Lock, Tv, Search, X } from 'lucide-react';
 
 interface VideoLecturesViewProps {
-  videos: VideoLecture[];
+  videos?: VideoLecture[];
   onBack: () => void;
   onOpenNotes: (chapterId: number) => void;
   isDarkMode: boolean;
 }
 
 export const VideoLecturesView: React.FC<VideoLecturesViewProps> = ({
-  videos,
+  videos = VIDEO_LECTURES_DATA,
   onBack,
   onOpenNotes,
   isDarkMode,

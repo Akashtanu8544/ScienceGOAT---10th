@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Chapter, MockExam, QuizQuestion, UserProgress } from '../types';
 import { AdMobRewardedModal } from './AdMobRewardedModal';
 import { StorageService } from '../services/db';
+import { CHAPTERS_DATA } from '../data/chaptersData';
+import { QUIZ_QUESTIONS_DATA, MOCK_EXAMS_DATA } from '../data/quizData';
 import confetti from 'canvas-confetti';
 import { HelpCircle, CheckCircle2, XCircle, Clock, ArrowLeft, X, Check, Sparkles, RefreshCw, Trophy, ChevronRight, Play, Search } from 'lucide-react';
 
 interface QuizViewProps {
-  chapters: Chapter[];
-  questionsData: QuizQuestion[];
-  mockExamsData: MockExam[];
+  chapters?: Chapter[];
+  questionsData?: QuizQuestion[];
+  mockExamsData?: MockExam[];
   progress: UserProgress;
   onBack: () => void;
   onProgressUpdate: () => void;
@@ -17,9 +19,9 @@ interface QuizViewProps {
 }
 
 export const QuizView: React.FC<QuizViewProps> = ({
-  chapters,
-  questionsData,
-  mockExamsData,
+  chapters = CHAPTERS_DATA,
+  questionsData = QUIZ_QUESTIONS_DATA,
+  mockExamsData = MOCK_EXAMS_DATA,
   progress,
   onBack,
   onProgressUpdate,
@@ -73,7 +75,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
         {
           id: `ch-${selectedChapter.id}-exam-1`,
           title: `${selectedChapter.titleHindi} - अभ्यास टेस्ट 1`,
-          unit: selectedChapter.unit || '',
+          unit: 'unit' in selectedChapter ? selectedChapter.unit : '',
           chapterIds: [selectedChapter.id],
           totalQuestions: 0,
           durationMinutes: 15,
@@ -90,7 +92,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
       exams.push({
         id: `ch-${selectedChapter.id}-all-questions`,
         title: `🔥 सम्पूर्ण अध्याय टेस्ट - सभी ${chapterQuestions.length} वस्तुनिष्ठ प्रश्न`,
-        unit: selectedChapter.unit || '',
+        unit: 'unit' in selectedChapter ? selectedChapter.unit : '',
         chapterIds: [selectedChapter.id],
         totalQuestions: chapterQuestions.length,
         durationMinutes: Math.min(60, Math.max(15, Math.ceil(chapterQuestions.length * 0.8))),
@@ -111,7 +113,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
       exams.push({
         id: `ch-${selectedChapter.id}-set-${i + 1}`,
         title: `📝 अभ्यास टेस्ट ${i + 1} (प्रश्न ${startIdx + 1} से ${startIdx + chunkQuestions.length})`,
-        unit: selectedChapter.unit || '',
+        unit: 'unit' in selectedChapter ? selectedChapter.unit : '',
         chapterIds: [selectedChapter.id],
         totalQuestions: chunkQuestions.length,
         durationMinutes: 15,

@@ -30,6 +30,8 @@ export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
       <img
         src="/logo.svg"
         alt="Science GOAT 10th Logo"
+        fetchPriority="high"
+        decoding="async"
         className={`${sizeMap.icon} object-contain rounded-2xl shadow-sm ${className}`}
       />
     );
@@ -44,6 +46,8 @@ export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
           <img
             src="/logo.svg"
             alt="Science GOAT 10th Logo"
+            fetchPriority="high"
+            decoding="async"
             className="relative w-full h-full object-contain rounded-xl drop-shadow-sm select-none"
           />
         </div>

@@ -37,6 +37,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           <img
             src="/logo.svg"
             alt="Science GOAT 10th Logo"
+            fetchPriority="high"
+            decoding="async"
+            width="208"
+            height="208"
             className="relative w-44 h-44 sm:w-52 sm:h-52 object-contain drop-shadow-2xl rounded-3xl"
           />
         </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chapter, ChapterNotes } from '../types';
 import { generateNotesPDF } from '../services/pdfGenerator';
 import { StorageService } from '../services/db';
+import { CHAPTERS_DATA } from '../data/chaptersData';
+import { NOTES_DATA } from '../data/notesData';
 import {
   ArrowLeft,
   Search,
@@ -26,8 +28,8 @@ import {
 } from 'lucide-react';
 
 interface NotesViewerProps {
-  chapters: Chapter[];
-  notesData: Record<number, ChapterNotes>;
+  chapters?: Chapter[];
+  notesData?: Record<number, ChapterNotes>;
   initialChapterId?: number;
   onBack: () => void;
   onProgressUpdate: () => void;
@@ -41,8 +43,8 @@ const cleanText = (str: string) => {
 };
 
 export const NotesViewer: React.FC<NotesViewerProps> = ({
-  chapters,
-  notesData,
+  chapters = CHAPTERS_DATA,
+  notesData = NOTES_DATA,
   initialChapterId,
   onBack,
   onProgressUpdate,

@@ -7,43 +7,56 @@ interface DailyTipCardProps {
 }
 
 export const DailyTipCard: React.FC<DailyTipCardProps> = ({ isDarkMode }) => {
-  const [currentTip, setCurrentTip] = useState<DailyTip>(DAILY_TIPS_DATA[0]);
-  const [tipIndex, setTipIndex] = useState<number>(0);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [currentTip, setCurrentTip] = useState<DailyTip>(() => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const savedTip = localStorage.getItem('science_goat_daily_tip');
 
-  useEffect(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
-    const savedTip = localStorage.getItem('science_goat_daily_tip');
-
-    if (savedTip) {
-      try {
+      if (savedTip) {
         const parsed = JSON.parse(savedTip);
         if (parsed.lastFetchedDate === todayStr && parsed.tipIndex !== undefined) {
           const idx = parsed.tipIndex % DAILY_TIPS_DATA.length;
-          setTipIndex(idx);
-          setCurrentTip(DAILY_TIPS_DATA[idx]);
-          return;
+          return DAILY_TIPS_DATA[idx];
         }
-      } catch (e) {
-        console.error('Error loading daily tip state:', e);
       }
+
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 0);
+      const diff = now.getTime() - startOfYear.getTime();
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      const newIdx = dayOfYear % DAILY_TIPS_DATA.length;
+
+      return DAILY_TIPS_DATA[newIdx];
+    } catch {
+      return DAILY_TIPS_DATA[0];
     }
+  });
 
-    // Default to day of year index for daily refresh
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 0);
-    const diff = now.getTime() - startOfYear.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    const newIdx = dayOfYear % DAILY_TIPS_DATA.length;
+  const [tipIndex, setTipIndex] = useState<number>(() => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const savedTip = localStorage.getItem('science_goat_daily_tip');
 
-    setTipIndex(newIdx);
-    setCurrentTip(DAILY_TIPS_DATA[newIdx]);
-    localStorage.setItem(
-      'science_goat_daily_tip',
-      JSON.stringify({ tipIndex: newIdx, lastFetchedDate: todayStr })
-    );
-  }, []);
+      if (savedTip) {
+        const parsed = JSON.parse(savedTip);
+        if (parsed.lastFetchedDate === todayStr && parsed.tipIndex !== undefined) {
+          return parsed.tipIndex % DAILY_TIPS_DATA.length;
+        }
+      }
+
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 0);
+      const diff = now.getTime() - startOfYear.getTime();
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      return dayOfYear % DAILY_TIPS_DATA.length;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const handleManualRefresh = () => {
     setIsRefreshing(true);

@@ -1,0 +1,159 @@
+{
+  "name": "Science GOAT - 10th Science RBSE",
+  "short_name": "Science GOAT 10",
+  "id": "com.sciencegoat.class10rbse",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "portrait",
+  "lang": "hi-IN",
+  "dir": "ltr",
+  "theme_color": "#4f46e5",
+  "background_color": "#0f172a",
+  "description": "राजस्थान बोर्ड (RBSE) कक्षा 10वीं विज्ञान ऐप - हस्तलिखित नोट्स, ऑनलाइन टेस्ट, विगत वर्षों के पेपर (PYQ), अति-महत्वपूर्ण प्रश्न एवं वीडियो लेक्चर्स।",
+  "categories": [
+    "education",
+    "books",
+    "productivity"
+  ],
+  "iarc_rating_id": "e84b3a5d-482d-421e-8333-f002220d9124",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.svg",
+      "sizes": "1080x1920",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Science GOAT 10 - RBSE Dashboard & Study Material"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "1920x1080",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Science GOAT 10 - Desktop View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "हस्तलिखित नोट्स (Notes)",
+      "short_name": "नोट्स",
+      "description": "कक्षा 10वीं विज्ञान के अध्यायवार सम्पूर्ण नोट्स पढ़ें",
+      "url": "/?view=Notes",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "ऑनलाइन मॉडल क्विज़ (Quiz)",
+      "short_name": "क्विज़",
+      "description": "अध्यायवार बहुविकल्पीय प्रश्न एवं मॉडल टेस्ट हल करें",
+      "url": "/?view=Quiz",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "पुराने प्रश्न पत्र (PYQs)",
+      "short_name": "PYQs",
+      "description": "राजस्थान बोर्ड 2018 से 2024 तक के हल प्रश्न पत्र",
+      "url": "/?view=PYQ",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "अति-महत्वपूर्ण प्रश्न (Important Q&A)",
+      "short_name": "महत्वपूर्ण प्रश्न",
+      "description": "बोर्ड परीक्षा हेतु 100% संभावित महत्वपूर्ण प्रश्नोत्तर",
+      "url": "/?view=IMPORTANT",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/?action=open_notes",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+sciencegoat",
+      "url": "/?view=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/?action=share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "Science GOAT 10 Daily Tip",
+      "short_name": "Daily Tip",
+      "description": "विज्ञान की दैनिक परीक्षा टिप और महत्वपूर्ण सूत्र",
+      "tag": "daily-tip-widget",
+      "template": "widget-template",
+      "ms_ac_template": "widget-ac-template",
+      "data": "widget-data",
+      "type": "text/html",
+      "screenshots": [
+        {
+          "src": "/logo.svg",
+          "sizes": "600x300",
+          "label": "Daily Tip Widget Preview"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note_url": "/?view=Notes"
+  },
+  "scope_extensions": [
+    {
+      "origin": "https://sciencegoat-10th.web.app"
+    }
+  ]
+}

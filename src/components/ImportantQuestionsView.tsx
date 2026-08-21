@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ImportantQuestion, Chapter } from '../types';
 import { CHAPTERS_DATA } from '../data/chaptersData';
+import { IMPORTANT_QUESTIONS_DATA } from '../data/importantQuestionsData';
 import {
   ArrowLeft,
   Search,
@@ -15,13 +16,13 @@ import {
 } from 'lucide-react';
 
 interface ImportantQuestionsViewProps {
-  questions: ImportantQuestion[];
+  questions?: ImportantQuestion[];
   onBack: () => void;
   isDarkMode: boolean;
 }
 
 export const ImportantQuestionsView: React.FC<ImportantQuestionsViewProps> = ({
-  questions,
+  questions = IMPORTANT_QUESTIONS_DATA,
   onBack,
   isDarkMode,
 }) => {

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { PYQPaper } from '../types';
+import { PYQ_PAPERS_DATA } from '../data/pyqData';
 import { Download, ArrowLeft, Check, BookOpen, FileText, Sparkles } from 'lucide-react';
 import { InAppPdfViewer } from './InAppPdfViewer';
 
 interface PYQViewProps {
-  papers: PYQPaper[];
+  papers?: PYQPaper[];
   onBack: () => void;
   customPyqUrl?: string;
   isDarkMode: boolean;
 }
 
 export const PYQView: React.FC<PYQViewProps> = ({
-  papers,
+  papers = PYQ_PAPERS_DATA,
   onBack,
   isDarkMode,
 }) => {

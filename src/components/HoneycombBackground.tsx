@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const HoneycombBackground: React.FC<{ isDarkMode?: boolean }> = ({ isDarkMode }) => {
+export const HoneycombBackground: React.FC<{ isDarkMode?: boolean }> = React.memo(({ isDarkMode }) => {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       {/* Dynamic ambient gradient backplate */}
@@ -51,4 +51,4 @@ export const HoneycombBackground: React.FC<{ isDarkMode?: boolean }> = ({ isDark
       <div className="absolute inset-0 backdrop-blur-[3px] bg-white/5 dark:bg-slate-950/20 pointer-events-none" />
     </div>
   );
-};
+});
