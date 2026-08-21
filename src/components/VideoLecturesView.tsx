@@ -146,7 +146,7 @@ export const VideoLecturesView: React.FC<VideoLecturesViewProps> = ({
         </div>
 
         {/* Videos List */}
-        <div className="space-y-2.5">
+        <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
           {filteredVideos.map((vid) => {
             const isUnlocked = unlockedVideoIds.includes(vid.id);
             return (

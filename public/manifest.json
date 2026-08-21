@@ -1,18 +1,17 @@
 {
   "name": "Science GOAT - 10th Science RBSE",
   "short_name": "Science GOAT 10",
-  "id": "com.sciencegoat.class10rbse",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": [
-    "window-controls-overlay",
     "standalone",
     "minimal-ui",
     "browser"
   ],
-  "orientation": "portrait",
-  "lang": "hi-IN",
+  "orientation": "any",
+  "lang": "hi",
   "dir": "ltr",
   "theme_color": "#4f46e5",
   "background_color": "#0f172a",
@@ -22,9 +21,7 @@
     "books",
     "productivity"
   ],
-  "iarc_rating_id": "e84b3a5d-482d-421e-8333-f002220d9124",
   "prefer_related_applications": false,
-  "related_applications": [],
   "icons": [
     {
       "src": "/pwa-192x192.png",

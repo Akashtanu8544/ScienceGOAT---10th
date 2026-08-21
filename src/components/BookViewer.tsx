@@ -337,7 +337,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({
       </div>
 
       {/* Numbered Chapters List */}
-      <div className="space-y-2.5">
+      <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
         {filteredChapters.length === 0 ? (
           <div
             className={`text-center py-8 text-xs font-bold ${

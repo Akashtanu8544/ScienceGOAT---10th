@@ -132,7 +132,7 @@ export default function App() {
       />
 
       {/* Mobile App Frame Container with fixed header/footer and scrollable middle */}
-      <div className="w-full max-w-md h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md landscape:max-w-full h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden transition-all duration-300">
         {/* Fixed Top Header */}
         <Header
           isDarkMode={isDarkMode}

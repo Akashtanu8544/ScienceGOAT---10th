@@ -71,7 +71,7 @@ export const PYQView: React.FC<PYQViewProps> = ({
         </div>
 
         {/* Numbered Papers List */}
-        <div className="space-y-2.5">
+        <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2.5 space-y-0">
           {papers.map((paper) => {
             const isDownloaded = downloadedPapers[paper.id];
             return (
