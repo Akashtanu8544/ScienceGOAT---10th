@@ -7,6 +7,7 @@
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
+    "tabbed",
     "standalone",
     "minimal-ui",
     "browser"
@@ -57,6 +58,12 @@
       "purpose": "maskable"
     },
     {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
@@ -65,15 +72,15 @@
   ],
   "screenshots": [
     {
-      "src": "/pwa-512x512.png",
-      "sizes": "512x512",
+      "src": "/screenshot-narrow.png",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Science GOAT 10 - RBSE Dashboard & Study Material"
     },
     {
-      "src": "/pwa-512x512.png",
-      "sizes": "512x512",
+      "src": "/screenshot-wide.png",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Science GOAT 10 - Desktop View"
@@ -137,8 +144,12 @@
     {
       "action": "/?action=open_notes",
       "accept": {
-        "application/pdf": [".pdf"],
-        "application/json": [".json"]
+        "application/pdf": [
+          ".pdf"
+        ],
+        "application/json": [
+          ".json"
+        ]
       }
     }
   ],
@@ -186,9 +197,5 @@
   "note_taking": {
     "new_note_url": "/?view=Notes"
   },
-  "scope_extensions": [
-    {
-      "origin": "https://sciencegoat-10th.web.app"
-    }
-  ]
+  "scope_extensions": []
 }
