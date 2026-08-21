@@ -55,19 +55,26 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-3 space-y-4 text-xs font-semibold custom-scrollbar">
           {/* Dark Mode Switcher */}
           <div
-            onClick={onToggleTheme}
-            className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
-              isDarkMode ? 'bg-slate-800 text-amber-300' : 'bg-slate-100 text-slate-800'
+            onClick={() => {
+              if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                try { navigator.vibrate(10); } catch (e) {}
+              }
+              onToggleTheme();
+            }}
+            className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all border ${
+              isDarkMode
+                ? 'bg-slate-800/90 text-amber-300 border-slate-700 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                : 'bg-white text-slate-800 border-slate-200 shadow-sm'
             }`}
           >
             <div className="flex items-center gap-2.5 font-bold">
-              {isDarkMode ? <Moon className="w-4 h-4 text-amber-400" /> : <Sun className="w-4 h-4 text-amber-500" />}
+              {isDarkMode ? <Moon className="w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" /> : <Sun className="w-4 h-4 text-amber-500" />}
               <span>{isDarkMode ? 'डार्क मोड (Dark Mode)' : 'लाइट मोड (Light Mode)'}</span>
             </div>
             {/* Custom Toggle Switch */}
             <div
-              className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ${
-                isDarkMode ? 'bg-amber-500 justify-end' : 'bg-slate-300 justify-start'
+              className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 border shadow-inner ${
+                isDarkMode ? 'bg-amber-500 border-amber-600 justify-end' : 'bg-slate-300 border-slate-400 justify-start'
               }`}
             >
               <div className="w-5 h-5 rounded-full bg-white shadow-md transform transition-transform" />
@@ -75,14 +82,19 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
           </div>
 
           {/* Menu Options */}
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <button
               onClick={() => {
+                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate(10); } catch (e) {}
+                }
                 onClose();
                 onOpenGitHubConfig();
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-                isDarkMode ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-100 text-slate-800'
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
+                isDarkMode
+                  ? 'bg-slate-800/40 hover:bg-slate-800 text-slate-200 border-slate-800 shadow-sm'
+                  : 'bg-slate-50 hover:bg-white text-slate-800 border-slate-200/80 shadow-2xs'
               }`}
             >
               <Settings className="w-4 h-4 text-blue-500" />
@@ -91,11 +103,16 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
             <button
               onClick={() => {
+                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate(10); } catch (e) {}
+                }
                 onClose();
                 onOpenShare();
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-                isDarkMode ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-100 text-slate-800'
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
+                isDarkMode
+                  ? 'bg-slate-800/40 hover:bg-slate-800 text-slate-200 border-slate-800 shadow-sm'
+                  : 'bg-slate-50 hover:bg-white text-slate-800 border-slate-200/80 shadow-2xs'
               }`}
             >
               <Share2 className="w-4 h-4 text-emerald-500" />
@@ -104,11 +121,16 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
             <button
               onClick={() => {
+                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate(10); } catch (e) {}
+                }
                 onClose();
                 alert('धन्यवाद! Science GOAT - 10 को रेट करने के लिए शेयर बटन दबाएं।');
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-                isDarkMode ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-100 text-slate-800'
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
+                isDarkMode
+                  ? 'bg-slate-800/40 hover:bg-slate-800 text-slate-200 border-slate-800 shadow-sm'
+                  : 'bg-slate-50 hover:bg-white text-slate-800 border-slate-200/80 shadow-2xs'
               }`}
             >
               <Star className="w-4 h-4 text-amber-500" />
@@ -117,11 +139,16 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
             <button
               onClick={() => {
+                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate(10); } catch (e) {}
+                }
                 onClose();
                 alert('आप अपने सुझाव या प्रश्न हमें व्हाट्सएप शेयर बटन के माध्यम से भेज सकते हैं।');
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-                isDarkMode ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-100 text-slate-800'
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
+                isDarkMode
+                  ? 'bg-slate-800/40 hover:bg-slate-800 text-slate-200 border-slate-800 shadow-sm'
+                  : 'bg-slate-50 hover:bg-white text-slate-800 border-slate-200/80 shadow-2xs'
               }`}
             >
               <MessageSquare className="w-4 h-4 text-purple-500" />

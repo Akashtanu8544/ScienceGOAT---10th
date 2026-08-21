@@ -67,24 +67,59 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // General static asset fetch strategy: Cache First, Network Fallback
+  // General static asset fetch strategy: Network First for images/icons, Cache with Content-Type validation
   if (
     event.request.method === 'GET' &&
     (url.origin === location.origin || url.hostname.includes('unpkg.com') || url.hostname.includes('cdnjs'))
   ) {
+    const isImage =
+      url.pathname.endsWith('.png') ||
+      url.pathname.endsWith('.jpg') ||
+      url.pathname.endsWith('.jpeg') ||
+      url.pathname.endsWith('.svg') ||
+      url.pathname.endsWith('.ico') ||
+      url.pathname.endsWith('.json') ||
+      event.request.destination === 'image';
+
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        return fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              const copy = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+      (async () => {
+        // For images and manifest icons, try fresh network fetch first
+        if (isImage) {
+          try {
+            const networkResponse = await fetch(event.request);
+            if (networkResponse.ok && networkResponse.status === 200) {
+              const contentType = networkResponse.headers.get('content-type') || '';
+              // Only cache if valid image/json type, not SPA HTML fallback
+              if (!contentType.includes('text/html')) {
+                const cache = await caches.open(CACHE_NAME);
+                cache.put(event.request, networkResponse.clone());
+              }
+              return networkResponse;
             }
-            return response;
-          })
-          .catch(() => cached || Response.error());
-      })
+          } catch (e) {
+            // Network failed, check cache
+          }
+        }
+
+        const cached = await caches.match(event.request);
+        if (cached) {
+          const cachedType = cached.headers.get('content-type') || '';
+          // If expecting an image/json but cached response is HTML, discard it
+          if (!isImage || !cachedType.includes('text/html')) {
+            return cached;
+          }
+        }
+
+        const fetchResponse = await fetch(event.request);
+        if (fetchResponse.ok && fetchResponse.status === 200) {
+          const contentType = fetchResponse.headers.get('content-type') || '';
+          if (!contentType.includes('text/html') || !isImage) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(event.request, fetchResponse.clone());
+          }
+        }
+        return fetchResponse;
+      })()
     );
   }
 });

@@ -148,10 +148,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
     <>
       {/* Clean Combined Hero Card */}
       <div
-        className={`relative rounded-3xl p-4 sm:p-5 border shadow-xl backdrop-blur-2xl transition-all overflow-hidden space-y-3.5 ${
+        className={`relative rounded-3xl p-4 sm:p-5 border shadow-2xl backdrop-blur-2xl transition-all overflow-hidden space-y-3.5 ${
           isDarkMode
-            ? 'bg-gradient-to-br from-slate-900/95 via-indigo-950/40 to-slate-900/95 border-indigo-500/30 text-white'
-            : 'bg-gradient-to-br from-white/95 via-indigo-50/80 to-purple-50/90 border-indigo-200/90 text-slate-900 shadow-indigo-500/5'
+            ? 'card-3d-dark text-white'
+            : 'card-3d-light text-slate-900'
         }`}
       >
         {/* Glow Effects */}
@@ -162,17 +162,17 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0" />
+              <Calendar className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 drop-shadow-[0_2px_4px_rgba(244,63,94,0.4)]" />
               <span className="text-xs font-black text-slate-800 dark:text-slate-200">
                 बोर्ड परीक्षा लक्ष्य: {formattedExamDateString}
               </span>
             </div>
             <button
               onClick={handleOpenModal}
-              className={`p-1 px-2.5 rounded-xl border text-[10px] font-black flex items-center gap-1 transition-all active:scale-95 shrink-0 ${
+              className={`p-1 px-2.5 rounded-xl border text-[10px] font-black flex items-center gap-1 transition-all active:translate-y-0.5 shrink-0 ${
                 isDarkMode
-                  ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-indigo-300'
-                  : 'bg-white hover:bg-slate-50 border-indigo-200 text-indigo-600 shadow-2xs'
+                  ? 'bg-gradient-to-b from-slate-800 to-slate-900 border-t border-l border-slate-700 border-b border-r border-slate-950 text-indigo-300 shadow-md'
+                  : 'bg-gradient-to-b from-white to-slate-100 border-t border-l border-white border-b border-r border-slate-300 text-indigo-700 shadow-sm'
               }`}
             >
               <Settings className="w-3 h-3" />
@@ -187,10 +187,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
           ) : (
             <div className="grid grid-cols-4 gap-2 text-center">
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center ${
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
                   isDarkMode
-                    ? 'bg-slate-900/90 border-indigo-500/30'
-                    : 'bg-white/90 border-indigo-100 shadow-2xs'
+                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
                 }`}
               >
                 <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
@@ -202,10 +202,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center ${
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
                   isDarkMode
-                    ? 'bg-slate-900/90 border-indigo-500/30'
-                    : 'bg-white/90 border-indigo-100 shadow-2xs'
+                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
                 }`}
               >
                 <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
@@ -217,10 +217,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center ${
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
                   isDarkMode
-                    ? 'bg-slate-900/90 border-indigo-500/30'
-                    : 'bg-white/90 border-indigo-100 shadow-2xs'
+                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
                 }`}
               >
                 <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
@@ -232,10 +232,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center ${
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
                   isDarkMode
-                    ? 'bg-slate-900/90 border-indigo-500/30'
-                    : 'bg-white/90 border-indigo-100 shadow-2xs'
+                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
                 }`}
               >
                 <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none animate-pulse">
@@ -253,13 +253,13 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
         <div
           className={`p-3 rounded-2xl border backdrop-blur-xl transition-all space-y-1 ${
             isDarkMode
-              ? 'bg-slate-900/90 border-indigo-500/30'
-              : 'bg-white/90 border-indigo-100 shadow-2xs'
+              ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+              : 'bg-white/95 border-indigo-200 shadow-[0_4px_10px_rgba(15,23,42,0.06)]'
           }`}
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 icon-container-3d">
                 {currentTip.category === 'quote' ? (
                   <Quote className="w-3 h-3" />
                 ) : (
@@ -275,10 +275,10 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
             <button
               onClick={handleManualRefreshTip}
               title="नया विचार देखें"
-              className={`p-1 rounded-lg border transition-all active:scale-95 shrink-0 ${
+              className={`p-1 rounded-lg border transition-all active:translate-y-0.5 shrink-0 ${
                 isDarkMode
                   ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-indigo-300'
-                  : 'bg-slate-50 hover:bg-white border-indigo-100 text-indigo-600'
+                  : 'bg-slate-50 hover:bg-white border-indigo-200 text-indigo-600'
               }`}
             >
               <RefreshCw className={`w-3 h-3 ${isRefreshingTip ? 'animate-spin' : ''}`} />
