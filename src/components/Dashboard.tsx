@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BarChart2, ChevronRight, BookOpen, FileText, HelpCircle, Flame, ScrollText, Video, Search, X, Activity, BookMarked } from 'lucide-react';
 import { QUIZ_QUESTIONS_DATA } from '../data/quizData';
 import { CHAPTERS_DATA } from '../data/chaptersData';
+import { MergedBoardHeroCard } from './MergedBoardHeroCard';
 
 interface DashboardProps {
   onSelectOption: (option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY') => void;
@@ -184,55 +185,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-4 animate-fadeIn">
-      {/* Glassmorphism Welcome Hero Card */}
-      <div
-        className={`relative rounded-3xl p-4 sm:p-5 border shadow-xl backdrop-blur-2xl overflow-hidden transition-all group ${
-          isDarkMode
-            ? 'bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-950/80 border-slate-700/60 text-white'
-            : 'bg-gradient-to-br from-white/90 via-blue-50/60 to-indigo-50/70 border-white/80 text-slate-900'
-        }`}
-      >
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
+      {/* Merged Master Board Hero Card (Science GOAT + Progress + Countdown + Streak + Daily Tip) */}
+      <MergedBoardHeroCard
+        isDarkMode={isDarkMode}
+        completedChaptersCount={completedChaptersCount}
+        onSelectOption={onSelectOption}
+      />
 
-        <div className="relative z-10 space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold text-amber-500 dark:text-amber-400">
-              कक्षा 10वीं विज्ञान
-            </span>
-
-            <button
-              onClick={() => onSelectOption('PROGRESS')}
-              className={`py-1 px-3 rounded-full border font-black text-[11px] flex items-center gap-1.5 transition-all active:scale-95 shadow-sm ${
-                isDarkMode
-                  ? 'bg-slate-800/90 text-amber-300 border-amber-500/30 hover:bg-slate-700'
-                  : 'bg-white/90 text-blue-700 border-blue-200 hover:bg-blue-50'
-              }`}
-            >
-              <BarChart2 className="w-3.5 h-3.5 text-blue-600 dark:text-amber-400" />
-              <span>प्रगति: {completedChaptersCount}/13</span>
-            </button>
-          </div>
-
-          <div className="space-y-0.5">
-            <h2 className={`text-lg sm:text-xl font-black tracking-tight flex items-center gap-2 ${
-              isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}>
-              <span>Science GOAT</span>
-              <span className="px-2 py-0.5 rounded-lg bg-green-500 text-white text-xs font-black">10th</span>
-            </h2>
-            <p className={`text-xs font-medium leading-relaxed ${
-              isDarkMode ? 'text-slate-300' : 'text-slate-600'
-            }`}>
-              राजस्थान बोर्ड कक्षा 10 विज्ञान का संपूर्ण डिजिटल साथी
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard Search Bar directly below App Branding */}
+      {/* Dashboard Search Bar directly below Merged Hero Card */}
       <div className="relative z-10">
         <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${
-          isDarkMode ? 'text-amber-400' : 'text-blue-600'
+          isDarkMode ? 'text-amber-400' : 'text-indigo-600'
         }`} />
         <input
           type="text"
@@ -242,7 +205,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           className={`w-full pl-10 pr-9 py-2.5 text-xs rounded-2xl font-black transition-all backdrop-blur-2xl shadow-md focus:outline-none ${
             isDarkMode
               ? 'bg-slate-900/80 text-slate-100 placeholder-slate-400 border border-slate-700/80 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20'
-              : 'bg-white/90 text-slate-900 placeholder-slate-400 border border-blue-200/90 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 shadow-blue-500/5'
+              : 'bg-white/90 text-slate-900 placeholder-slate-400 border border-indigo-200/90 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-indigo-500/5'
           }`}
         />
         {searchQuery && (
@@ -255,8 +218,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         )}
       </div>
 
-      {/* Performance Overview Section (Small Progress Rings for Physics, Chemistry, Biology) */}
-      <div className={`p-3.5 rounded-3xl border shadow-md space-y-2.5 backdrop-blur-2xl ${
+      {/* Performance Overview Section with Integrated Daily Quiz */}
+      <div className={`p-3.5 rounded-3xl border shadow-md space-y-3 backdrop-blur-2xl ${
         isDarkMode
           ? 'bg-slate-900/80 border-slate-800'
           : 'bg-white/80 border-white/80 shadow-slate-200/50'
@@ -320,64 +283,36 @@ export const Dashboard: React.FC<DashboardProps> = ({
             onClick={() => onSelectOption('PROGRESS')}
           />
         </div>
-      </div>
 
-      {/* Science Glossary Feature Card */}
-      <div
-        onClick={() => onSelectOption('GLOSSARY')}
-        className={`p-3.5 rounded-2xl border shadow-md relative overflow-hidden backdrop-blur-2xl transition-all cursor-pointer group active:scale-[0.99] ${
-          isDarkMode
-            ? 'bg-gradient-to-r from-slate-900/90 via-amber-950/20 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60'
-            : 'bg-gradient-to-r from-amber-50/90 via-yellow-50/60 to-amber-100/70 border-amber-300/80 hover:border-amber-400 shadow-amber-500/5'
-        }`}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              📚
+        {/* Integrated Daily Quiz Bar inside Performance Overview */}
+        <div
+          onClick={() => onSelectOption('Quiz')}
+          className={`p-2.5 rounded-2xl border transition-all cursor-pointer group active:scale-[0.99] flex items-center justify-between gap-2.5 ${
+            isDarkMode
+              ? 'bg-slate-950/60 border-amber-500/30 hover:border-amber-400/60'
+              : 'bg-amber-50/70 border-amber-200/80 hover:border-amber-300 shadow-2xs'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 font-bold flex items-center justify-center text-sm shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              🎯
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>विज्ञान शब्दावली</span>
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-md">
-                  Glossary
+              <h4 className="text-xs font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
+                <span>दैनिक प्रश्नोत्तरी</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  (Daily Quiz)
                 </span>
-              </h3>
-              <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                कक्षा 10वीं के मुख्य वैज्ञानिक शब्द व परिभाषाएं
+              </h4>
+              <p className="text-[10px] font-semibold text-slate-600 dark:text-slate-400 leading-none mt-0.5">
+                रोजाना 10 प्रश्नों से तैयारी मजबूत करें
               </p>
             </div>
           </div>
 
-          <button className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black transition-all flex items-center gap-1 shrink-0 shadow-sm group-hover:shadow-amber-500/25">
-            <span>खोलें</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Daily Quiz Feature Section (Ultra Minimalistic) */}
-      <div
-        onClick={() => onSelectOption('Quiz')}
-        className={`p-3 rounded-2xl border shadow-md relative overflow-hidden backdrop-blur-2xl transition-all cursor-pointer group active:scale-[0.99] ${
-          isDarkMode
-            ? 'bg-slate-900/90 border-amber-500/30 hover:border-amber-400/60'
-            : 'bg-white/95 border-amber-300/60 hover:border-amber-400 shadow-amber-500/5'
-        }`}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-lg shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              🔥
-            </div>
-            <h3 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white">
-              दैनिक प्रश्नोत्तरी <span className="text-amber-500 font-bold">(Daily Quiz)</span>
-            </h3>
-          </div>
-
-          <button className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black transition-all flex items-center gap-1 shrink-0 shadow-sm group-hover:shadow-amber-500/25">
+          <button className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-black transition-all flex items-center gap-1 shrink-0 shadow-2xs group-hover:shadow-amber-500/20">
             <span>क्विज़ खेलें</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3 h-3" />
           </button>
         </div>
       </div>
@@ -423,6 +358,40 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Science Glossary Feature Card - Positioned Below Board PYQ & Video Classes Grid */}
+      <div
+        onClick={() => onSelectOption('GLOSSARY')}
+        className={`p-3.5 rounded-2xl border shadow-md relative overflow-hidden backdrop-blur-2xl transition-all cursor-pointer group active:scale-[0.99] ${
+          isDarkMode
+            ? 'bg-gradient-to-r from-slate-900/90 via-amber-950/20 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60'
+            : 'bg-gradient-to-r from-amber-50/90 via-yellow-50/60 to-amber-100/70 border-amber-300/80 hover:border-amber-400 shadow-amber-500/5'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+              📚
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>विज्ञान शब्दावली</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-md">
+                  Glossary
+                </span>
+              </h3>
+              <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                कक्षा 10वीं के मुख्य वैज्ञानिक शब्द व परिभाषाएं
+              </p>
+            </div>
+          </div>
+
+          <button className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black transition-all flex items-center gap-1 shrink-0 shadow-sm group-hover:shadow-amber-500/25">
+            <span>खोलें</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

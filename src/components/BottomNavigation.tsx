@@ -21,10 +21,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   ];
 
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 z-40 backdrop-blur-2xl border-t py-1.5 px-2 max-w-md mx-auto transition-colors duration-200 ${
+    <nav className={`shrink-0 sticky bottom-0 left-0 right-0 z-40 backdrop-blur-2xl border-t py-1.5 px-2 max-w-md w-full mx-auto transition-colors duration-200 ${
       isDarkMode
-        ? 'bg-slate-900/80 border-slate-800/80 text-slate-400'
-        : 'bg-white/85 border-white/70 text-slate-600 shadow-2xl'
+        ? 'bg-slate-900/90 border-slate-800/80 text-slate-400'
+        : 'bg-white/90 border-slate-200 text-slate-600 shadow-2xl'
     }`}>
       <div className="flex items-center justify-around gap-1">
         {navItems.map((item) => {
@@ -33,11 +33,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <button
               key={item.id}
               onClick={() => onSelectView(item.id)}
-              className={`flex items-center justify-center p-2.5 rounded-2xl transition-all active:scale-90 relative ${
+              className={`flex items-center justify-center p-2 rounded-2xl transition-all active:scale-90 relative ${
                 isActive
                   ? isDarkMode
-                    ? 'text-amber-300 bg-amber-500/25 font-black scale-110 border border-amber-400/40 shadow-md shadow-amber-500/10'
-                    : 'text-blue-700 bg-blue-100 font-black scale-110 border border-blue-300 shadow-md shadow-blue-500/10'
+                    ? 'text-amber-300 bg-amber-500/25 font-black scale-105 border border-amber-400/40 shadow-md shadow-amber-500/10'
+                    : 'text-blue-700 bg-blue-100 font-black scale-105 border border-blue-300 shadow-md shadow-blue-500/10'
                   : 'hover:text-slate-900 dark:hover:text-slate-200 opacity-70 hover:opacity-100'
               }`}
               title={item.label}
@@ -55,4 +55,3 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     </nav>
   );
 };
-

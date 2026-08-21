@@ -21,6 +21,8 @@ const DEFAULT_PROGRESS: UserProgress = {
   lastActiveDate: new Date().toISOString().split('T')[0],
   unlockedMockExams: [],
   badges: ['राजस्थान बोर्ड परीक्षार्थी', 'प्रथम अध्ययन दिवस'],
+  chapterReadingTime: {},
+  totalReadingTimeSeconds: 0,
 };
 
 const DEFAULT_GITHUB_CONFIG: GitHubConfig = {
@@ -93,6 +95,15 @@ export class StorageService {
     return p;
   }
 
+  static unmarkChapterComplete(chapterId: number): UserProgress {
+    const p = this.getProgress();
+    if (Array.isArray(p.completedChapters)) {
+      p.completedChapters = p.completedChapters.filter((id) => id !== chapterId);
+      this.saveProgress(p);
+    }
+    return p;
+  }
+
   static recordQuizScore(examId: string, score: number, total: number): UserProgress {
     const p = this.getProgress();
     if (!p.quizScores || typeof p.quizScores !== 'object') {
@@ -123,6 +134,27 @@ export class StorageService {
     return p;
   }
 
+  static logReadingTime(chapterKey: number | string, secondsSpent: number): UserProgress {
+    if (secondsSpent <= 0) return this.getProgress();
+    const p = this.getProgress();
+    if (!p.chapterReadingTime || typeof p.chapterReadingTime !== 'object') {
+      p.chapterReadingTime = {};
+    }
+    const current = p.chapterReadingTime[chapterKey] || 0;
+    p.chapterReadingTime[chapterKey] = current + secondsSpent;
+    p.totalReadingTimeSeconds = (p.totalReadingTimeSeconds || 0) + secondsSpent;
+
+    // Bonus points for reading time (1 point per minute)
+    const earnedPoints = Math.floor(secondsSpent / 60);
+    if (earnedPoints > 0) {
+      p.totalPoints = (p.totalPoints || 0) + earnedPoints;
+    }
+
+    this.checkBadges(p);
+    this.saveProgress(p);
+    return p;
+  }
+
   static checkBadges(p: UserProgress): void {
     if (!Array.isArray(p.badges)) {
       p.badges = [];
@@ -137,6 +169,8 @@ export class StorageService {
     if ((p.totalPoints || 0) >= 300) badges.add('ज्ञान रत्न');
     if ((p.totalPoints || 0) >= 1000) badges.add('⚡ सुपर माइंड');
     if ((p.streakDays || 0) >= 7) badges.add('🔥 7 दिवसीय स्ट्राइक मस्टर');
+    if ((p.totalReadingTimeSeconds || 0) >= 600) badges.add('📖 स्वाध्यायी (10 मिनट पठन)');
+    if ((p.totalReadingTimeSeconds || 0) >= 3600) badges.add('🧠 एकाग्रचित्त (1 घंटा पठन)');
     p.badges = Array.from(badges);
   }
 

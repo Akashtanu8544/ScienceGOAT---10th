@@ -1,8 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Chapter, ChapterNotes } from '../types';
 import { generateNotesPDF } from '../services/pdfGenerator';
 import { StorageService } from '../services/db';
-import { Download, CheckCircle, ArrowLeft, Zap, BookOpen, Check, RefreshCw, ChevronRight, Search, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Search,
+  X,
+  FileText,
+  BookOpen,
+  Download,
+  CheckCircle,
+  Sparkles,
+  ChevronRight,
+  ChevronLeft,
+  Copy,
+  Check,
+  Flame,
+  Bookmark,
+  Share2,
+  CheckCircle2,
+  Circle,
+  Lightbulb,
+  Zap,
+  HelpCircle
+} from 'lucide-react';
 
 interface NotesViewerProps {
   chapters: Chapter[];
@@ -13,6 +34,12 @@ interface NotesViewerProps {
   isDarkMode: boolean;
 }
 
+// Clean text helper to strip any internal citation tags e.g. [cite: 2]
+const cleanText = (str: string) => {
+  if (!str) return '';
+  return str.replace(/\[cite:\s*\d+\]/g, '').trim();
+};
+
 export const NotesViewer: React.FC<NotesViewerProps> = ({
   chapters,
   notesData,
@@ -21,91 +48,201 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
   onProgressUpdate,
   isDarkMode,
 }) => {
-  // Navigation level state: 'CHAPTER_LIST' -> 'TOPICS_LIST' -> 'READER'
-  const [viewLevel, setViewLevel] = useState<'CHAPTER_LIST' | 'TOPICS_LIST' | 'READER'>(
-    initialChapterId ? 'TOPICS_LIST' : 'CHAPTER_LIST'
-  );
-
-  const [selectedChapterId, setSelectedChapterId] = useState<number>(initialChapterId || 1);
-  const [selectedTopicIndex, setSelectedTopicIndex] = useState<number>(0);
-  const [fontSize, setFontSize] = useState<number>(14); // default text size in px
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState<'chemistry' | 'biology' | 'physics'>('chemistry');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Active Selected Chapter ID for displaying rich Code-Added Notes
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(initialChapterId || null);
 
-  const selectedChapter = chapters.find((c) => c.id === selectedChapterId) || chapters[0];
-  const notes = notesData[selectedChapterId];
+  // Active Sub-Tab inside Chapter Notes Detail View ('all' | 'summary' | 'keyPoints' | 'formulas' | 'sections')
+  const [activeTab, setActiveTab] = useState<'all' | 'summary' | 'keyPoints' | 'formulas' | 'sections'>('all');
 
+  // Copy state for feedback
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  // Search within current active chapter notes
+  const [chapterSearchQuery, setChapterSearchQuery] = useState('');
+
+  // Chapter completion status state
+  const [completedChapters, setCompletedChapters] = useState<number[]>(() => {
+    return StorageService.getProgress().completedChapters || [];
+  });
+
+  // Handle initial chapter selection if passed or updated
+  useEffect(() => {
+    if (initialChapterId) {
+      setSelectedChapterId(initialChapterId);
+      const ch = chapters.find((c) => c.id === initialChapterId);
+      if (ch) {
+        setSubjectFilter(ch.subject);
+      }
+    }
+  }, [initialChapterId, chapters]);
+
+  // Sync completion status on mount/change
+  useEffect(() => {
+    const prog = StorageService.getProgress();
+    setCompletedChapters(prog.completedChapters || []);
+  }, [selectedChapterId]);
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(cleanText(text));
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  const handleToggleComplete = (chapterId: number) => {
+    const isCompleted = completedChapters.includes(chapterId);
+    if (isCompleted) {
+      StorageService.unmarkChapterComplete(chapterId);
+    } else {
+      StorageService.markChapterComplete(chapterId);
+    }
+    const updated = StorageService.getProgress().completedChapters || [];
+    setCompletedChapters(updated);
+    onProgressUpdate();
+  };
+
+  // Filtered chapters for chapter list view
   const filteredChapters = chapters.filter((ch) => {
     const matchesSubject = ch.subject === subjectFilter;
-    const matchesSearch = searchQuery.trim() === '' ||
+    const matchesSearch =
+      searchQuery.trim() === '' ||
       ch.titleHindi.includes(searchQuery) ||
       ch.titleEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ch.description.includes(searchQuery);
     return matchesSubject && matchesSearch;
   });
 
-  // Helper topic list generated from notes
-  const topics = notes?.keyPoints ? notes.keyPoints.map((point, idx) => {
-    const titleParts = point.split(':');
-    const title = titleParts.length > 1 ? titleParts[0] : `विषय ${idx + 1}`;
-    const desc = titleParts.length > 1 ? titleParts.slice(1).join(':') : point;
-    return { id: idx, title, desc, point };
-  }) : [
-    { id: 0, title: 'परिचय एवं मूलभूत सिद्धान्त', desc: 'रासायनिक अभिक्रियाएँ और समीकरण की परिभाषा', point: 'परिचय एवं मूलभूत सिद्धान्त' }
-  ];
+  // Active Chapter Object & Notes Data
+  const activeChapter = selectedChapterId ? chapters.find((c) => c.id === selectedChapterId) : null;
+  const activeNotes = selectedChapterId ? notesData[selectedChapterId] : null;
 
-  const handleDownloadPDF = () => {
-    generateNotesPDF(selectedChapter, notes);
-    setDownloadSuccess(true);
-    setTimeout(() => setDownloadSuccess(false), 3000);
-  };
+  // Previous & Next Chapter IDs for navigation bar
+  const currentChapterIndex = activeChapter ? chapters.findIndex((c) => c.id === activeChapter.id) : -1;
+  const prevChapter = currentChapterIndex > 0 ? chapters[currentChapterIndex - 1] : null;
+  const nextChapter = currentChapterIndex >= 0 && currentChapterIndex < chapters.length - 1 ? chapters[currentChapterIndex + 1] : null;
 
-  const handleMarkTopicDone = (idx: number) => {
-    StorageService.markChapterComplete(selectedChapter.id);
-    onProgressUpdate();
-  };
+  // Render Full Interactive Code-Added Chapter Notes View
+  if (activeChapter && activeNotes) {
+    const isCompleted = completedChapters.includes(activeChapter.id);
 
-  /* LEVEL 1: CHAPTER SELECTION PAGE */
-  if (viewLevel === 'CHAPTER_LIST') {
     return (
-      <div className="space-y-3.5 animate-fadeIn">
-        {/* Centered Header Bar */}
-        <div className={`relative flex items-center justify-center p-3.5 rounded-3xl border shadow-sm backdrop-blur-md ${
-          isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/90 border-slate-200'
-        }`}>
+      <div className="space-y-3.5 animate-fadeIn pb-6">
+        {/* Top Sticky Header Controls Bar */}
+        <div
+          className={`sticky top-0 z-20 flex items-center justify-between p-3 rounded-2xl border shadow-md backdrop-blur-xl gap-2 ${
+            isDarkMode ? 'bg-slate-900/95 border-slate-800' : 'bg-white/95 border-slate-200'
+          }`}
+        >
           <button
-            onClick={onBack}
-            className={`absolute left-3.5 p-2 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center ${
-              isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+            onClick={() => setSelectedChapterId(null)}
+            className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1 shrink-0 ${
+              isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
             }`}
-            title="वापस जाएँ"
+            title="अध्याय सूची पर लौटें"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 text-indigo-500" />
+            <span className="hidden sm:inline">सूची</span>
           </button>
-          <h2 className={`text-sm sm:text-base font-black flex items-center gap-2 text-center ${
-            isDarkMode ? 'text-white' : 'text-slate-900'
-          }`}>
-            <span className="text-xl">📝</span> Study Notes
-          </h2>
+
+          <div className="min-w-0 flex-1 text-center">
+            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider block">
+              अध्याय {activeChapter.chapterNumber} • {activeChapter.weightage} अंक
+            </span>
+            <h2
+              className={`text-xs sm:text-sm font-black truncate ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              {activeChapter.titleHindi}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Mark Complete Toggle Button */}
+            <button
+              onClick={() => handleToggleComplete(activeChapter.id)}
+              className={`p-2 px-2.5 rounded-xl border text-xs font-black transition-all flex items-center gap-1 active:scale-95 ${
+                isCompleted
+                  ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/40 dark:text-emerald-400'
+                  : isDarkMode
+                  ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                  : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+              }`}
+              title={isCompleted ? 'पूर्ण चिह्नित' : 'अपूर्ण चिह्नित करें'}
+            >
+              {isCompleted ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span className="hidden sm:inline">पूर्ण</span>
+                </>
+              ) : (
+                <>
+                  <Circle className="w-4 h-4 text-slate-400" />
+                  <span className="hidden sm:inline">अपूर्ण</span>
+                </>
+              )}
+            </button>
+
+            {/* Export / Download PDF Button */}
+            <button
+              onClick={() => generateNotesPDF(activeChapter, activeNotes)}
+              className="p-2 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-sm flex items-center gap-1 transition-transform active:scale-95"
+              title="PDF फाइल सेव करें"
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden xs:inline">PDF</span>
+            </button>
+          </div>
         </div>
 
-        {/* Subject Filter Category Tabs */}
-        <div className="grid grid-cols-3 gap-2">
+        {/* Chapter Overview Hero Card */}
+        <div
+          className={`p-4 rounded-3xl border shadow-md relative overflow-hidden backdrop-blur-md ${
+            isDarkMode
+              ? 'bg-gradient-to-br from-indigo-950/60 via-slate-900 to-slate-900/90 border-indigo-500/30'
+              : 'bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-white border-indigo-200/80'
+          }`}
+        >
+          <div className="flex items-start gap-3.5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-3xl flex items-center justify-center shrink-0 shadow-inner">
+              {activeChapter.icon3D || '📝'}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <h1 className={`text-base sm:text-lg font-black leading-tight ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}>
+                अध्याय {activeChapter.chapterNumber}: {activeChapter.titleHindi}
+              </h1>
+
+              <p className="text-xs text-indigo-500 dark:text-indigo-400 font-bold mt-0.5">
+                {activeChapter.titleEnglish}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Quick Jump Filter Sub-Tabs */}
+        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-2xl border bg-slate-200/50 dark:bg-slate-900/60 border-slate-300/60 dark:border-slate-800 text-xs font-black">
           {[
-            { id: 'chemistry', label: 'रसायन विज्ञान', icon: '🧪' },
-            { id: 'biology', label: 'जीव विज्ञान', icon: '🫀' },
-            { id: 'physics', label: 'भौतिक विज्ञान', icon: '⚡' },
+            { id: 'all', label: 'सभी', icon: '📚' },
+            { id: 'summary', label: 'सारांश', icon: '📌' },
+            { id: 'keyPoints', label: 'मुख्य बिंदु', icon: '✨' },
+            { id: 'formulas', label: 'सूत्र', icon: '🧮' },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSubjectFilter(tab.id as any)}
-              className={`py-2 px-2 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
-                subjectFilter === tab.id
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`py-2 px-1 rounded-xl transition-all flex items-center justify-center gap-1 active:scale-95 ${
+                activeTab === tab.id
+                  ? 'bg-indigo-600 text-white shadow-md'
                   : isDarkMode
-                  ? 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-800'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'text-slate-300 hover:bg-slate-800/80'
+                  : 'text-slate-700 hover:bg-white/80'
               }`}
             >
               <span>{tab.icon}</span>
@@ -114,380 +251,529 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
           ))}
         </div>
 
-        {/* Page Inline Search Bar */}
-        <div className="relative">
-          <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${
-            isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
-          }`} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="नोट्स में खोजें: अध्याय नाम, विषय..."
-            className={`w-full pl-10 pr-9 py-2.5 text-xs rounded-2xl font-black transition-all backdrop-blur-2xl shadow-sm focus:outline-none ${
-              isDarkMode
-                ? 'bg-slate-900/80 text-slate-100 placeholder-slate-400 border border-slate-700/80 focus:border-indigo-400'
-                : 'bg-white/90 text-slate-900 placeholder-slate-400 border border-indigo-200 focus:border-indigo-600'
+        {/* 1. SECTION: CHAPTER SUMMARY */}
+        {(activeTab === 'all' || activeTab === 'summary') && activeNotes.summaryHindi && (
+          <div
+            className={`p-4 rounded-3xl border shadow-sm space-y-2.5 transition-all ${
+              isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
             }`}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs sm:text-sm font-black text-amber-500 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4" />
+                <span>📌 अध्याय सारांश (Chapter Summary)</span>
+              </h3>
+              <button
+                onClick={() => handleCopy(activeNotes.summaryHindi, 'summary')}
+                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-500 text-[10px] font-bold flex items-center gap-1"
+                title="सारांश कॉपी करें"
+              >
+                {copiedText === 'summary' ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-500" />
+                    <span className="text-emerald-500">कॉपी हुआ</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>कॉपी</span>
+                  </>
+                )}
+              </button>
+            </div>
 
-        {/* List of Filtered Chapters */}
-        <div className="space-y-2.5">
-          {filteredChapters.length === 0 ? (
-            <div className="text-center py-8 text-xs text-slate-400">कोई अध्याय नहीं मिला</div>
-          ) : (
-            filteredChapters.map((ch) => {
-              const isCompleted = StorageService.getProgress().completedChapters.includes(ch.id);
-              return (
-                <div
-                  key={ch.id}
-                  onClick={() => {
-                    setSelectedChapterId(ch.id);
-                    setViewLevel('TOPICS_LIST');
-                  }}
-                  className={`p-3.5 rounded-3xl border cursor-pointer transition-all duration-200 transform active:scale-[0.99] flex items-center justify-between group shadow-sm backdrop-blur-md ${
-                    isDarkMode
-                      ? 'bg-slate-900/80 border-slate-800 hover:border-indigo-500/50'
-                      : 'bg-white/90 border-slate-200 hover:border-indigo-300 hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-xl flex items-center justify-center shrink-0 shadow-inner">
-                      {ch.icon3D || '📝'}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400">
-                          अध्याय {ch.chapterNumber} • {ch.weightage} अंक
-                        </span>
-                        {isCompleted && (
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                            ✓ पूर्ण
+            <p className={`text-xs sm:text-sm leading-relaxed font-medium ${
+              isDarkMode ? 'text-slate-200' : 'text-slate-800'
+            }`}>
+              {cleanText(activeNotes.summaryHindi)}
+            </p>
+          </div>
+        )}
+
+        {/* 2. SECTION: KEY POINTS */}
+        {(activeTab === 'all' || activeTab === 'keyPoints') && activeNotes.keyPoints && activeNotes.keyPoints.length > 0 && (
+          <div
+            className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
+              isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs sm:text-sm font-black text-indigo-500 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4" />
+                <span>✨ मुख्य बोर्ड अवधारणाएं व बिंदु (Key Concepts)</span>
+              </h3>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">
+                {activeNotes.keyPoints.length} मुख्य बिंदु
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {activeNotes.keyPoints.map((point, index) => {
+                const text = cleanText(point);
+                const titlePart = text.split(':')[0];
+                const descPart = text.includes(':') ? text.slice(text.indexOf(':') + 1) : null;
+
+                return (
+                  <div
+                    key={index}
+                    className={`p-3 rounded-2xl border flex items-start gap-2.5 transition-all ${
+                      isDarkMode
+                        ? 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+                        : 'bg-slate-50 border-slate-200/80 hover:border-indigo-200'
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                      {index + 1}
+                    </span>
+
+                    <div className="flex-1 text-xs leading-relaxed font-medium">
+                      {descPart ? (
+                        <>
+                          <strong className="font-extrabold text-indigo-600 dark:text-indigo-400 mr-1">
+                            {titlePart}:
+                          </strong>
+                          <span className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>
+                            {descPart}
                           </span>
-                        )}
-                      </div>
-                      <h3 className={`text-xs sm:text-sm font-black truncate mt-0.5 ${
-                        isDarkMode ? 'text-white' : 'text-slate-900'
-                      }`}>
-                        {ch.titleHindi}
-                      </h3>
+                        </>
+                      ) : (
+                        <span className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>
+                          {text}
+                        </span>
+                      )}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-1 text-xs font-black text-indigo-600 dark:text-indigo-400 shrink-0">
-                    <span>विषय</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  /* LEVEL 2: CHAPTER TOPICS LIST PAGE (Matching Image 4 Layout) */
-  if (viewLevel === 'TOPICS_LIST') {
-    const completedCount = topics.filter((_, idx) => idx < 2).length; // demo progress count
-    const totalTopics = topics.length;
-    const progressPercent = Math.round((completedCount / totalTopics) * 100);
-
-    return (
-      <div className="space-y-4">
-        {/* Top Header Card */}
-        <div className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setViewLevel('CHAPTER_LIST')}
-              className={`p-2 rounded-2xl border text-xs font-bold transition-all flex items-center gap-1 ${
-                isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-              }`}
-            >
-              <ArrowLeft className="w-4 h-4" /> अध्याय सूची
-            </button>
-
-            <button
-              onClick={handleDownloadPDF}
-              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow flex items-center gap-1"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{downloadSuccess ? '✓ डाउनलोड हुआ' : 'PDF नोट्स'}</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3 pt-1">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-2xl font-bold shrink-0">
-              🧪
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className={`text-sm sm:text-base font-black truncate ${
-                isDarkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                {selectedChapter.titleHindi}
-              </h2>
-              <p className={`text-[11px] font-medium ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-500'
-              }`}>
-                {topics.length} विषय (Topics)
-              </p>
+                );
+              })}
             </div>
           </div>
+        )}
 
-          {/* Study Progress Bar (Image 4 Design) */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>अध्ययन प्रगति (Study Progress)</span>
-              <span className="text-rose-500">{completedCount}/{totalTopics} पूर्ण ({progressPercent}%)</span>
-            </div>
-            <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+        {/* 3. SECTION: FORMULAS & CHEMICAL REACTIONS */}
+        {(activeTab === 'all' || activeTab === 'formulas') && (
+          <>
+            {/* Formulas List */}
+            {activeNotes.formulas && activeNotes.formulas.length > 0 && (
               <div
-                className="bg-rose-500 h-full rounded-full transition-all duration-500"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Topics List Items (Matching Image 4 Cards) */}
-        <div className="space-y-2.5">
-          {topics.map((t, idx) => {
-            const isDone = idx < 2; // demo done status
-            return (
-              <div
-                key={idx}
-                className={`p-3.5 rounded-2xl border flex items-center justify-between gap-2 shadow-sm transition-all ${
-                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/90'
+                className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
+                  isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
                 }`}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  {/* Status Badge Icon */}
-                  {isDone ? (
-                    <div className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-600 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 stroke-[3]" />
-                    </div>
-                  ) : (
-                    <div className="w-7 h-7 rounded-full bg-rose-500/10 text-rose-500 font-extrabold flex items-center justify-center text-xs shrink-0">
-                      {idx + 1}
-                    </div>
-                  )}
-
-                  <div className="min-w-0">
-                    {/* Status Pill */}
-                    {isDone ? (
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-[10px]">
-                        पढ़ा गया (Done)
-                      </span>
-                    ) : (
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold text-[10px]">
-                        शेष है (Pending)
-                      </span>
-                    )}
-                    <h4 className={`text-xs font-black truncate mt-0.5 ${
-                      isDarkMode ? 'text-white' : 'text-slate-900'
-                    }`}>
-                      {t.title}
-                    </h4>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-black text-purple-500 flex items-center gap-1.5">
+                    <Zap className="w-4 h-4" />
+                    <span>🧮 महत्वपूर्ण सूत्र व रासायनिक समीकरण</span>
+                  </h3>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-600 dark:text-purple-300">
+                    {activeNotes.formulas.length} समीकरण
+                  </span>
                 </div>
 
-                {/* Read / Review Action Button */}
-                <button
-                  onClick={() => {
-                    setSelectedTopicIndex(idx);
-                    setViewLevel('READER');
-                  }}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1 shrink-0 transition-all ${
-                    isDone
-                      ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-slate-200 hover:opacity-90'
-                      : 'bg-rose-500 hover:bg-rose-600 text-white'
-                  }`}
-                >
-                  {isDone ? <RefreshCw className="w-3.5 h-3.5" /> : <BookOpen className="w-3.5 h-3.5" />}
-                  <span>{isDone ? 'दोहराएं' : 'पढ़ें'}</span>
-                </button>
+                <div className="space-y-3">
+                  {activeNotes.formulas.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3.5 rounded-2xl border space-y-2 ${
+                        isDarkMode
+                          ? 'bg-slate-950/70 border-purple-500/20'
+                          : 'bg-purple-50/40 border-purple-200/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                          <span>📌</span>
+                          <span>{cleanText(item.name)}</span>
+                        </h4>
+                        <button
+                          onClick={() => handleCopy(item.formula, `f_${idx}`)}
+                          className="text-[10px] font-bold text-slate-500 hover:text-purple-600 flex items-center gap-1 p-1 rounded bg-slate-200/50 dark:bg-slate-800"
+                        >
+                          {copiedText === `f_${idx}` ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                          <span>सूत्र कॉपी</span>
+                        </button>
+                      </div>
+
+                      {/* Formula Code Box */}
+                      <div className="p-2.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs sm:text-sm font-bold overflow-x-auto tracking-wide shadow-inner border border-slate-800">
+                        {cleanText(item.formula)}
+                      </div>
+
+                      <p className={`text-[11px] font-medium leading-relaxed ${
+                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                      }`}>
+                        <strong>व्याख्या:</strong> {cleanText(item.explanation)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            );
-          })}
+            )}
+
+            {/* Reactions List if present */}
+            {activeNotes.reactions && activeNotes.reactions.length > 0 && (
+              <div
+                className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
+                  isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
+                }`}
+              >
+                <h3 className="text-xs sm:text-sm font-black text-teal-500 flex items-center gap-1.5">
+                  🧪 प्रमुख रासायनिक अभिक्रियाएं
+                </h3>
+
+                <div className="space-y-3">
+                  {activeNotes.reactions.map((rx, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3.5 rounded-2xl border space-y-2 ${
+                        isDarkMode
+                          ? 'bg-slate-950/70 border-teal-500/20'
+                          : 'bg-teal-50/40 border-teal-200/80'
+                      }`}
+                    >
+                      <h4 className="text-xs font-black text-teal-700 dark:text-teal-300">
+                        {cleanText(rx.name)}
+                      </h4>
+
+                      <div className="p-2.5 rounded-xl bg-slate-900 text-cyan-300 font-mono text-xs sm:text-sm font-bold overflow-x-auto tracking-wide border border-slate-800">
+                        {cleanText(rx.equation)}
+                      </div>
+
+                      <p className={`text-[11px] font-medium ${
+                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                      }`}>
+                        {cleanText(rx.note)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* 4. SECTION: DETAILED CHAPTER SECTIONS */}
+        {(activeTab === 'all' || activeTab === 'sections') && activeNotes.sections && activeNotes.sections.length > 0 && (
+          <div className="space-y-3.5">
+            <h3 className="text-xs sm:text-sm font-black text-indigo-500 flex items-center gap-1.5 px-1">
+              <BookOpen className="w-4 h-4" />
+              <span>📖 विस्तृत अध्याय पाठ्य (Detailed Chapter Sections)</span>
+            </h3>
+
+            {activeNotes.sections.map((sec, secIdx) => (
+              <div
+                key={secIdx}
+                className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
+                  isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
+                }`}
+              >
+                <h4 className="text-xs sm:text-sm font-black text-indigo-600 dark:text-indigo-400 border-b border-slate-200 dark:border-slate-800 pb-2">
+                  {cleanText(sec.heading)}
+                </h4>
+
+                {sec.content && (
+                  <p className={`text-xs leading-relaxed font-medium ${
+                    isDarkMode ? 'text-slate-200' : 'text-slate-800'
+                  }`}>
+                    {cleanText(sec.content)}
+                  </p>
+                )}
+
+                {/* Section Formula / Reaction Equation Box */}
+                {(sec.formula || sec.reaction) && (
+                  <div className="p-2.5 rounded-xl bg-slate-900 text-amber-400 font-mono text-xs font-bold overflow-x-auto border border-slate-800">
+                    {cleanText(sec.formula || sec.reaction || '')}
+                  </div>
+                )}
+
+                {/* Section Bullet Points */}
+                {sec.bulletPoints && sec.bulletPoints.length > 0 && (
+                  <ul className="space-y-1.5">
+                    {sec.bulletPoints.map((bp, bpIdx) => (
+                      <li key={bpIdx} className="flex items-start gap-2 text-xs font-medium">
+                        <span className="text-indigo-500 shrink-0 mt-0.5">•</span>
+                        <span className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>
+                          {cleanText(bp)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* Important Board Tip Banner */}
+                {sec.importantTip && (
+                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 space-y-1">
+                    <div className="flex items-center gap-1.5 font-black text-xs text-amber-600 dark:text-amber-400">
+                      <Flame className="w-4 h-4 text-amber-500" />
+                      <span>🔥 महत्वपूर्ण बोर्ड परीक्षा टिप (Board Exam Tip)</span>
+                    </div>
+                    <p className="text-xs font-semibold leading-relaxed">
+                      {cleanText(sec.importantTip)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Diagram Guide Banner */}
+                {sec.diagramTitle && (
+                  <div className="p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-900 dark:text-cyan-200 space-y-1">
+                    <div className="font-black text-xs text-cyan-600 dark:text-cyan-400">
+                      🎨 नामांकित चित्र: {cleanText(sec.diagramTitle)}
+                    </div>
+                    {sec.diagramDescription && (
+                      <p className="text-xs font-medium">
+                        {cleanText(sec.diagramDescription)}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Bottom Chapter Switcher Navigation Footer */}
+        <div
+          className={`p-3.5 rounded-3xl border shadow-md space-y-3 backdrop-blur-md ${
+            isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            {prevChapter ? (
+              <button
+                onClick={() => setSelectedChapterId(prevChapter.id)}
+                className={`p-2 px-3 rounded-2xl border text-xs font-black transition-all flex items-center gap-1 text-left min-w-0 flex-1 max-w-[48%] active:scale-95 ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                    : 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4 shrink-0 text-indigo-500" />
+                <div className="min-w-0">
+                  <div className="text-[9px] text-slate-400 font-bold uppercase">पिछला अध्याय</div>
+                  <div className="truncate">अध्याय {prevChapter.chapterNumber}</div>
+                </div>
+              </button>
+            ) : (
+              <div className="flex-1" />
+            )}
+
+            {nextChapter ? (
+              <button
+                onClick={() => setSelectedChapterId(nextChapter.id)}
+                className={`p-2 px-3 rounded-2xl border text-xs font-black transition-all flex items-center gap-1 text-right justify-end min-w-0 flex-1 max-w-[48%] active:scale-95 ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                    : 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="text-[9px] text-slate-400 font-bold uppercase">अगला अध्याय</div>
+                  <div className="truncate">अध्याय {nextChapter.chapterNumber}</div>
+                </div>
+                <ChevronRight className="w-4 h-4 shrink-0 text-indigo-500" />
+              </button>
+            ) : (
+              <div className="flex-1" />
+            )}
+          </div>
+
+          <button
+            onClick={() => handleToggleComplete(activeChapter.id)}
+            className={`w-full py-2.5 rounded-2xl font-black text-xs transition-all flex items-center justify-center gap-2 shadow-sm ${
+              isCompleted
+                ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-600'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            }`}
+          >
+            {isCompleted ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>यह अध्याय पूर्ण चिह्नित है</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                <span>इस अध्याय को पूर्ण चिह्नित करें</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     );
   }
 
-  /* LEVEL 3: DETAIL NOTES READER PAGE (Matching Image 5 Layout) */
-  const activeTopic = topics[selectedTopicIndex] || topics[0];
-
+  // Render Chapter Selection List View (when no chapter is selected)
   return (
-    <div className="space-y-4">
-      {/* Top Controls Header (Matching Image 5 Top Bar) */}
-      <div className={`p-3.5 rounded-2xl border shadow-sm flex items-center justify-between gap-2 ${
-        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-      }`}>
-        <div className="flex items-center gap-2.5 min-w-0">
-          <button
-            onClick={() => setViewLevel('TOPICS_LIST')}
-            className={`p-1.5 rounded-xl border text-xs font-bold transition-all flex items-center ${
-              isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-            }`}
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
+    <div className="space-y-3.5 animate-fadeIn">
+      {/* Header Bar */}
+      <div
+        className={`relative flex items-center justify-between p-3.5 rounded-3xl border shadow-sm backdrop-blur-md gap-2 ${
+          isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/90 border-slate-200'
+        }`}
+      >
+        <button
+          onClick={onBack}
+          className={`p-2 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center shrink-0 ${
+            isDarkMode
+              ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+              : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+          }`}
+          title="वापस जाएँ"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-xl">📝</span>
           <div className="min-w-0">
-            <h2 className={`text-xs sm:text-sm font-black truncate ${
-              isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}>
-              {activeTopic.title}
+            <h2
+              className={`text-sm sm:text-base font-black truncate ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              NCERT अध्ययन नोट्स (Class 10 Notes)
             </h2>
-            <p className="text-[10px] text-emerald-600 font-bold">
-              अध्ययन नोट्स (Markdown)
+            <p className="text-[10px] text-indigo-500 font-bold truncate">
+              कक्षा 10 विज्ञान - हस्तलिखित एवं त्वरित रिविजन नोट्स
             </p>
           </div>
         </div>
 
-        {/* Text Font Resizers [A-] [A+] */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => setFontSize((prev) => Math.max(12, prev - 1))}
-            className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-black text-xs border border-emerald-500/30"
-            title="अक्षर छोटा करें"
-          >
-            A-
-          </button>
-          <button
-            onClick={() => setFontSize((prev) => Math.min(22, prev + 1))}
-            className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-black text-xs border border-emerald-500/30"
-            title="अक्षर बड़ा करें"
-          >
-            A+
-          </button>
-        </div>
+        <div className="w-8 shrink-0" />
       </div>
 
-      {/* Main Formatted Article Reader Sheet (Matching Image 5 Body) */}
-      <div className={`p-5 rounded-3xl border shadow-md space-y-4 ${
-        isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
-      }`}>
-        {/* Title Header */}
-        <div className="border-b border-slate-100 dark:border-slate-800 pb-3 space-y-1">
-          <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-            कक्षा 10 विज्ञान
-          </h1>
-          <h2 className="text-sm font-bold text-slate-800 dark:text-slate-300">
-            अध्याय {selectedChapter.chapterNumber} : {selectedChapter.titleHindi}
-          </h2>
-          <h3 className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 pt-1">
-            Topic {selectedChapter.chapterNumber}.{selectedTopicIndex + 1} : {activeTopic.title}
-          </h3>
-        </div>
-
-        {/* Dynamic Font Sized Article Body */}
-        <div className="space-y-4 leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
-          {/* Green Subtitle */}
-          <h4 className="font-extrabold text-emerald-600 dark:text-emerald-400">
-            अवधारणा व विस्तृत अध्ययन
-          </h4>
-
-          <div className="h-0.5 bg-slate-200 dark:bg-slate-800 my-2" />
-
-          {/* Intro Section */}
-          <div className="space-y-1.5">
-            <h5 className="font-black text-slate-900 dark:text-white">परिचय</h5>
-            <p className="font-medium text-slate-700 dark:text-slate-300">
-              {activeTopic.desc || `${activeTopic.title} के अंतर्गत रासायनिक प्रक्रियाओं और समीकरण के मूलभूत सिद्धांतों को समझा जाता है।`}
-            </p>
-          </div>
-
-          <p className="font-medium text-slate-700 dark:text-slate-300">
-            मुख्य बिंदु निम्नलिखित प्रकार से समझे जा सकते हैं:
-          </p>
-
-          <ul className="space-y-2 list-none pl-1">
-            <li className="flex items-start gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0" />
-              <span>कोण-कोण से पदार्थ अभिक्रिया में भाग लेते हैं (अभिकारक)।</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0" />
-              <span>अभिक्रिया के पश्चात बनने वाले नए पदार्थ (उत्पाद)।</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0" />
-              <span>अभिक्रिया के दौरान आवश्यक तापमान, दाब या उत्प्रेरक परिस्थितियां।</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0" />
-              <span>द्रव्यमान संरक्षण का नियम - अभिकारक और उत्पाद का द्रव्यमान सदैव समान रहता है।</span>
-            </li>
-          </ul>
-
-          <div className="h-0.5 bg-slate-200 dark:bg-slate-800 my-2" />
-
-          {/* Definition Callout Box */}
-          <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 space-y-1">
-            <h5 className="font-bold text-emerald-700 dark:text-emerald-300 text-xs">परिभाषा (Definition)</h5>
-            <p className="font-semibold text-slate-800 dark:text-slate-200 italic">
-              "{activeTopic.point}"
-            </p>
-          </div>
-
-          {/* Important Equations if available */}
-          {notes?.formulas && notes.formulas.length > 0 && (
-            <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 space-y-2">
-              <h5 className="font-bold text-blue-700 dark:text-blue-300 text-xs flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5" /> रासायनिक सूत्र व समीकरण:
-              </h5>
-              <div className="space-y-2">
-                {notes.formulas.map((f, i) => {
-                  if (typeof f === 'string') {
-                    return (
-                      <div key={i} className="font-mono font-bold text-blue-900 dark:text-blue-200 text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-blue-100 dark:border-slate-800">
-                        {f}
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={i} className="font-mono text-blue-900 dark:text-blue-200 text-xs bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-blue-100 dark:border-slate-800 space-y-1">
-                      <div className="font-bold text-blue-700 dark:text-blue-300">{f.name}: <span className="font-extrabold text-blue-900 dark:text-blue-100">{f.formula}</span></div>
-                      {f.explanation && <div className="text-[11px] font-normal text-slate-600 dark:text-slate-400">{f.explanation}</div>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Actions */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+      {/* Subject Filter Category Tabs */}
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { id: 'chemistry', label: 'रसायन शास्त्र', icon: '🧪' },
+          { id: 'biology', label: 'जीव विज्ञान', icon: '🫀' },
+          { id: 'physics', label: 'भौतिक शास्त्र', icon: '⚡' },
+        ].map((tab) => (
           <button
-            onClick={() => handleMarkTopicDone(selectedTopicIndex)}
-            className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow flex items-center gap-1.5"
-          >
-            <CheckCircle className="w-4 h-4" />
-            <span>पढ़ा हुआ चिह्नित करें (+50 अंक)</span>
-          </button>
-
-          <button
-            onClick={handleDownloadPDF}
-            className={`py-2.5 px-4 rounded-xl border font-bold text-xs flex items-center gap-1.5 ${
-              isDarkMode ? 'bg-slate-800 text-slate-200 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'
+            key={tab.id}
+            onClick={() => setSubjectFilter(tab.id as any)}
+            className={`py-2 px-2 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
+              subjectFilter === tab.id
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                : isDarkMode
+                ? 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-800'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
-            <Download className="w-4 h-4" />
-            <span>PDF डाउनलोड</span>
+            <span>{tab.icon}</span>
+            <span className="truncate">{tab.label}</span>
           </button>
-        </div>
+        ))}
+      </div>
+
+      {/* Search Input Bar */}
+      <div className="relative">
+        <Search
+          className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${
+            isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+          }`}
+        />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="नोट्स में खोजें: अध्याय का नाम, विषय..."
+          className={`w-full pl-10 pr-9 py-2.5 text-xs rounded-2xl font-black transition-all backdrop-blur-2xl shadow-sm focus:outline-none ${
+            isDarkMode
+              ? 'bg-slate-900/80 text-slate-100 placeholder-slate-400 border border-slate-700/80 focus:border-indigo-400'
+              : 'bg-white/90 text-slate-900 placeholder-slate-400 border border-indigo-200 focus:border-indigo-600'
+          }`}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+
+      {/* Chapter Notes Cards List */}
+      <div className="space-y-2.5">
+        {filteredChapters.length === 0 ? (
+          <div className="text-center py-8 text-xs text-slate-400 font-bold">कोई नोट्स उपलब्ध नहीं हैं</div>
+        ) : (
+          filteredChapters.map((ch) => {
+            const isCompleted = completedChapters.includes(ch.id);
+            const notesObj = notesData[ch.id];
+
+            return (
+              <div
+                key={ch.id}
+                onClick={() => setSelectedChapterId(ch.id)}
+                className={`p-3.5 rounded-3xl border cursor-pointer transition-all duration-200 transform active:scale-[0.99] flex items-center justify-between group shadow-sm backdrop-blur-md ${
+                  isDarkMode
+                    ? 'bg-slate-900/80 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900'
+                    : 'bg-white/90 border-slate-200 hover:border-indigo-300 hover:shadow-md'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-2xl flex items-center justify-center shrink-0 shadow-inner">
+                    {ch.icon3D || '📝'}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                      <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400">
+                        अध्याय {ch.chapterNumber} • {ch.weightage} अंक
+                      </span>
+
+                      {isCompleted && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black">
+                          <CheckCircle className="w-3 h-3 text-emerald-500 shrink-0" />
+                          <span>पूर्ण</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <h3
+                      className={`text-xs sm:text-sm font-black truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      {ch.titleHindi}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Right Action Buttons */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      generateNotesPDF(ch, notesObj);
+                    }}
+                    className={`p-2 rounded-xl border transition-all ${
+                      isDarkMode
+                        ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                        : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                    }`}
+                    title="PDF डाउनलोड करें"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedChapterId(ch.id)}
+                    className="p-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] shadow-sm flex items-center gap-1.5 transition-transform active:scale-95"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>पढ़ें</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

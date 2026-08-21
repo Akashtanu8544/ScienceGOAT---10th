@@ -16,6 +16,7 @@ import { MoreAppsModal } from './components/MoreAppsModal';
 import { GitHubConfigModal } from './components/GitHubConfigModal';
 import { BottomNavigation } from './components/BottomNavigation';
 import { SplashScreen } from './components/SplashScreen';
+import { LoadingSpinner } from './components/LoadingSpinner';
 
 import { CHAPTERS_DATA } from './data/chaptersData';
 import { NOTES_DATA } from './data/notesData';
@@ -26,7 +27,7 @@ import { VIDEO_LECTURES_DATA } from './data/videosData';
 
 import { StorageService } from './services/db';
 import { UserProgress, GitHubConfig } from './types';
-import { Search, X, FileText } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -93,13 +94,13 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden antialiased flex flex-col items-center transition-colors duration-200 ${
+    <div className={`h-screen w-screen overflow-hidden font-sans selection:bg-amber-500 selection:text-slate-950 relative antialiased flex flex-col items-center transition-colors duration-200 ${
       isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-100/90 text-slate-900'
     }`}>
       {/* App Opening Splash Screen */}
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
-      {/* Interactive Honeycomb Canvas Background */}
+      {/* Interactive Honeycomb Canvas Background with subtle blur */}
       <HoneycombBackground isDarkMode={isDarkMode} />
 
       {/* Main Drawer Menu */}
@@ -113,17 +114,17 @@ export default function App() {
         onOpenGitHubConfig={() => setIsGitHubConfigOpen(true)}
       />
 
-      {/* Mobile Frame Container */}
-      <div className="w-full max-w-md min-h-screen flex flex-col relative z-10 shadow-2xl">
-        {/* Sticky Top Header */}
+      {/* Mobile App Frame Container with fixed header/footer and scrollable middle */}
+      <div className="w-full max-w-md h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden">
+        {/* Fixed Top Header */}
         <Header
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
           onOpenDrawer={() => setIsDrawerOpen(true)}
         />
 
-        {/* Dynamic Main Body Content Area */}
-        <main className="flex-1 px-3.5 pt-3 pb-24 overflow-y-auto custom-scrollbar">
+        {/* Scrollable Middle Body Section */}
+        <main className="flex-1 min-h-0 px-3.5 pt-3 pb-3 overflow-y-auto custom-scrollbar relative">
           {searchQuery ? (
             /* Search Results Overlay View */
             <div className="space-y-3 animate-fadeIn">
@@ -294,7 +295,7 @@ export default function App() {
           )}
         </main>
 
-        {/* Bottom Navigation */}
+        {/* Fixed Bottom Navigation Footer */}
         <BottomNavigation
           currentView={currentView}
           onSelectView={handleSelectOption}
@@ -302,13 +303,16 @@ export default function App() {
         />
       </div>
 
+      {/* Global PDF Proxy Loading Spinner */}
+      <LoadingSpinner isDarkMode={isDarkMode} />
+
       {/* Modals */}
       {isShareModalOpen && (
-        <ShareModal onClose={() => setIsShareModalOpen(false)} />
+        <ShareModal onClose={() => setIsShareModalOpen(false)} isDarkMode={isDarkMode} />
       )}
 
       {isMoreAppsModalOpen && (
-        <MoreAppsModal onClose={() => setIsMoreAppsModalOpen(false)} />
+        <MoreAppsModal onClose={() => setIsMoreAppsModalOpen(false)} isDarkMode={isDarkMode} />
       )}
 
       {isGitHubConfigOpen && (
@@ -316,6 +320,7 @@ export default function App() {
           config={githubConfig}
           onSave={(updated) => setGithubConfig(updated)}
           onClose={() => setIsGitHubConfigOpen(false)}
+          isDarkMode={isDarkMode}
         />
       )}
     </div>

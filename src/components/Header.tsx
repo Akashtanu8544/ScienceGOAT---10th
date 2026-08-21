@@ -14,7 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDrawer,
 }) => {
   return (
-    <header className={`sticky top-0 z-40 transition-all duration-200 backdrop-blur-xl border-b shadow-md ${
+    <header className={`shrink-0 sticky top-0 z-40 w-full max-w-md mx-auto transition-all duration-200 backdrop-blur-xl border-b shadow-md ${
       isDarkMode
         ? 'bg-slate-900/90 border-slate-800/80 text-white'
         : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 border-blue-500/30 text-white shadow-blue-500/10'

@@ -6,7 +6,7 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     chapterId: 1,
     title: 'रासायनिक अभिक्रियाएं एवं समीकरण - पूरी आसान ट्रिक और संतुलित अभिक्रियाएं',
     subject: 'chemistry',
-    youtubeId: 'L8p7_f_H23M',
+    youtubeId: 'm9JFronUVek',
     duration: '28 मिनट',
     teacherName: 'राकेश सर (राजस्थान बोर्ड विशेषज्ञ)',
     topics: ['Hit and Trial विधि से समीकरण संतुलित करना', 'संयोजन, वियोजन व विस्थापन अभिक्रिया', 'द्विविस्थापन व रेडॉक्स (उपचयन-अपचयन) ट्रिक'],
@@ -21,7 +21,7 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     chapterId: 2,
     title: 'अम्ल, क्षारक व लवण - pH मान का दैनिक जीवन में महत्व एवं लवणों का निर्माण',
     subject: 'chemistry',
-    youtubeId: 'Jg7B6N3a4k0',
+    youtubeId: '8nXySqcprvM',
     duration: '35 मिनट',
     teacherName: 'डॉ. शर्मा (केमिस्ट्री गुरु)',
     topics: ['सूचक (प्राकृतिक व संश्लेषित)', 'pH स्केल एवं दैनिक जीवन में प्रभाव', 'कास्टिक सोडा, विरंजक चूर्ण, धावन सोडा व POP'],
@@ -36,7 +36,7 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     chapterId: 3,
     title: 'धातु एवं अधातु - सक्रियता श्रेणी (Reactivity Series) व भर्जन-निस्तापन',
     subject: 'chemistry',
-    youtubeId: 'G1OaN81L_S0',
+    youtubeId: 'U7Je_B3NewY',
     duration: '38 मिनट',
     teacherName: 'अमित सोनी सर',
     topics: ['धातुओं व अधातुओं के भौतिक व रासायनिक गुण', 'सक्रियता श्रेणी याद करने की मजेदार ट्रिक', 'आयनिक यौगिकों के गुणधर्म', 'धातु कर्म: भर्जन (Roasting) व निस्तापन (Calcination)'],
@@ -51,7 +51,7 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     chapterId: 4,
     title: 'कार्बन एवं उसके यौगिक - इलेक्ट्रॉन बिंदु संरचना व IUPAC नामकरण',
     subject: 'chemistry',
-    youtubeId: '4yV218T_W1k',
+    youtubeId: '0urBvYRurCI',
     duration: '42 मिनट',
     teacherName: 'प्रो. वर्मा (केमिस्ट्री फैकल्टी)',
     topics: ['सहसंयोजी आबंध एवं कार्बन की सर्वतोमुखी प्रकृति', 'समजातीय श्रेणी (Homologous Series)', 'एल्केन, एल्कीन व एल्काइन का IUPAC नामकरण', 'साबुन एवं अपमार्जन का मिसेल सिद्धांत'],
@@ -62,11 +62,86 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     ]
   },
   {
+    id: 'vid_bio_5',
+    chapterId: 5,
+    title: 'जैव प्रक्रम (Life Processes) - मानव पाचन, श्वसन, परिसंचरण व उत्सर्जन तंत्र',
+    subject: 'biology',
+    youtubeId: 'qf_9yY7yA2g',
+    duration: '48 मिनट',
+    teacherName: 'सुमन मैम (बायोलॉजी विशेषज्ञ)',
+    topics: ['स्वपोषी व विषमपोषी पोषण (प्रकाश संश्लेषण)', 'मानव आहार नाल एवं पाचक एंजाइम', 'मानव हृदय एवं दोहरा परिसंचरण', 'वृक्काणु (Nephron) की कार्यप्रणाली'],
+    keyTakeaways: [
+      'प्रकाश संश्लेषण समीकरण: 6CO₂ + 12H₂O → C₆H₁₂O₆ + 6O₂ + 6H₂O',
+      'मानव हृदय के 4 कोष्ठकों में रक्त प्रवाह की दिशा',
+      'नेफ्रॉन द्वारा डायलिसिस (अपोहन) व अपशिष्ट पृथक्करण'
+    ]
+  },
+  {
+    id: 'vid_bio_6',
+    chapterId: 6,
+    title: 'नियंत्रण एवं समन्वय - न्यूरॉन की संरचना, मस्तिष्क व पादप हार्मोन',
+    subject: 'biology',
+    youtubeId: 'e2kL3p4oX8Y',
+    duration: '40 मिनट',
+    teacherName: 'डॉ. मीना (बायोलॉजी गुरु)',
+    topics: ['तंत्रिका कोशिका (Nephron vs Neuron)', 'प्रतिवर्ती चाप (Reflex Arc)', 'मानव मस्तिष्क के तीन भाग (अग्र, मध्य, पश्च)', 'पादप हार्मोन (ऑक्सिन, जिबरेलिन, साइटोकाइनिन, एब्सिसिक)'],
+    keyTakeaways: [
+      'सिनेप्स: दो तंत्रिका कोशिकाओं के मध्य का खाली स्थान',
+      'मस्तिष्क का अनुमस्तिष्क (Cerebellum) शरीर का संतुलन बनाए रखता है',
+      'एब्सिसिक अम्ल वृद्धि रोधक हार्मोन है'
+    ]
+  },
+  {
+    id: 'vid_bio_7',
+    chapterId: 7,
+    title: 'जीव जनन कैसे करते हैं? - अलैंगिक जनन, पुष्प की संरचना व मानव जनन',
+    subject: 'biology',
+    youtubeId: 'A3Z4A5R6T7Y',
+    duration: '45 मिनट',
+    teacherName: 'राकेश सर (बायोलॉजी)',
+    topics: ['अलैंगिक जनन की विधियां (मुकुलन, विखंडन, बीजाणु समासंघ)', 'पुष्प के भाग (पुंकेसर व स्त्रीकेसर)', 'मानव नर व मादा जनन तंत्र', 'गर्भनिरोधक उपाय व यौन संचारित रोग'],
+    keyTakeaways: [
+      'प्लाज्मोडियम में बहुखंडन तथा हाइड्रा में मुकुलन',
+      'दोहरा निषेचन (Double Fertilization) पुष्पी पौधों में होता है',
+      'कॉपर-T, कंडोम व गर्भनिरोधक गोलियों की क्रियाविधि'
+    ]
+  },
+  {
+    id: 'vid_bio_8',
+    chapterId: 8,
+    title: 'आनुवंशिकता - मेंडल के वंशानुगति के नियम व लिंग निर्धारण',
+    subject: 'biology',
+    youtubeId: 'B9N0M1K2L3P',
+    duration: '35 मिनट',
+    teacherName: 'सुमन मैम (बायोलॉजी)',
+    topics: ['मेंडल का मटर के पौधे का चयन', 'एकसंकर संकरण (Monohybrid Cross 3:1)', 'द्विसंकर संकरण (Dihybrid Cross 9:3:3:1)', 'मानव में लिंग निर्धारण (XX व XY गुणसूत्र)'],
+    keyTakeaways: [
+      'प्रभाविता का नियम एवं पृथक्करण का नियम',
+      'मानव शिशु का लिंग पिता के शुक्राणु (X या Y गुणसूत्र) पर निर्भर करता है',
+      'जीनोटाइप एवं फिनोटाइप अनुपात'
+    ]
+  },
+  {
+    id: 'vid_bio_13',
+    chapterId: 13,
+    title: 'हमारा पर्यावरण - पारितंत्र, 10% ऊर्जा नियम व ओजोन परत क्षरण',
+    subject: 'biology',
+    youtubeId: 'K9L8M7N6P5Q',
+    duration: '30 मिनट',
+    teacherName: 'डॉ. मीना (पर्यावरण विशेषज्ञ)',
+    topics: ['जैविक एवं अजैविक घटक', 'आहार श्रृंखला एवं खाद्य जाल', 'लिंडेमान का 10% ऊर्जा प्रवाह नियम', 'ओजोन परत (O₃) एवं CFCs'],
+    keyTakeaways: [
+      'केवल 10% ऊर्जा ही अगले पोषी स्तर में स्थानांतरित होती है',
+      'जैविक आवर्धन (Biological Magnification): कीटनाशकों का शीर्ष उपभोक्ता में जमाव',
+      'ओजोन क्षय का मुख्य कारण क्लोरोफ्लोरोकार्बन (CFC) है'
+    ]
+  },
+  {
     id: 'vid_5',
     chapterId: 9,
     title: 'प्रकाश – परावर्तन तथा अपवर्तन - किरण आरेख (Ray Diagram) की मास्टर क्लास',
     subject: 'physics',
-    youtubeId: '9g1fR2c9f-g',
+    youtubeId: 'VE3B_hO2jNw',
     duration: '45 मिनट',
     teacherName: 'विजय चौधरी सर (फिजिक्स एक्सपर्ट)',
     topics: ['दर्पण सूत्र (1/f = 1/v + 1/u) व आवर्धन (m)', 'अवतल व उत्तल दर्पण से प्रतिबिंब निर्माण', 'लेंस की क्षमता (P = 1/f) व अपवर्तनांक'],
@@ -81,7 +156,7 @@ export const VIDEO_LECTURES_DATA: VideoLecture[] = [
     chapterId: 10,
     title: 'मानव नेत्र तथा रंगबिरंगा संसार - दृष्टि दोष व प्रिज्म द्वारा प्रकाश का विक्षेपण',
     subject: 'physics',
-    youtubeId: 'X4O1A31T-5o',
+    youtubeId: 'VE3B_hO2jNw',
     duration: '32 मिनट',
     teacherName: 'सुनील कुमार (RBSE फैकल्टी)',
     topics: ['निकट दृष्टि दोष (Myopia) एवं दूर दृष्टि दोष (Hypermetropia)', 'प्रिज्म द्वारा श्वेत प्रकाश का वर्ण विक्षेपण (VIBGYOR)', 'तारों का टिमटिमाना व सूर्योदय/सूर्यास्त का लाल रंग'],

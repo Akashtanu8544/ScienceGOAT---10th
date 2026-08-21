@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@keyframes nativeSlideIn {
+  0% {
+    opacity: 0.85;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-native-slide-in {
+  animation: nativeSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

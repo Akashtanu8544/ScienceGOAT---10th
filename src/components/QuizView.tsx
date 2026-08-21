@@ -63,28 +63,67 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   const selectedChapter = (chapters || []).find((c) => c.id === selectedChapterId) || chapters?.[0] || { id: 1, titleHindi: 'रसायन शास्त्र' };
 
-  // Mock exams for current chapter
-  const currentChapterExams = (mockExamsData || []).filter((m) => m?.chapterIds?.includes(selectedChapter.id));
+  // Mock exams / dynamic exams for current chapter
+  const chapterQuestions = (questionsData || []).filter((q) => q?.chapterId === selectedChapter.id);
 
-  // Fallback default exam if none found in mock data
-  const defaultExams = currentChapterExams.length > 0 ? currentChapterExams : [
-    {
-      id: `ch-${selectedChapter.id}-exam-1`,
-      title: `${selectedChapter.titleHindi} - अभ्यास टेस्ट 1`,
-      chapterIds: [selectedChapter.id],
-      durationMinutes: 15,
-      questions: (questionsData || []).filter((q) => q?.chapterId === selectedChapter.id).slice(0, 10),
-      rewardedAdRequired: false,
-    },
-    {
-      id: `ch-${selectedChapter.id}-exam-2`,
-      title: `${selectedChapter.titleHindi} - बोर्ड स्पेशल मॉक टेस्ट 2`,
-      chapterIds: [selectedChapter.id],
-      durationMinutes: 20,
-      questions: (questionsData || []).filter((q) => q?.chapterId === selectedChapter.id).slice(0, 10),
-      rewardedAdRequired: true,
+  // Generate dynamic test sets so ALL chapter questions are accessible
+  const generateExamsForChapter = (): MockExam[] => {
+    if (chapterQuestions.length === 0) {
+      return [
+        {
+          id: `ch-${selectedChapter.id}-exam-1`,
+          title: `${selectedChapter.titleHindi} - अभ्यास टेस्ट 1`,
+          unit: selectedChapter.unit || '',
+          chapterIds: [selectedChapter.id],
+          totalQuestions: 0,
+          durationMinutes: 15,
+          rewardedAdRequired: false,
+          questions: [],
+        }
+      ];
     }
-  ];
+
+    const exams: MockExam[] = [];
+
+    // 1. Full Chapter Practice Test if questions exist
+    if (chapterQuestions.length > 10) {
+      exams.push({
+        id: `ch-${selectedChapter.id}-all-questions`,
+        title: `🔥 सम्पूर्ण अध्याय टेस्ट - सभी ${chapterQuestions.length} वस्तुनिष्ठ प्रश्न`,
+        unit: selectedChapter.unit || '',
+        chapterIds: [selectedChapter.id],
+        totalQuestions: chapterQuestions.length,
+        durationMinutes: Math.min(60, Math.max(15, Math.ceil(chapterQuestions.length * 0.8))),
+        rewardedAdRequired: false,
+        questions: chapterQuestions,
+      });
+    }
+
+    // 2. Chunked Practice Sets of 20 questions each
+    const CHUNK_SIZE = 20;
+    const totalChunks = Math.ceil(chapterQuestions.length / CHUNK_SIZE);
+
+    for (let i = 0; i < totalChunks; i++) {
+      const startIdx = i * CHUNK_SIZE;
+      const chunkQuestions = chapterQuestions.slice(startIdx, startIdx + CHUNK_SIZE);
+      const isBoardSpecial = i > 0 && i % 2 === 1;
+
+      exams.push({
+        id: `ch-${selectedChapter.id}-set-${i + 1}`,
+        title: `📝 अभ्यास टेस्ट ${i + 1} (प्रश्न ${startIdx + 1} से ${startIdx + chunkQuestions.length})`,
+        unit: selectedChapter.unit || '',
+        chapterIds: [selectedChapter.id],
+        totalQuestions: chunkQuestions.length,
+        durationMinutes: 15,
+        rewardedAdRequired: isBoardSpecial,
+        questions: chunkQuestions,
+      });
+    }
+
+    return exams;
+  };
+
+  const defaultExams = generateExamsForChapter();
 
   const handleStartExamClick = (exam: MockExam) => {
     const isUnlocked = (progress?.unlockedMockExams || []).includes(exam.id);
@@ -224,6 +263,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <div className="text-center py-8 text-xs text-slate-400">कोई अध्याय नहीं मिला</div>
           ) : (
             filteredChapters.map((ch) => {
+              const chQCount = (questionsData || []).filter((q) => q?.chapterId === ch.id).length;
               const hasScore = progress?.quizScores?.[`ch-${ch.id}-exam-1`]?.score !== undefined;
               return (
                 <div
@@ -243,10 +283,15 @@ export const QuizView: React.FC<QuizViewProps> = ({
                       {ch.icon3D || '🎯'}
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400">
                           अध्याय {ch.chapterNumber} • {ch.weightage} अंक
                         </span>
+                        {chQCount > 0 && (
+                          <span className="text-[10px] font-black text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                            {chQCount} MCQs
+                          </span>
+                        )}
                         {hasScore && (
                           <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                             ✓ टेस्ट दिया
@@ -399,12 +444,17 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   /* LEVEL 3: LIVE MCQ QUIZ SCREEN (Matching Image 7 Layout) */
   const questionsList = activeExam?.questions || [];
-  const currentQ = questionsList[currentQuestionIndex] || {
-    questionHindi: 'आवर्त में बाएँ से दाएँ जाने पर संयोजक इलेक्ट्रॉनों की संख्या मुख्य समूह तत्वों के लिए सामान्यतः कैसे बदलती है?',
-    optionsHindi: ['8 से 1 तक घटती है', '1 से 8 तक क्रमशः बढ़ती है', 'सदैव 2 रहती है', 'कोई नियमितता नहीं होती'],
+  const rawQ = questionsList[currentQuestionIndex];
+  const currentQ = rawQ || {
+    question: 'आवर्त में बाएँ से दाएँ जाने पर संयोजक इलेक्ट्रॉनों की संख्या मुख्य समूह तत्वों के लिए सामान्यतः कैसे बदलती है?',
+    options: ['8 से 1 तक घटती है', '1 से 8 तक क्रमशः बढ़ती है', 'सदैव 2 रहती है', 'कोई नियमितता नहीं होती'],
     correctAnswer: 1,
-    explanationHindi: 'मुख्य समूह तत्वों में किसी आवर्त में बाएँ से दाएँ जाने पर बाह्यतम कोश के इलेक्ट्रॉनों की संख्या सामान्यतः 1 से 8 तक बढ़ती है।',
+    explanation: 'मुख्य समूह तत्वों में किसी आवर्त में बाएँ से दाएँ जाने पर बाह्यतम कोश के इलेक्ट्रॉनों की संख्या सामान्यतः 1 से 8 तक बढ़ती है।',
   };
+
+  const displayQuestion = currentQ.question || (currentQ as any).questionHindi || 'प्रश्न अनुपलब्ध है';
+  const displayOptions = currentQ.options || (currentQ as any).optionsHindi || [];
+  const displayExplanation = currentQ.explanation || (currentQ as any).explanationHindi || 'उपरोक्त प्रश्न में मुख्य सिद्धांतों के अनुसार सही उत्तर का चयन किया गया है।';
 
   const selectedAnswer = userAnswers[currentQuestionIndex];
   const hasAnsweredCurrent = selectedAnswer !== undefined;
@@ -428,12 +478,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
         <div className="flex-1 mx-2 space-y-1">
           <div className="flex items-center justify-between text-xs font-black">
             <span className={isDarkMode ? 'text-white' : 'text-slate-900'}>मॉक टेस्ट</span>
-            <span className="text-emerald-600 font-extrabold">Q {currentQuestionIndex + 1} of {questionsList.length || 10}</span>
+            <span className="text-emerald-600 font-extrabold">Q {currentQuestionIndex + 1} of {questionsList.length || 1}</span>
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
             <div
               className="bg-emerald-500 h-full transition-all duration-300"
-              style={{ width: `${((currentQuestionIndex + 1) / (questionsList.length || 10)) * 100}%` }}
+              style={{ width: `${((currentQuestionIndex + 1) / (questionsList.length || 1)) * 100}%` }}
             />
           </div>
         </div>
@@ -452,13 +502,13 @@ export const QuizView: React.FC<QuizViewProps> = ({
         <h3 className={`text-sm sm:text-base font-black leading-relaxed ${
           isDarkMode ? 'text-white' : 'text-slate-900'
         }`}>
-          {currentQ.questionHindi}
+          {displayQuestion}
         </h3>
       </div>
 
       {/* 4 Option Buttons (Matching Image 7 Cards) */}
       <div className="space-y-2.5">
-        {(currentQ?.optionsHindi || []).map((opt, idx) => {
+        {displayOptions.map((opt, idx) => {
           const isSelected = selectedAnswer === idx;
           const isCorrect = idx === currentQ.correctAnswer;
 
@@ -514,7 +564,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <span>व्याख्या (Explanation)</span>
           </div>
           <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-relaxed">
-            {currentQ.explanationHindi || 'उपरोक्त प्रश्न में मुख्य सिद्धांतों के अनुसार सही उत्तर का चयन किया गया है।'}
+            {displayExplanation}
           </p>
         </div>
       )}

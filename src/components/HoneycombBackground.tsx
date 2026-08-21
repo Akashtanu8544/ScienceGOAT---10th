@@ -11,7 +11,7 @@ export const HoneycombBackground: React.FC<{ isDarkMode?: boolean }> = ({ isDark
       }`} />
 
       {/* Primary Honeycomb Grid SVG */}
-      <svg className="absolute inset-0 w-full h-full opacity-40 dark:opacity-60" xmlns="http://www.w3.org/2000/svg">
+      <svg className="absolute inset-0 w-full h-full opacity-35 dark:opacity-55" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern
             id="honeycomb-pattern-v4"
@@ -46,7 +46,9 @@ export const HoneycombBackground: React.FC<{ isDarkMode?: boolean }> = ({ isDark
         </defs>
         <rect width="100%" height="100%" fill="url(#honeycomb-pattern-v4)" />
       </svg>
+
+      {/* Subtle background blur overlay layer */}
+      <div className="absolute inset-0 backdrop-blur-[3px] bg-white/5 dark:bg-slate-950/20 pointer-events-none" />
     </div>
   );
 };
-

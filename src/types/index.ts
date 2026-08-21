@@ -34,14 +34,14 @@ export interface ChapterNotes {
 }
 
 export interface QuizQuestion {
-  id: string;
+  id: string | number;
   chapterId: number;
-  unit: string;
+  unit?: string;
   question: string;
   options: string[];
   correctAnswer: number; // 0-based index
   explanation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty?: 'easy' | 'medium' | 'hard';
 }
 
 export interface MockExam {
@@ -125,6 +125,8 @@ export interface UserProgress {
   lastActiveDate: string;
   unlockedMockExams: string[]; // Exam IDs unlocked via rewarded ad
   badges: string[];
+  chapterReadingTime?: Record<string | number, number>; // Seconds spent reading per chapter/material
+  totalReadingTimeSeconds?: number; // Total reading time in seconds
 }
 
 export interface GitHubConfig {
