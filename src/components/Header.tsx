@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="w-5 h-5 text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
             </button>
 
-            <ScienceGoatLogo size="md" showText={true} showImage={false} />
+            <ScienceGoatLogo size="md" showText={true} showImage={true} />
           </div>
 
           {/* Right Action Buttons */}
