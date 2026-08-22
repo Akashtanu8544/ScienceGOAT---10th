@@ -29,6 +29,9 @@ const ProgressTrackerView = lazy(() =>
   import('./components/ProgressTrackerView').then((m) => ({ default: m.ProgressTrackerView }))
 );
 const GlossaryView = lazy(() => import('./components/GlossaryView').then((m) => ({ default: m.GlossaryView })));
+const PrivacyPolicyView = lazy(() =>
+  import('./components/PrivacyPolicyView').then((m) => ({ default: m.PrivacyPolicyView }))
+);
 const ShareModal = lazy(() => import('./components/ShareModal').then((m) => ({ default: m.ShareModal })));
 const MoreAppsModal = lazy(() => import('./components/MoreAppsModal').then((m) => ({ default: m.MoreAppsModal })));
 const GitHubConfigModal = lazy(() =>
@@ -49,8 +52,17 @@ const ViewLoadingFallback = ({ isDarkMode }: { isDarkMode: boolean }) => (
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [currentView, setCurrentView] = useState<
-    'Dashboard' | 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY'
-  >('Dashboard');
+    'Dashboard' | 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY' | 'PRIVACY'
+  >(() => {
+    if (typeof window !== 'undefined') {
+      const search = window.location.search;
+      const path = window.location.pathname;
+      if (search.includes('view=PRIVACY') || search.includes('privacy') || path.includes('/privacy')) {
+        return 'PRIVACY';
+      }
+    }
+    return 'Dashboard';
+  });
 
   const [selectedChapterForNotes, setSelectedChapterForNotes] = useState<number | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
@@ -91,7 +103,7 @@ export default function App() {
   };
 
   const handleSelectOption = (
-    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY'
+    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY' | 'PRIVACY'
   ) => {
     if (option === 'SHARE') {
       setIsShareModalOpen(true);
@@ -129,6 +141,7 @@ export default function App() {
         onOpenShare={() => setIsShareModalOpen(true)}
         onOpenMoreApps={() => setIsMoreAppsModalOpen(true)}
         onOpenGitHubConfig={() => setIsGitHubConfigOpen(true)}
+        onOpenPrivacyPolicy={() => setCurrentView('PRIVACY')}
       />
 
       {/* Mobile App Frame Container with fixed header/footer and scrollable middle */}
@@ -298,6 +311,13 @@ export default function App() {
 
               {currentView === 'GLOSSARY' && (
                 <GlossaryView
+                  onBack={() => setCurrentView('Dashboard')}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+
+              {currentView === 'PRIVACY' && (
+                <PrivacyPolicyView
                   onBack={() => setCurrentView('Dashboard')}
                   isDarkMode={isDarkMode}
                 />

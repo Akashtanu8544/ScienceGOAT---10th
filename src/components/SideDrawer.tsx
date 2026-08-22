@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, Settings, Star, Share2, MessageSquare, X } from 'lucide-react';
+import { Sun, Moon, Settings, Star, Share2, MessageSquare, Shield, X } from 'lucide-react';
 import { ScienceGoatLogo } from './ScienceGoatLogo';
 
 interface SideDrawerProps {
@@ -10,6 +10,7 @@ interface SideDrawerProps {
   onOpenShare: () => void;
   onOpenMoreApps?: () => void;
   onOpenGitHubConfig: () => void;
+  onOpenPrivacyPolicy?: () => void;
 }
 
 export const SideDrawer: React.FC<SideDrawerProps> = ({
@@ -19,6 +20,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
   onToggleTheme,
   onOpenShare,
   onOpenGitHubConfig,
+  onOpenPrivacyPolicy,
 }) => {
   if (!isOpen) return null;
 
@@ -135,6 +137,28 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
             >
               <Star className="w-4 h-4 text-amber-500" />
               <span>रेट करें (Rate Science GOAT ★★★★★)</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate(10); } catch (e) {}
+                }
+                onClose();
+                if (onOpenPrivacyPolicy) {
+                  onOpenPrivacyPolicy();
+                } else if (typeof window !== 'undefined') {
+                  window.open('/privacy.html', '_blank');
+                }
+              }}
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border active:translate-y-0.5 ${
+                isDarkMode
+                  ? 'bg-slate-800/40 hover:bg-slate-800 text-slate-200 border-slate-800 shadow-sm'
+                  : 'bg-slate-50 hover:bg-white text-slate-800 border-slate-200/80 shadow-2xs'
+              }`}
+            >
+              <Shield className="w-4 h-4 text-emerald-400" />
+              <span>गोपनीयता नीति (Privacy Policy)</span>
             </button>
 
             <button
