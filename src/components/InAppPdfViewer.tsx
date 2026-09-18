@@ -43,28 +43,50 @@ const PdfPageCanvas: React.FC<PdfPageCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(pageNumber <= 2);
   const renderTaskRef = useRef<any>(null);
+
+  // Lazy render using IntersectionObserver
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || isVisible) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '400px' }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [isVisible]);
 
   useEffect(() => {
     let active = true;
 
-    const render = async () => {
+    const fetchDimensions = async () => {
       try {
         const page = await pdfDoc.getPage(pageNumber);
         if (!active) return;
-
-        // Intrinsic page dimensions
         const baseViewport = page.getViewport({ scale: 1.0, rotation });
         setDimensions({
           width: baseViewport.width,
           height: baseViewport.height,
         });
 
+        if (!isVisible) return;
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
         // High resolution viewport for crisp rendering
-        const renderScale = Math.max(window.devicePixelRatio || 1, 2.0);
+        const renderScale = Math.min(window.devicePixelRatio || 1, 2.0);
         const viewport = page.getViewport({ scale: renderScale, rotation });
 
         canvas.width = Math.floor(viewport.width);
@@ -94,7 +116,7 @@ const PdfPageCanvas: React.FC<PdfPageCanvasProps> = ({
       }
     };
 
-    render();
+    fetchDimensions();
 
     return () => {
       active = false;
@@ -104,7 +126,7 @@ const PdfPageCanvas: React.FC<PdfPageCanvasProps> = ({
         } catch {}
       }
     };
-  }, [pdfDoc, pageNumber, rotation]);
+  }, [pdfDoc, pageNumber, rotation, isVisible]);
 
   return (
     <div
@@ -155,6 +177,7 @@ export const InAppPdfViewer: React.FC<InAppPdfViewerProps> = ({
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>('NCERT सर्वर से कनेक्ट हो रहा है...');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [viewerMode, setViewerMode] = useState<'canvas' | 'embed'>('canvas');
 
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
@@ -381,7 +404,7 @@ export const InAppPdfViewer: React.FC<InAppPdfViewerProps> = ({
       }`}
     >
       {/* Global Loading Overlay */}
-      {loading && (
+      {loading && viewerMode === 'canvas' && (
         <PdfLoadingOverlay
           title={title}
           progress={downloadProgress}
@@ -392,6 +415,11 @@ export const InAppPdfViewer: React.FC<InAppPdfViewerProps> = ({
             window.location.reload();
           }}
           onCancel={onClose}
+          onOpenDocsViewer={() => {
+            setViewerMode('embed');
+            setLoading(false);
+            setErrorMsg(null);
+          }}
           isDarkMode={isDarkMode}
         />
       )}
@@ -460,136 +488,171 @@ export const InAppPdfViewer: React.FC<InAppPdfViewerProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={handleDownload}
-            className="p-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold text-xs shadow-sm flex items-center gap-1 shrink-0"
-            title="PDF डाउनलोड करें"
-          >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">डाउनलोड</span>
-          </button>
-        </div>
-
-        {/* Tier 2: Page Jump Controls & Zoom Controls */}
-        <div
-          className={`flex items-center justify-between gap-1 p-1.5 rounded-xl border text-xs ${
-            isDarkMode
-              ? 'bg-slate-950/80 border-slate-800'
-              : 'bg-slate-50 border-slate-200'
-          }`}
-        >
-          {/* Page Counter */}
-          {numPages > 0 ? (
-            <div
-              className={`flex items-center gap-1 border px-2 py-1 rounded-lg font-black ${
-                isDarkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-200'
-                  : 'bg-white border-slate-200 text-slate-800 shadow-sm'
-              }`}
-            >
-              <button
-                onClick={() => scrollToPage(currentPage - 1)}
-                disabled={currentPage <= 1}
-                className="p-0.5 disabled:opacity-30 hover:opacity-100"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[11px] px-1">
-                {currentPage} / {numPages}
-              </span>
-              <button
-                onClick={() => scrollToPage(currentPage + 1)}
-                disabled={currentPage >= numPages}
-                className="p-0.5 disabled:opacity-30 hover:opacity-100"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <div className="text-[11px] text-slate-400 font-bold px-1">लोड हो रहा है...</div>
-          )}
-
-          {/* Zoom & Rotation Controls */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
-              onClick={zoomOut}
-              disabled={scale <= 0.6}
-              className={`p-1.5 rounded-lg border active:scale-95 disabled:opacity-40 ${
-                isDarkMode
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
+              onClick={() => {
+                const nextMode = viewerMode === 'canvas' ? 'embed' : 'canvas';
+                setViewerMode(nextMode);
+                if (nextMode === 'embed') {
+                  setLoading(false);
+                  setErrorMsg(null);
+                }
+              }}
+              className={`p-2 px-2.5 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                viewerMode === 'embed'
+                  ? 'bg-indigo-600 text-white border-indigo-500'
+                  : isDarkMode
+                  ? 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+                  : 'bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200'
               }`}
-              title="ज़ूम कम करें (-)"
+              title="व्यूअर मोड बदलें"
             >
-              <ZoomOut className="w-3.5 h-3.5" />
+              {viewerMode === 'embed' ? 'कैनवास व्यू' : 'वेब व्यू'}
             </button>
 
             <button
-              onClick={resetZoom}
-              className={`px-2 py-1 rounded-lg border text-[10px] font-black ${
-                isDarkMode
-                  ? 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-700'
-                  : 'bg-white hover:bg-slate-100 text-amber-600 border-slate-200 shadow-sm'
-              }`}
-              title="रीसेट ज़ूम (100%)"
+              onClick={handleDownload}
+              className="p-2 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold text-xs shadow-sm flex items-center gap-1 shrink-0"
+              title="PDF डाउनलोड करें"
             >
-              {Math.round(scale * 100)}%
-            </button>
-
-            <button
-              onClick={zoomIn}
-              disabled={scale >= 2.5}
-              className={`p-1.5 rounded-lg border active:scale-95 disabled:opacity-40 ${
-                isDarkMode
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
-              }`}
-              title="ज़ूम बढ़ाएं (+)"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={toggleRotation}
-              className={`p-1.5 rounded-lg border active:scale-95 ${
-                isDarkMode
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
-              }`}
-              title="घूमाएं (Rotate)"
-            >
-              <RotateCw className="w-3.5 h-3.5" />
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">डाउनलोड</span>
             </button>
           </div>
         </div>
+
+        {/* Tier 2: Page Jump Controls & Zoom Controls (Only when in canvas mode) */}
+        {viewerMode === 'canvas' && (
+          <div
+            className={`flex items-center justify-between gap-1 p-1.5 rounded-xl border text-xs ${
+              isDarkMode
+                ? 'bg-slate-950/80 border-slate-800'
+                : 'bg-slate-50 border-slate-200'
+            }`}
+          >
+            {/* Page Counter */}
+            {numPages > 0 ? (
+              <div
+                className={`flex items-center gap-1 border px-2 py-1 rounded-lg font-black ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-700 text-slate-200'
+                    : 'bg-white border-slate-200 text-slate-800 shadow-sm'
+                }`}
+              >
+                <button
+                  onClick={() => scrollToPage(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  className="p-0.5 disabled:opacity-30 hover:opacity-100"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[11px] px-1">
+                  {currentPage} / {numPages}
+                </span>
+                <button
+                  onClick={() => scrollToPage(currentPage + 1)}
+                  disabled={currentPage >= numPages}
+                  className="p-0.5 disabled:opacity-30 hover:opacity-100"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="text-[11px] text-slate-400 font-bold px-1">लोड हो रहा है...</div>
+            )}
+
+            {/* Zoom & Rotation Controls */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={zoomOut}
+                disabled={scale <= 0.6}
+                className={`p-1.5 rounded-lg border active:scale-95 disabled:opacity-40 ${
+                  isDarkMode
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
+                }`}
+                title="ज़ूम कम करें (-)"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={resetZoom}
+                className={`px-2 py-1 rounded-lg border text-[10px] font-black ${
+                  isDarkMode
+                    ? 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-700'
+                    : 'bg-white hover:bg-slate-100 text-amber-600 border-slate-200 shadow-sm'
+                }`}
+                title="रीसेट ज़ूम (100%)"
+              >
+                {Math.round(scale * 100)}%
+              </button>
+
+              <button
+                onClick={zoomIn}
+                disabled={scale >= 2.5}
+                className={`p-1.5 rounded-lg border active:scale-95 disabled:opacity-40 ${
+                  isDarkMode
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
+                }`}
+                title="ज़ूम बढ़ाएं (+)"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={toggleRotation}
+                className={`p-1.5 rounded-lg border active:scale-95 ${
+                  isDarkMode
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-sm'
+                }`}
+                title="घूमाएं (Rotate)"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* Scrollable PDF Pages Container */}
-      <main
-        ref={containerRef}
-        onScroll={handleScroll}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className={`flex-1 w-full overflow-y-auto p-2 sm:p-4 flex flex-col items-center custom-scrollbar relative ${
-          isDarkMode ? 'bg-slate-900/90' : 'bg-slate-200/90'
-        }`}
-      >
-        {/* Render Canvas Pages with aspect-ratio containers */}
-        {!loading &&
-          !errorMsg &&
-          pdfDoc &&
-          Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => (
-            <PdfPageCanvas
-              key={pageNum}
-              pdfDoc={pdfDoc}
-              pageNumber={pageNum}
-              scale={scale}
-              rotation={rotation}
-              isDarkMode={isDarkMode}
-            />
-          ))}
-      </main>
+      {/* PDF Pages Display */}
+      {viewerMode === 'embed' ? (
+        <div className="flex-1 w-full h-full relative bg-slate-900">
+          <iframe
+            src={`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`}
+            className="w-full h-full border-0"
+            title={title}
+          />
+        </div>
+      ) : (
+        <main
+          ref={containerRef}
+          onScroll={handleScroll}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className={`flex-1 w-full overflow-y-auto p-2 sm:p-4 flex flex-col items-center custom-scrollbar relative ${
+            isDarkMode ? 'bg-slate-900/90' : 'bg-slate-200/90'
+          }`}
+        >
+          {/* Render Canvas Pages with aspect-ratio containers */}
+          {!loading &&
+            !errorMsg &&
+            pdfDoc &&
+            Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => (
+              <PdfPageCanvas
+                key={pageNum}
+                pdfDoc={pdfDoc}
+                pageNumber={pageNum}
+                scale={scale}
+                rotation={rotation}
+                isDarkMode={isDarkMode}
+              />
+            ))}
+        </main>
+      )}
 
       {/* Floating Bottom Quick Zoom Bar */}
       {!loading && !errorMsg && (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProgress, Chapter } from '../types';
-import { Award, Flame, CheckCircle, ArrowLeft, FlaskConical, Zap, Dna, Clock, BookOpen } from 'lucide-react';
+import { Award, Flame, CheckCircle, ArrowLeft, FlaskConical, Zap, Dna, Clock } from 'lucide-react';
 
 interface ProgressTrackerViewProps {
   progress: UserProgress;
@@ -42,107 +42,132 @@ export const ProgressTrackerView: React.FC<ProgressTrackerViewProps> = ({
   const readingMap = progress?.chapterReadingTime || {};
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fadeIn pb-6">
       {/* Centered Header Bar */}
-      <div className={`relative flex items-center justify-center p-3.5 rounded-3xl border shadow-sm backdrop-blur-md ${
-        isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/90 border-slate-200'
-      }`}>
+      <div
+        className={`relative flex items-center justify-between p-3.5 rounded-3xl border transition-all ${
+          isDarkMode ? 'card-3d-dark text-white' : 'card-3d-light text-slate-900'
+        }`}
+      >
         <button
           onClick={onBack}
-          className={`absolute left-3.5 p-2 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center ${
-            isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+          className={`p-2.5 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center active:scale-95 ${
+            isDarkMode
+              ? 'bg-slate-800/80 border-slate-700 text-slate-200 hover:bg-slate-700'
+              : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
           }`}
           title="वापस जाएँ"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </button>
-        <h2 className={`text-sm sm:text-base font-black flex items-center gap-2 text-center ${
-          isDarkMode ? 'text-white' : 'text-slate-900'
-        }`}>
-          <span className="text-xl">📈</span> प्रगति रिपोर्ट कार्ड
+        <h2
+          className={`text-sm sm:text-base font-black flex items-center gap-2 text-center truncate ${
+            isDarkMode ? 'text-white' : 'text-slate-900'
+          }`}
+        >
+          <span className="text-xl">📈</span> प्रगति व सत्र रिपोर्ट कार्ड
         </h2>
+        <div className="w-9" />
       </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-4 gap-2">
-        <div className={`p-3 rounded-2xl border text-center space-y-1 shadow-sm ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className="w-7 h-7 rounded-full bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center">
-            <Flame className="w-3.5 h-3.5 fill-amber-500" />
+        <div
+          className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 mx-auto flex items-center justify-center">
+            <Flame className="w-4 h-4 fill-amber-500" />
           </div>
           <div className="text-xs sm:text-sm font-black text-amber-500">{progress.streakDays}d</div>
-          <div className="text-[9px] font-bold text-slate-500">स्ट्राइक</div>
+          <div className="text-[9px] font-black text-slate-400">स्ट्राइक</div>
         </div>
 
-        <div className={`p-3 rounded-2xl border text-center space-y-1 shadow-sm ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-500 mx-auto flex items-center justify-center">
-            <Award className="w-3.5 h-3.5" />
+        <div
+          className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 mx-auto flex items-center justify-center">
+            <Award className="w-4 h-4" />
           </div>
           <div className="text-xs sm:text-sm font-black text-blue-500">{progress.totalPoints}</div>
-          <div className="text-[9px] font-bold text-slate-500">अंक</div>
+          <div className="text-[9px] font-black text-slate-400">अंक</div>
         </div>
 
-        <div className={`p-3 rounded-2xl border text-center space-y-1 shadow-sm ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className="w-7 h-7 rounded-full bg-purple-500/10 text-purple-500 mx-auto flex items-center justify-center">
-            <Clock className="w-3.5 h-3.5" />
+        <div
+          className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-500 mx-auto flex items-center justify-center">
+            <Clock className="w-4 h-4" />
           </div>
-          <div className="text-xs sm:text-sm font-black text-purple-500">{displayReadingTime}</div>
-          <div className="text-[9px] font-bold text-slate-500">अध्ययन समय</div>
+          <div className="text-xs sm:text-sm font-black text-purple-500 truncate">{displayReadingTime}</div>
+          <div className="text-[9px] font-black text-slate-400">अध्ययन समय</div>
         </div>
 
-        <div className={`p-3 rounded-2xl border text-center space-y-1 shadow-sm ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center">
-            <CheckCircle className="w-3.5 h-3.5" />
+        <div
+          className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mx-auto flex items-center justify-center">
+            <CheckCircle className="w-4 h-4" />
           </div>
           <div className="text-xs sm:text-sm font-black text-emerald-500">{progressPercent}%</div>
-          <div className="text-[9px] font-bold text-slate-500">पाठ्यक्रम</div>
+          <div className="text-[9px] font-black text-slate-400">पाठ्यक्रम</div>
         </div>
       </div>
 
       {/* Reading Time per Chapter Analytics */}
-      <div className={`p-4 rounded-3xl border shadow-sm space-y-3 ${
-        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-      }`}>
+      <div
+        className={`p-4 rounded-3xl border space-y-3 transition-all ${
+          isDarkMode ? 'card-3d-dark text-white' : 'card-3d-light text-slate-900'
+        }`}
+      >
         <div className="flex items-center justify-between">
-          <h3 className={`text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
-            isDarkMode ? 'text-white' : 'text-slate-900'
-          }`}>
+          <h3
+            className={`text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
+              isDarkMode ? 'text-white' : 'text-slate-900'
+            }`}
+          >
             <Clock className="w-4 h-4 text-purple-500" />
-            <span>अध्याय-वार अध्ययन समय (Reading Analytics)</span>
+            <span>अध्याय-वार अध्ययन समय</span>
           </h3>
-          <span className="text-[10px] font-bold text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+          <span className="text-[10px] font-black text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
             कुल: {displayReadingTime}
           </span>
         </div>
 
-        <div className="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+        <div className="space-y-2 max-h-52 overflow-y-auto pr-1 custom-scrollbar">
           {(chapters || []).map((ch) => {
             const chSeconds = readingMap[ch.id] || readingMap[`अध्याय ${ch.chapterNumber}: ${ch.titleHindi}`] || 0;
             const chMins = Math.floor(chSeconds / 60);
             const chSecs = chSeconds % 60;
             const timeLabel = chMins > 0 ? `${chMins} मि ${chSecs} से` : `${chSecs} से`;
+            const estMin = ch.estimatedReadingMinutes || 15;
 
             return (
               <div
                 key={ch.id}
-                className={`p-2.5 rounded-2xl border flex items-center justify-between gap-2 text-xs ${
-                  isDarkMode ? 'bg-slate-800/60 border-slate-700/60' : 'bg-slate-50 border-slate-200'
+                className={`p-2.5 rounded-2xl border flex items-center justify-between gap-2 text-xs transition-all ${
+                  isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200/80'
                 }`}
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-base">{ch.icon3D || '📖'}</span>
-                  <span className={`font-bold truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                    अध्याय {ch.chapterNumber}: {ch.titleHindi}
-                  </span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-base shrink-0">{ch.icon3D || '📖'}</span>
+                  <div className="min-w-0">
+                    <span className={`font-black truncate block ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                      अध्याय {ch.chapterNumber}: {ch.titleHindi}
+                    </span>
+                    <span className="text-[10px] text-amber-500 font-bold">
+                      अनुमानित: ~{estMin} मिनट
+                    </span>
+                  </div>
                 </div>
-                <span className={`font-black shrink-0 ${chSeconds > 0 ? 'text-purple-500' : 'text-slate-400'}`}>
+                <span className={`font-black shrink-0 ${chSeconds > 0 ? 'text-purple-500 dark:text-purple-400' : 'text-slate-400'}`}>
                   {timeLabel}
                 </span>
               </div>
@@ -152,51 +177,70 @@ export const ProgressTrackerView: React.FC<ProgressTrackerViewProps> = ({
       </div>
 
       {/* Subject Wise Progress Cards */}
-      <div className={`p-4 rounded-3xl border shadow-sm space-y-3.5 ${
-        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-      }`}>
-        <h3 className={`text-xs font-black uppercase tracking-wider ${
-          isDarkMode ? 'text-white' : 'text-slate-900'
-        }`}>
+      <div
+        className={`p-4 rounded-3xl border space-y-3.5 transition-all ${
+          isDarkMode ? 'card-3d-dark text-white' : 'card-3d-light text-slate-900'
+        }`}
+      >
+        <h3
+          className={`text-xs font-black uppercase tracking-wider ${
+            isDarkMode ? 'text-white' : 'text-slate-900'
+          }`}
+        >
           📊 विषय-वार प्रगति (Subject Progress)
         </h3>
 
         {/* Chemistry */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-blue-600">
+            <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-black">
               <FlaskConical className="w-3.5 h-3.5" /> रसायन विज्ञान (Chemistry)
             </span>
-            <span className="text-slate-500">{chemistryCompleted}/{chemistryChapters.length} ({chemPercent}%)</span>
+            <span className="text-slate-400 font-bold">
+              {chemistryCompleted}/{chemistryChapters.length} ({chemPercent}%)
+            </span>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div className="bg-blue-600 h-full rounded-full transition-all duration-500" style={{ width: `${chemPercent}%` }} />
+          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-200/40 dark:border-slate-700/40">
+            <div
+              className="bg-gradient-to-r from-blue-600 to-cyan-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${chemPercent}%` }}
+            />
           </div>
         </div>
 
         {/* Physics */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-purple-600">
+            <span className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-black">
               <Zap className="w-3.5 h-3.5" /> भौतिक विज्ञान (Physics)
             </span>
-            <span className="text-slate-500">{physicsCompleted}/{physicsChapters.length} ({physPercent}%)</span>
+            <span className="text-slate-400 font-bold">
+              {physicsCompleted}/{physicsChapters.length} ({physPercent}%)
+            </span>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div className="bg-purple-600 h-full rounded-full transition-all duration-500" style={{ width: `${physPercent}%` }} />
+          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-200/40 dark:border-slate-700/40">
+            <div
+              className="bg-gradient-to-r from-purple-600 to-indigo-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${physPercent}%` }}
+            />
           </div>
         </div>
 
         {/* Biology */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-emerald-600">
+            <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-black">
               <Dna className="w-3.5 h-3.5" /> जीव विज्ञान (Biology)
             </span>
-            <span className="text-slate-500">{biologyCompleted}/{biologyChapters.length} ({bioPercent}%)</span>
+            <span className="text-slate-400 font-bold">
+              {biologyCompleted}/{biologyChapters.length} ({bioPercent}%)
+            </span>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div className="bg-emerald-600 h-full rounded-full transition-all duration-500" style={{ width: `${bioPercent}%` }} />
+          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-200/40 dark:border-slate-700/40">
+            <div
+              className="bg-gradient-to-r from-emerald-600 to-teal-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${bioPercent}%` }}
+            />
           </div>
         </div>
       </div>

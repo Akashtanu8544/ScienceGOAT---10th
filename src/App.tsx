@@ -1,138 +1,348 @@
-import React, { useState, lazy, Suspense } from 'react';
-import { HoneycombBackground } from './components/HoneycombBackground';
-import { Header } from './components/Header';
-import { SideDrawer } from './components/SideDrawer';
-import { Dashboard } from './components/Dashboard';
-import { BottomNavigation } from './components/BottomNavigation';
-import { SplashScreen } from './components/SplashScreen';
-import { LoadingSpinner } from './components/LoadingSpinner';
-
+import React, { useState, useEffect } from 'react';
+import { Chapter, UserProgress } from './types';
 import { CHAPTERS_DATA } from './data/chaptersData';
-import { VIDEO_LECTURES_DATA } from './data/videosData';
-
 import { StorageService } from './services/db';
-import { UserProgress, GitHubConfig } from './types';
-import { X, FileText, Sparkles } from 'lucide-react';
+import { LanguageProvider, useLanguage } from './utils/languageContext';
 
-// Lazy loaded secondary views and modals to optimize critical path & LCP performance
-const BookViewer = lazy(() => import('./components/BookViewer').then((m) => ({ default: m.BookViewer })));
-const NotesViewer = lazy(() => import('./components/NotesViewer').then((m) => ({ default: m.NotesViewer })));
-const QuizView = lazy(() => import('./components/QuizView').then((m) => ({ default: m.QuizView })));
-const PYQView = lazy(() => import('./components/PYQView').then((m) => ({ default: m.PYQView })));
-const ImportantQuestionsView = lazy(() =>
-  import('./components/ImportantQuestionsView').then((m) => ({ default: m.ImportantQuestionsView }))
-);
-const VideoLecturesView = lazy(() =>
-  import('./components/VideoLecturesView').then((m) => ({ default: m.VideoLecturesView }))
-);
-const ProgressTrackerView = lazy(() =>
-  import('./components/ProgressTrackerView').then((m) => ({ default: m.ProgressTrackerView }))
-);
-const GlossaryView = lazy(() => import('./components/GlossaryView').then((m) => ({ default: m.GlossaryView })));
-const PrivacyPolicyView = lazy(() =>
-  import('./components/PrivacyPolicyView').then((m) => ({ default: m.PrivacyPolicyView }))
-);
-const ShareModal = lazy(() => import('./components/ShareModal').then((m) => ({ default: m.ShareModal })));
-const MoreAppsModal = lazy(() => import('./components/MoreAppsModal').then((m) => ({ default: m.MoreAppsModal })));
-const GitHubConfigModal = lazy(() =>
-  import('./components/GitHubConfigModal').then((m) => ({ default: m.GitHubConfigModal }))
-);
+// Primary View Components
+import { Header } from './components/Header';
+import { Dashboard } from './components/Dashboard';
+import { BookViewer } from './components/BookViewer';
+import { NotesViewer } from './components/NotesViewer';
+import { QuizView } from './components/QuizView';
+import { PYQView } from './components/PYQView';
+import { ImportantQuestionsView } from './components/ImportantQuestionsView';
+import { VideoLecturesView } from './components/VideoLecturesView';
+import { GlossaryView } from './components/GlossaryView';
+import { ProgressTrackerView } from './components/ProgressTrackerView';
+import { DiagramsAndGraphsView } from './components/DiagramsAndGraphsView';
+import { SplashScreen } from './components/SplashScreen';
+import { SideDrawer } from './components/SideDrawer';
+import { ScienceBottomNav, ScienceTab } from './components/ScienceBottomNav';
 
-const ViewLoadingFallback = ({ isDarkMode }: { isDarkMode: boolean }) => (
-  <div className="flex flex-col items-center justify-center min-h-[300px] gap-3 text-center animate-fadeIn py-12">
-    <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center animate-spin">
-      <Sparkles className="w-5 h-5 text-amber-500" />
-    </div>
-    <span className={`text-xs font-black ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-      सामग्री लोड हो रही है...
-    </span>
-  </div>
-);
+// Modals
+import { ShareModal } from './components/ShareModal';
+import { MoreAppsModal } from './components/MoreAppsModal';
+import { PrivacyPolicyView } from './components/PrivacyPolicyView';
 
-export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
-  const [currentView, setCurrentView] = useState<
-    'Dashboard' | 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY' | 'PRIVACY'
-  >(() => {
-    if (typeof window !== 'undefined') {
-      const search = window.location.search;
-      const path = window.location.pathname;
-      if (search.includes('view=PRIVACY') || search.includes('privacy') || path.includes('/privacy')) {
-        return 'PRIVACY';
-      }
-    }
-    return 'Dashboard';
-  });
+type ActiveViewType =
+  | 'DASHBOARD'
+  | 'BOOK'
+  | 'NOTES'
+  | 'QUIZ'
+  | 'PYQ'
+  | 'IMPORTANT'
+  | 'VIDEOS'
+  | 'GLOSSARY'
+  | 'PROGRESS'
+  | 'DIAGRAMS'
+  | 'PRIVACY_POLICY';
 
-  const [selectedChapterForNotes, setSelectedChapterForNotes] = useState<number | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState('');
+function AppContent() {
+  const { language } = useLanguage();
 
-  // Dark/Light Theme State
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+  // Splash Screen State (shown only once per initial load)
+  const [showSplash, setShowSplash] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('rbse_theme_mode');
-      return saved === 'dark';
-    } catch (e) {
+      const hasShown = sessionStorage.getItem('sciencegoat_splash_shown');
+      return !hasShown;
+    } catch {
       return false;
     }
   });
 
-  // Drawer & Modals State
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isMoreAppsModalOpen, setIsMoreAppsModalOpen] = useState(false);
-  const [isGitHubConfigOpen, setIsGitHubConfigOpen] = useState(false);
-
-  // App Persistence State
+  // User Progress and Persistence State
   const [progress, setProgress] = useState<UserProgress>(() => StorageService.getProgress());
-  const [githubConfig, setGithubConfig] = useState<GitHubConfig>(() => StorageService.getGitHubConfig());
 
-  // Toggle Dark Mode
-  const handleToggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('rbse_theme_mode', next ? 'dark' : 'light');
-      } catch (e) {}
-      return next;
-    });
-  };
-
-  const refreshProgress = () => {
-    setProgress(StorageService.getProgress());
-  };
-
-  const handleSelectOption = (
-    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY' | 'PRIVACY'
-  ) => {
-    if (option === 'SHARE') {
-      setIsShareModalOpen(true);
-    } else if (option === 'MORE_APPS') {
-      setIsMoreAppsModalOpen(true);
-    } else {
-      if (option === 'Notes') {
-        setSelectedChapterForNotes(undefined);
-      }
-      setCurrentView(option);
+  // Dark/Light Theme State (persisted)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('sciencegoat_theme');
+      if (saved !== null) return saved === 'dark';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch {
+      return false;
     }
+  });
+
+  // Navigation State
+  const [currentTab, setCurrentTab] = useState<ScienceTab>('home');
+  const [activeView, setActiveView] = useState<ActiveViewType>('DASHBOARD');
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Modals & Drawers
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [isMoreAppsModalOpen, setIsMoreAppsModalOpen] = useState<boolean>(false);
+
+  // Sync theme with DOM document element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      try { localStorage.setItem('sciencegoat_theme', 'dark'); } catch {}
+    } else {
+      document.documentElement.classList.remove('dark');
+      try { localStorage.setItem('sciencegoat_theme', 'light'); } catch {}
+    }
+  }, [isDarkMode]);
+
+  // Handle Splash Screen finish
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+    try {
+      sessionStorage.setItem('sciencegoat_splash_shown', 'true');
+    } catch {}
   };
 
-  const handleOpenChapterNotes = (chapterId: number) => {
-    setSelectedChapterForNotes(chapterId);
-    setCurrentView('Notes');
+  // Toggle Theme
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
   };
+
+  // Refresh User Progress from Database/LocalStorage
+  const handleProgressUpdate = () => {
+    const updated = StorageService.getProgress();
+    setProgress({ ...updated });
+  };
+
+  // Switch Bottom Tab
+  const handleSelectTab = (tab: ScienceTab) => {
+    setCurrentTab(tab);
+    switch (tab) {
+      case 'home':
+        setSelectedChapterId(null);
+        setActiveView('DASHBOARD');
+        break;
+      case 'book':
+        setSelectedChapterId(null);
+        setActiveView('BOOK');
+        break;
+      case 'notes':
+        setSelectedChapterId(null);
+        setActiveView('NOTES');
+        break;
+      case 'quiz':
+        setActiveView('QUIZ');
+        break;
+      case 'progress':
+        setActiveView('PROGRESS');
+        break;
+      default:
+        setActiveView('DASHBOARD');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle Options selected from Dashboard or other links
+  const handleSelectDashboardOption = (
+    option: 'Book' | 'Notes' | 'Quiz' | 'PYQ' | 'IMPORTANT' | 'SHARE' | 'MORE_APPS' | 'VIDEOS' | 'PROGRESS' | 'GLOSSARY' | 'DIAGRAMS'
+  ) => {
+    switch (option) {
+      case 'Book':
+        setSelectedChapterId(null);
+        setCurrentTab('book');
+        setActiveView('BOOK');
+        break;
+      case 'Notes':
+        setSelectedChapterId(null);
+        setCurrentTab('notes');
+        setActiveView('NOTES');
+        break;
+      case 'Quiz':
+        setSelectedChapterId(null);
+        setCurrentTab('quiz');
+        setActiveView('QUIZ');
+        break;
+      case 'PROGRESS':
+        setCurrentTab('progress');
+        setActiveView('PROGRESS');
+        break;
+      case 'PYQ':
+        setActiveView('PYQ');
+        break;
+      case 'IMPORTANT':
+        setActiveView('IMPORTANT');
+        break;
+      case 'DIAGRAMS':
+        setActiveView('DIAGRAMS');
+        break;
+      case 'VIDEOS':
+        setActiveView('VIDEOS');
+        break;
+      case 'GLOSSARY':
+        setActiveView('GLOSSARY');
+        break;
+      case 'SHARE':
+        setIsShareModalOpen(true);
+        break;
+      case 'MORE_APPS':
+        setIsMoreAppsModalOpen(true);
+        break;
+      default:
+        setActiveView('DASHBOARD');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Back Button Navigation handler
+  const handleBackToDashboard = () => {
+    setCurrentTab('home');
+    setActiveView('DASHBOARD');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Open Notes for a specific chapter
+  const handleOpenChapterNotes = (chapterId: number) => {
+    setSelectedChapterId(chapterId);
+    setCurrentTab('notes');
+    setActiveView('NOTES');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Open Quiz for a specific chapter
+  const handleOpenChapterQuiz = (chapterId?: number) => {
+    if (chapterId) setSelectedChapterId(chapterId);
+    setCurrentTab('quiz');
+    setActiveView('QUIZ');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // If splash screen is active, show it
+  if (showSplash) {
+    return <SplashScreen onFinish={handleSplashFinish} />;
+  }
+
+  const completedCount = progress?.completedChapters?.length || 0;
+  const streakDays = progress?.streakDays || 0;
+  const totalPoints = progress?.totalPoints || 0;
 
   return (
-    <div className={`h-screen w-screen overflow-hidden font-sans selection:bg-amber-500 selection:text-slate-950 relative antialiased flex flex-col items-center transition-colors duration-200 ${
-      isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-100/90 text-slate-900'
-    }`}>
-      {/* App Opening Splash Screen */}
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+    <div
+      id="science-goat-app"
+      className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
+        isDarkMode
+          ? 'bg-slate-950 text-slate-100'
+          : 'bg-slate-100/90 text-slate-900'
+      }`}
+    >
+      {/* Sticky Top Header with Streak, Points, Menu, Theme Toggle */}
+      <Header
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleToggleTheme}
+        onOpenDrawer={() => setIsDrawerOpen(true)}
+        streakDays={streakDays}
+        totalPoints={totalPoints}
+        onOpenProgress={() => handleSelectTab('progress')}
+      />
 
-      {/* Interactive Honeycomb Canvas Background with subtle blur */}
-      <HoneycombBackground isDarkMode={isDarkMode} />
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-md mx-auto px-3.5 pt-3 pb-24 transition-all">
+        {activeView === 'DASHBOARD' && (
+          <Dashboard
+            onSelectOption={handleSelectDashboardOption}
+            completedChaptersCount={completedCount}
+            completedChapters={progress?.completedChapters || []}
+            isDarkMode={isDarkMode}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        )}
 
-      {/* Main Drawer Menu */}
+        {activeView === 'BOOK' && (
+          <BookViewer
+            chapters={CHAPTERS_DATA}
+            onBack={handleBackToDashboard}
+            onSelectChapterNotes={handleOpenChapterNotes}
+            isDarkMode={isDarkMode}
+            initialChapterId={selectedChapterId || undefined}
+          />
+        )}
+
+        {activeView === 'NOTES' && (
+          <NotesViewer
+            chapters={CHAPTERS_DATA}
+            initialChapterId={selectedChapterId || undefined}
+            onBack={handleBackToDashboard}
+            onProgressUpdate={handleProgressUpdate}
+            onOpenQuizTab={handleOpenChapterQuiz}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'QUIZ' && (
+          <QuizView
+            chapters={CHAPTERS_DATA}
+            progress={progress}
+            onBack={handleBackToDashboard}
+            onProgressUpdate={handleProgressUpdate}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'PROGRESS' && (
+          <ProgressTrackerView
+            progress={progress}
+            chapters={CHAPTERS_DATA}
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'PYQ' && (
+          <PYQView
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'IMPORTANT' && (
+          <ImportantQuestionsView
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'DIAGRAMS' && (
+          <DiagramsAndGraphsView
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'VIDEOS' && (
+          <VideoLecturesView
+            onBack={handleBackToDashboard}
+            onOpenNotes={handleOpenChapterNotes}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'GLOSSARY' && (
+          <GlossaryView
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeView === 'PRIVACY_POLICY' && (
+          <PrivacyPolicyView
+            onBack={handleBackToDashboard}
+            isDarkMode={isDarkMode}
+          />
+        )}
+      </main>
+
+      {/* Modern Bottom Navigation Bar */}
+      <ScienceBottomNav
+        currentTab={currentTab}
+        onSelectTab={handleSelectTab}
+        isDarkMode={isDarkMode}
+        completedChaptersCount={completedCount}
+        streakDays={streakDays}
+      />
+
+      {/* Side Drawer Menu */}
       <SideDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
@@ -140,222 +350,35 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
         onOpenShare={() => setIsShareModalOpen(true)}
         onOpenMoreApps={() => setIsMoreAppsModalOpen(true)}
-        onOpenGitHubConfig={() => setIsGitHubConfigOpen(true)}
-        onOpenPrivacyPolicy={() => setCurrentView('PRIVACY')}
+        onOpenPrivacyPolicy={() => {
+          setIsDrawerOpen(false);
+          setActiveView('PRIVACY_POLICY');
+        }}
+        streakDays={streakDays}
       />
 
-      {/* Mobile App Frame Container with fixed header/footer and scrollable middle */}
-      <div className="w-full max-w-md h-screen flex flex-col relative z-10 shadow-2xl overflow-hidden">
-        {/* Fixed Top Header */}
-        <Header
-          isDarkMode={isDarkMode}
-          onToggleTheme={handleToggleTheme}
-          onOpenDrawer={() => setIsDrawerOpen(true)}
-        />
-
-        {/* Scrollable Middle Body Section */}
-        <main className="flex-1 min-h-0 px-3.5 pt-3 pb-3 overflow-y-auto custom-scrollbar relative">
-          {searchQuery ? (
-            /* Search Results Overlay View */
-            <div className="space-y-3 animate-fadeIn">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="text-xs font-black uppercase text-amber-500 tracking-wider">
-                  खोज परिणाम ("{searchQuery}")
-                </h3>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  रद्द करें
-                </button>
-              </div>
-
-              {/* Filtered Notes Search Results */}
-              <div className="space-y-2">
-                {CHAPTERS_DATA.filter(
-                  (c) =>
-                    c.titleHindi.includes(searchQuery) ||
-                    c.titleEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    c.description.includes(searchQuery)
-                ).map((ch) => (
-                  <div
-                    key={ch.id}
-                    onClick={() => {
-                      setSearchQuery('');
-                      handleOpenChapterNotes(ch.id);
-                    }}
-                    className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
-                      isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-amber-500' : 'bg-white border-slate-200 hover:border-blue-500'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xl">{ch.icon3D}</span>
-                      <div>
-                        <div className="text-xs font-bold">{ch.titleHindi}</div>
-                        <div className="text-[10px] text-slate-400">{ch.unit}</div>
-                      </div>
-                    </div>
-                    <span className="text-xs font-extrabold text-amber-500 flex items-center gap-1">
-                      <FileText className="w-3.5 h-3.5" />
-                      नोट्स →
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Search Video Lectures */}
-              <div className="space-y-2 pt-2">
-                <div className="text-[11px] font-bold text-slate-400">वीडियो व्याख्यान:</div>
-                {VIDEO_LECTURES_DATA.filter((v) =>
-                  v.title.includes(searchQuery) || v.topics.some((t) => t.includes(searchQuery))
-                ).map((vid) => (
-                  <div
-                    key={vid.id}
-                    onClick={() => {
-                      setSearchQuery('');
-                      setCurrentView('VIDEOS');
-                    }}
-                    className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between ${
-                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xl">🎥</span>
-                      <div>
-                        <div className="text-xs font-bold truncate max-w-[200px]">{vid.title}</div>
-                        <div className="text-[10px] text-slate-400">{vid.teacherName} • {vid.duration}</div>
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-amber-500 font-extrabold">देखें →</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* Views Router */
-            <Suspense fallback={<ViewLoadingFallback isDarkMode={isDarkMode} />}>
-              {currentView === 'Dashboard' && (
-                <Dashboard
-                  onSelectOption={handleSelectOption}
-                  completedChaptersCount={(progress?.completedChapters || []).length}
-                  completedChapters={progress?.completedChapters || []}
-                  isDarkMode={isDarkMode}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                />
-              )}
-
-              {currentView === 'Book' && (
-                <BookViewer
-                  chapters={CHAPTERS_DATA}
-                  onBack={() => setCurrentView('Dashboard')}
-                  onSelectChapterNotes={handleOpenChapterNotes}
-                  customBooksUrl={githubConfig.customBooksJsonUrl}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'Notes' && (
-                <NotesViewer
-                  chapters={CHAPTERS_DATA}
-                  initialChapterId={selectedChapterForNotes}
-                  onBack={() => setCurrentView('Dashboard')}
-                  onProgressUpdate={refreshProgress}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'Quiz' && (
-                <QuizView
-                  chapters={CHAPTERS_DATA}
-                  progress={progress}
-                  onBack={() => setCurrentView('Dashboard')}
-                  onProgressUpdate={refreshProgress}
-                  customQuizUrl={githubConfig.customQuizJsonUrl}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'PYQ' && (
-                <PYQView
-                  onBack={() => setCurrentView('Dashboard')}
-                  customPyqUrl={githubConfig.customPyqJsonUrl}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'IMPORTANT' && (
-                <ImportantQuestionsView
-                  onBack={() => setCurrentView('Dashboard')}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'VIDEOS' && (
-                <VideoLecturesView
-                  onBack={() => setCurrentView('Dashboard')}
-                  onOpenNotes={handleOpenChapterNotes}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'PROGRESS' && (
-                <ProgressTrackerView
-                  progress={progress}
-                  chapters={CHAPTERS_DATA}
-                  onBack={() => setCurrentView('Dashboard')}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'GLOSSARY' && (
-                <GlossaryView
-                  onBack={() => setCurrentView('Dashboard')}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-
-              {currentView === 'PRIVACY' && (
-                <PrivacyPolicyView
-                  onBack={() => setCurrentView('Dashboard')}
-                  isDarkMode={isDarkMode}
-                />
-              )}
-            </Suspense>
-          )}
-        </main>
-
-        {/* Fixed Bottom Navigation Footer */}
-        <BottomNavigation
-          currentView={currentView}
-          onSelectView={handleSelectOption}
-          isDarkMode={isDarkMode}
-        />
-      </div>
-
-      {/* Global PDF Proxy Loading Spinner */}
-      <LoadingSpinner isDarkMode={isDarkMode} />
-
       {/* Modals */}
-      <Suspense fallback={null}>
-        {isShareModalOpen && (
-          <ShareModal onClose={() => setIsShareModalOpen(false)} isDarkMode={isDarkMode} />
-        )}
+      {isShareModalOpen && (
+        <ShareModal
+          onClose={() => setIsShareModalOpen(false)}
+          isDarkMode={isDarkMode}
+        />
+      )}
 
-        {isMoreAppsModalOpen && (
-          <MoreAppsModal onClose={() => setIsMoreAppsModalOpen(false)} isDarkMode={isDarkMode} />
-        )}
-
-        {isGitHubConfigOpen && (
-          <GitHubConfigModal
-            config={githubConfig}
-            onSave={(updated) => setGithubConfig(updated)}
-            onClose={() => setIsGitHubConfigOpen(false)}
-            isDarkMode={isDarkMode}
-          />
-        )}
-      </Suspense>
+      {isMoreAppsModalOpen && (
+        <MoreAppsModal
+          onClose={() => setIsMoreAppsModalOpen(false)}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

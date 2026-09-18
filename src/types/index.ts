@@ -7,10 +7,14 @@ export interface Chapter {
   titleEnglish: string;
   subject: SubjectType;
   unit: string;
+  unitEnglish?: string;
   weightage: number; // Board Exam Weightage Marks (e.g. 6 marks)
   icon3D: string;
   pdfUrl?: string;
+  pdfUrlEn?: string;
   description: string;
+  descriptionEnglish?: string;
+  estimatedReadingMinutes?: number;
 }
 
 export interface NoteSection {
@@ -60,16 +64,22 @@ export interface PYQPaper {
   year: number;
   board: 'RBSE' | 'NCERT';
   title: string;
+  titleEnglish?: string;
   totalMarks: number;
   timeAllowed: string;
   pdfUrl: string;
+  pdfUrlEn?: string;
   downloadUrl?: string;
   solutionPdfUrl?: string;
+  isAvailable?: boolean; // false when not added yet / coming soon
+  comingSoonMessage?: string;
   sections: {
     sectionName: string;
+    sectionNameEnglish?: string;
     marksPerQuestion: number;
     questionsCount: number;
     sampleQuestions: string[];
+    sampleQuestionsEnglish?: string[];
   }[];
 }
 
@@ -78,9 +88,11 @@ export interface ImportantQuestion {
   chapterId: number;
   type: 'VSA' | 'SA' | 'LA' | 'DIAGRAM' | 'EQUATION';
   question: string;
+  questionEnglish?: string;
   marks: number;
   answer: string;
-  repeatedYears?: number[];
+  answerEnglish?: string;
+  repeatedYears?: (number | string)[];
   diagramUrl?: string;
 }
 
@@ -94,6 +106,8 @@ export interface VideoLecture {
   teacherName: string;
   topics: string[];
   keyTakeaways: string[];
+  isAvailable?: boolean; // false when not added yet / coming soon
+  comingSoonMessage?: string;
 }
 
 export interface GlossaryTerm {
@@ -127,6 +141,8 @@ export interface UserProgress {
   badges: string[];
   chapterReadingTime?: Record<string | number, number>; // Seconds spent reading per chapter/material
   totalReadingTimeSeconds?: number; // Total reading time in seconds
+  dailyReadingTime?: Record<string, number>; // Date 'YYYY-MM-DD' -> seconds spent
+  sessionHistory?: { timestamp: number; date: string; chapterId: number; chapterTitle: string; seconds: number }[];
 }
 
 export interface GitHubConfig {

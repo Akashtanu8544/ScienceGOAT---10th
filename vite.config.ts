@@ -275,23 +275,37 @@ export default defineConfig(() => {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
+      dedupe: ['react', 'react-dom'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'lucide-react', 'canvas-confetti'],
     },
     build: {
       target: 'esnext',
       cssCodeSplit: true,
+      chunkSizeWarningLimit: 1200,
       rollupOptions: {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
+              if (id.includes('pdfjs-dist')) {
+                return 'pdfjs-vendor';
+              }
               if (id.includes('jspdf') || id.includes('html2canvas')) {
-                return 'pdf-vendor';
+                return 'pdf-generator-vendor';
               }
-              if (id.includes('lucide-react')) {
-                return 'icons-vendor';
-              }
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'react-vendor';
-              }
+            }
+            if (id.includes('src/data/quiz/')) {
+              return 'quiz-database';
+            }
+            if (id.includes('src/data/notes/')) {
+              return 'notes-database';
+            }
+            if (id.includes('src/data/importantQuestionsData')) {
+              return 'important-questions-database';
+            }
+            if (id.includes('src/data/glossaryData')) {
+              return 'glossary-database';
             }
           },
         },

@@ -8,6 +8,7 @@ interface PdfLoadingOverlayProps {
   errorMsg?: string | null;
   onRetry?: () => void;
   onCancel?: () => void;
+  onOpenDocsViewer?: () => void;
   isDarkMode?: boolean;
 }
 
@@ -18,6 +19,7 @@ export const PdfLoadingOverlay: React.FC<PdfLoadingOverlayProps> = ({
   errorMsg,
   onRetry,
   onCancel,
+  onOpenDocsViewer,
   isDarkMode = false,
 }) => {
   return (
@@ -65,26 +67,38 @@ export const PdfLoadingOverlay: React.FC<PdfLoadingOverlayProps> = ({
                 {errorMsg}
               </p>
             </div>
-            <div className="flex items-center gap-2 w-full pt-2">
-              {onCancel && (
+            <div className="flex flex-col gap-2 w-full pt-2">
+              <div className="flex items-center gap-2 w-full">
+                {onCancel && (
+                  <button
+                    onClick={onCancel}
+                    className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs transition-all active:scale-95 border ${
+                      isDarkMode
+                        ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                        : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    बंद करें
+                  </button>
+                )}
+                {onRetry && (
+                  <button
+                    onClick={onRetry}
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    पुनः प्रयास
+                  </button>
+                )}
+              </div>
+
+              {onOpenDocsViewer && (
                 <button
-                  onClick={onCancel}
-                  className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs transition-all active:scale-95 border ${
-                    isDarkMode
-                      ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
-                      : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
-                  }`}
+                  onClick={onOpenDocsViewer}
+                  className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95"
                 >
-                  बंद करें
-                </button>
-              )}
-              {onRetry && (
-                <button
-                  onClick={onRetry}
-                  className="flex-1 py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  पुनः प्रयास
+                  <BookOpen className="w-3.5 h-3.5" />
+                  वैकल्पिक व्यूअर में खोलें
                 </button>
               )}
             </div>

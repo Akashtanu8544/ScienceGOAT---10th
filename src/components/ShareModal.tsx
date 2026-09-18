@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Share2, Copy, Check, Smartphone, X } from 'lucide-react';
+import { ScienceGoatLogo } from './ScienceGoatLogo';
 
 interface ShareModalProps {
   onClose: () => void;
@@ -35,13 +36,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, isDarkMode = fa
             isDarkMode ? 'border-slate-800' : 'border-slate-100'
           }`}
         >
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500">
-              <Share2 className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <ScienceGoatLogo size="sm" variant="icon-only" showText={false} />
             <div>
               <h3 className={`text-base font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                एप शेयर करें
+                Science GOAT शेयर करें
               </h3>
               <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 अपने सहपाठियों के साथ शेयर करें

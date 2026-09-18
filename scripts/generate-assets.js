@@ -7,57 +7,9 @@ if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
-// 1. Icon SVG representation
-const iconSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e1b4b" />
-      <stop offset="50%" stop-color="#312e81" />
-      <stop offset="100%" stop-color="#0f172a" />
-    </linearGradient>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24" />
-      <stop offset="100%" stop-color="#f59e0b" />
-    </linearGradient>
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#6366f1" />
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="10" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-  </defs>
+// Read the 3D Doodle Science GOAT SVG from public/logo.svg
+const iconSvg = fs.readFileSync(path.join(publicDir, 'logo.svg'), 'utf-8');
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
-  
-  <!-- Outer Glow Ring -->
-  <circle cx="256" cy="230" r="170" fill="none" stroke="url(#cyanGrad)" stroke-width="6" opacity="0.4" />
-  <circle cx="256" cy="230" r="140" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-dasharray="12 12" opacity="0.6" />
-
-  <!-- Central Atom / Science Symbol -->
-  <g transform="translate(256, 220)">
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(0)" opacity="0.8" />
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(60)" opacity="0.8" />
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(120)" opacity="0.8" />
-    
-    <!-- Nucleus -->
-    <circle cx="0" cy="0" r="28" fill="url(#goldGrad)" filter="url(#glow)" />
-    <circle cx="0" cy="0" r="14" fill="#ffffff" />
-  </g>
-
-  <!-- Badge / Text "SCIENCE GOAT" -->
-  <rect x="76" y="380" width="360" height="72" rx="36" fill="#0f172a" stroke="url(#goldGrad)" stroke-width="4" />
-  <text x="256" y="425" font-family="'Hind', 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="32" fill="#fbbf24" text-anchor="middle" letter-spacing="2">
-    SCIENCE GOAT 10th
-  </text>
-  <text x="256" y="442" font-family="sans-serif" font-weight="700" font-size="12" fill="#94a3b8" text-anchor="middle">
-    RBSE CLASS 10
-  </text>
-</svg>
-`;
 
 // Maskable Icon SVG with safe margins
 const maskableIconSvg = `
@@ -250,8 +202,7 @@ const screenshotWideSvg = `
 `;
 
 async function generateAllAssets() {
-  console.log('Generating logo.svg...');
-  fs.writeFileSync(path.join(publicDir, 'logo.svg'), iconSvg);
+  console.log('Loading refined 3D doodle logo.svg for asset generation...');
 
   console.log('Generating pwa-192x192.png...');
   await sharp(Buffer.from(iconSvg))

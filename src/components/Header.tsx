@@ -1,11 +1,15 @@
 import React from 'react';
 import { Menu, Sun, Moon } from 'lucide-react';
+import { useLanguage } from '../utils/languageContext';
 import { ScienceGoatLogo } from './ScienceGoatLogo';
 
 interface HeaderProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
   onOpenDrawer: () => void;
+  streakDays?: number;
+  totalPoints?: number;
+  onOpenProgress?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,57 +17,87 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   onOpenDrawer,
 }) => {
+  const { language } = useLanguage();
+
   const triggerHaptic = () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       try {
-        navigator.vibrate(12);
+        navigator.vibrate(8);
       } catch (e) {}
     }
   };
 
   return (
-    <header className={`shrink-0 sticky top-0 z-40 w-full max-w-md mx-auto transition-all duration-200 backdrop-blur-xl border-b shadow-xl ${
-      isDarkMode
-        ? 'bg-slate-900/95 border-slate-800/90 text-white shadow-black/40'
-        : 'bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 border-blue-500/40 text-white shadow-blue-900/20'
-    }`}>
-      <div className="max-w-md mx-auto px-3.5 py-2">
-        {/* Top Header Row */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Left Drawer Menu Trigger + Science GOAT Text */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <button
-              onClick={() => {
-                triggerHaptic();
-                onOpenDrawer();
-              }}
-              className="p-2 rounded-xl bg-gradient-to-b from-white/20 to-white/5 hover:from-white/30 hover:to-white/10 active:translate-y-0.5 active:shadow-inner text-white transition-all flex items-center justify-center shrink-0 border-t border-l border-white/30 border-b border-r border-black/30 shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
-              title="मुख्य मेनू"
-            >
-              <Menu className="w-5 h-5 text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
-            </button>
+    <header
+      id="app-header"
+      className={`sticky top-0 z-40 w-full transition-all duration-200 backdrop-blur-xl border-b select-none ${
+        isDarkMode
+          ? 'bg-[#0A0D18]/90 border-slate-800/80 text-white'
+          : 'bg-[#F6F8FD]/95 border-slate-200/80 text-slate-900'
+      }`}
+    >
+      <div className="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+        {/* Left: Clean Brand Identity with 3D Doodle Science GOAT Logo */}
+        <div
+          onClick={onOpenDrawer}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onOpenDrawer()}
+          className="cursor-pointer group active:scale-98 transition-transform select-none min-w-0"
+          title={language === 'hi' ? 'मेनू' : 'Menu'}
+        >
+          <ScienceGoatLogo
+            size="md"
+            showText={true}
+            showSubtitle={false}
+            badgeText="10th"
+          />
+        </div>
 
-            <ScienceGoatLogo size="md" showText={true} showImage={false} />
-          </div>
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Dark/Light Mode Quick Toggle Button */}
-            <button
-              onClick={() => {
-                triggerHaptic();
-                onToggleTheme();
-              }}
-              className="p-2 rounded-xl bg-gradient-to-b from-white/20 to-white/5 hover:from-white/30 hover:to-white/10 active:translate-y-0.5 active:shadow-inner text-white transition-all border-t border-l border-white/30 border-b border-r border-black/30 shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
-              title={isDarkMode ? 'लाइट मोड' : 'डार्क मोड'}
-            >
-              {isDarkMode ? (
-                <Sun className="w-4 h-4 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
-              ) : (
-                <Moon className="w-4 h-4 text-amber-300 fill-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
-              )}
-            </button>
-          </div>
+        {/* Right: Only Theme Toggle and Menu Button */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Theme Toggle Button */}
+          <button
+            id="header-theme-toggle-btn"
+            type="button"
+            onClick={() => {
+              triggerHaptic();
+              onToggleTheme();
+            }}
+            className={`p-2 rounded-xl border transition-all active:scale-90 flex items-center justify-center ${
+              isDarkMode
+                ? 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs'
+            }`}
+            title={isDarkMode ? (language === 'hi' ? 'लाइट मोड चालू करें' : 'Switch to Light Mode') : (language === 'hi' ? 'डार्क मोड चालू करें' : 'Switch to Dark Mode')}
+            aria-label="Theme toggle"
+          >
+            {isDarkMode ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-indigo-600 fill-indigo-600" />
+            )}
+          </button>
+
+          {/* Drawer Menu Button */}
+          <button
+            id="header-menu-btn"
+            type="button"
+            onClick={() => {
+              triggerHaptic();
+              onOpenDrawer();
+            }}
+            className={`p-2 rounded-xl border transition-all active:scale-90 flex items-center justify-center relative ${
+              isDarkMode
+                ? 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs'
+            }`}
+            title={language === 'hi' ? 'मेनू' : 'Menu'}
+            aria-label="मेनू"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>

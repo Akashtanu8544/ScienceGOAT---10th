@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Settings, X, Check, RotateCcw } from 'lucide-react';
+import { Calendar, Clock, Settings, X, Check, RotateCcw, Sparkles } from 'lucide-react';
 
 interface ExamCountdownCardProps {
   isDarkMode: boolean;
@@ -98,114 +98,121 @@ export const ExamCountdownCard: React.FC<ExamCountdownCardProps> = ({ isDarkMode
   return (
     <>
       <div
-        className={`p-4 rounded-3xl border shadow-lg backdrop-blur-2xl transition-all relative overflow-hidden ${
+        id="board-exam-countdown-card"
+        className={`p-4 rounded-3xl border shadow-sm transition-all relative overflow-hidden ${
           isDarkMode
-            ? 'bg-gradient-to-br from-slate-900/90 via-rose-950/30 to-slate-900/90 border-rose-500/30'
-            : 'bg-gradient-to-br from-rose-50/90 via-red-50/70 to-orange-50/80 border-rose-200/90 shadow-rose-500/5'
+            ? 'bg-slate-900/95 border-rose-500/25 text-white'
+            : 'bg-white border-rose-100 text-slate-900 shadow-rose-500/5'
         }`}
       >
-        {/* Background Decorative Glow */}
+        {/* Subtle Decorative Glows */}
         <div className="absolute -left-6 -top-6 w-24 h-24 bg-rose-500/10 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
 
         {/* Card Header */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
-              <Calendar className="w-4 h-4" />
+        <div className="flex items-center justify-between gap-2 mb-3 relative z-10">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-2xl bg-rose-500/15 border border-rose-400/30 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+              <Calendar className="w-4.5 h-4.5 stroke-[2.2]" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                  RBSE बोर्ड परीक्षा काउन्टडाउन
+                  बोर्ड परीक्षा लक्ष्य
+                </span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-400/25">
+                  RBSE 10th
                 </span>
               </div>
-              <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1">
-                <span>लक्ष्य तिथि: {formattedExamDateString}</span>
+              <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">
+                {formattedExamDateString}
               </h4>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={handleOpenModal}
-            className={`p-2 rounded-xl border transition-all active:scale-95 flex items-center gap-1 text-[11px] font-black shrink-0 ${
+            className={`px-2.5 py-1.5 rounded-xl border transition-all active:scale-95 flex items-center gap-1 text-[11px] font-black shrink-0 ${
               isDarkMode
                 ? 'bg-slate-800/90 hover:bg-slate-700 border-slate-700 text-rose-300'
-                : 'bg-white/90 hover:bg-white border-rose-200 text-rose-700 shadow-2xs'
+                : 'bg-rose-50/80 hover:bg-rose-100/80 border-rose-200 text-rose-700 shadow-2xs'
             }`}
           >
             <Settings className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">तिथि बदलें</span>
+            <span>तिथि बदलें</span>
           </button>
         </div>
 
         {/* Countdown Grid */}
         {timeLeft.isPast ? (
-          <div className="p-3 text-center rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-300 font-black text-xs">
-            🎉 बोर्ड परीक्षा का समय आ गया है या समाप्त हो चुका है! शुभकामनाएं!
+          <div className="p-3 text-center rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 font-black text-xs flex items-center justify-center gap-1.5 relative z-10">
+            <Sparkles className="w-4 h-4 text-rose-500" />
+            <span>बोर्ड परीक्षा का समय आ गया है! शुभकामनाएं!</span>
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="grid grid-cols-4 gap-2 text-center relative z-10">
             {/* Days */}
             <div
-              className={`p-2 rounded-2xl border flex flex-col items-center justify-center shadow-xs ${
+              className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                 isDarkMode
-                  ? 'bg-slate-900/90 border-rose-500/30 text-white'
-                  : 'bg-white/90 border-rose-200 text-slate-900'
+                  ? 'bg-slate-800/60 border-slate-800 text-white'
+                  : 'bg-slate-50 border-slate-200/80 text-slate-900'
               }`}
             >
-              <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+              <span className="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400 leading-none tabular-nums font-mono">
                 {timeLeft.days}
               </span>
-              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-1">
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-1">
                 दिन (Days)
               </span>
             </div>
 
             {/* Hours */}
             <div
-              className={`p-2 rounded-2xl border flex flex-col items-center justify-center shadow-xs ${
+              className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                 isDarkMode
-                  ? 'bg-slate-900/90 border-rose-500/30 text-white'
-                  : 'bg-white/90 border-rose-200 text-slate-900'
+                  ? 'bg-slate-800/60 border-slate-800 text-white'
+                  : 'bg-slate-50 border-slate-200/80 text-slate-900'
               }`}
             >
-              <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+              <span className="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400 leading-none tabular-nums font-mono">
                 {timeLeft.hours}
               </span>
-              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-1">
-                घंटे
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-1">
+                घंटे (Hrs)
               </span>
             </div>
 
             {/* Minutes */}
             <div
-              className={`p-2 rounded-2xl border flex flex-col items-center justify-center shadow-xs ${
+              className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                 isDarkMode
-                  ? 'bg-slate-900/90 border-rose-500/30 text-white'
-                  : 'bg-white/90 border-rose-200 text-slate-900'
+                  ? 'bg-slate-800/60 border-slate-800 text-white'
+                  : 'bg-slate-50 border-slate-200/80 text-slate-900'
               }`}
             >
-              <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+              <span className="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400 leading-none tabular-nums font-mono">
                 {timeLeft.minutes}
               </span>
-              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-1">
-                मिनट
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-1">
+                मिनट (Min)
               </span>
             </div>
 
             {/* Seconds */}
             <div
-              className={`p-2 rounded-2xl border flex flex-col items-center justify-center shadow-xs ${
+              className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                 isDarkMode
-                  ? 'bg-slate-900/90 border-rose-500/30 text-white'
-                  : 'bg-white/90 border-rose-200 text-slate-900'
+                  ? 'bg-slate-800/60 border-slate-800 text-white'
+                  : 'bg-slate-50 border-slate-200/80 text-slate-900'
               }`}
             >
-              <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none animate-pulse">
+              <span className="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400 leading-none tabular-nums font-mono animate-pulse">
                 {timeLeft.seconds}
               </span>
-              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-1">
-                सेकंड
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-1">
+                सेकंड (Sec)
               </span>
             </div>
           </div>

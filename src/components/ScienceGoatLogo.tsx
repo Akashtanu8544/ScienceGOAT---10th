@@ -5,8 +5,10 @@ interface ScienceGoatLogoProps {
   showText?: boolean;
   showSubtitle?: boolean;
   showImage?: boolean;
+  customSubtitle?: string;
   className?: string;
   variant?: 'full' | 'icon-only';
+  badgeText?: string;
 }
 
 export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
@@ -14,41 +16,44 @@ export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
   showText = true,
   showSubtitle = false,
   showImage = true,
+  customSubtitle,
   className = '',
   variant = 'full',
+  badgeText = '10th',
 }) => {
   const sizeMap = {
-    xs: { icon: 'w-6 h-6', text: 'text-xs', badge: 'text-[9px]', gap: 'gap-1.5' },
-    sm: { icon: 'w-8 h-8', text: 'text-sm', badge: 'text-[10px]', gap: 'gap-2' },
-    md: { icon: 'w-10 h-10', text: 'text-base', badge: 'text-xs', gap: 'gap-2.5' },
-    lg: { icon: 'w-16 h-16', text: 'text-2xl', badge: 'text-sm', gap: 'gap-3' },
-    xl: { icon: 'w-28 h-28 sm:w-36 sm:h-36', text: 'text-3xl sm:text-4xl', badge: 'text-base', gap: 'gap-4' },
+    xs: { icon: 'w-6 h-6', rounded: 'rounded-lg', text: 'text-xs', badge: 'text-[8px] px-1 py-0.2', gap: 'gap-1.5' },
+    sm: { icon: 'w-8 h-8', rounded: 'rounded-xl', text: 'text-sm', badge: 'text-[9px] px-1.5 py-0.5', gap: 'gap-2' },
+    md: { icon: 'w-10 h-10', rounded: 'rounded-2xl', text: 'text-sm sm:text-base', badge: 'text-[9px] px-1.5 py-0.5', gap: 'gap-2.5' },
+    lg: { icon: 'w-16 h-16', rounded: 'rounded-3xl', text: 'text-xl', badge: 'text-xs px-2 py-0.5', gap: 'gap-3' },
+    xl: { icon: 'w-24 h-24 sm:w-28 sm:h-28', rounded: 'rounded-3xl', text: 'text-2xl sm:text-3xl', badge: 'text-xs px-2.5 py-1', gap: 'gap-3.5' },
   }[size];
 
   if (variant === 'icon-only' && showImage) {
     return (
-      <img
-        src="/logo.svg"
-        alt="Science GOAT 10th Logo"
-        fetchPriority="high"
-        decoding="async"
-        className={`${sizeMap.icon} object-contain rounded-2xl shadow-sm ${className}`}
-      />
+      <div className={`relative ${sizeMap.icon} shrink-0 group ${className}`}>
+        <img
+          src="/logo.svg"
+          alt="Science GOAT 3D Doodle Mascot Logo"
+          fetchPriority="high"
+          decoding="async"
+          className={`w-full h-full object-contain ${sizeMap.rounded} drop-shadow-md transition-transform duration-200 group-hover:scale-105 active:scale-95`}
+        />
+      </div>
     );
   }
 
   return (
     <div className={`flex items-center ${sizeMap.gap} ${className}`}>
-      {/* Official Badge Image */}
+      {/* 3D Doodle Mascot App Logo */}
       {showImage && (
         <div className={`relative ${sizeMap.icon} shrink-0 group`}>
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 via-green-400 to-emerald-500 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-300" />
           <img
             src="/logo.svg"
-            alt="Science GOAT 10th Logo"
+            alt="Science GOAT 3D Doodle Mascot Logo"
             fetchPriority="high"
             decoding="async"
-            className="relative w-full h-full object-contain rounded-xl drop-shadow-sm select-none"
+            className={`w-full h-full object-contain ${sizeMap.rounded} drop-shadow-md select-none transition-transform duration-200 group-hover:scale-105 active:scale-95`}
           />
         </div>
       )}
@@ -56,17 +61,19 @@ export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
       {/* Typography */}
       {showText && (
         <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-1.5 leading-none">
-            <span className={`font-black tracking-tight ${sizeMap.text} bg-gradient-to-r from-amber-400 via-amber-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-sm truncate`}>
-              Science GOAT
+          <div className="flex items-center gap-1.5 leading-tight">
+            <span className={`font-black tracking-tight ${sizeMap.text} text-slate-900 dark:text-white truncate`}>
+              Science <span className="text-amber-500 dark:text-amber-400">GOAT</span>
             </span>
-            <span className={`px-1.5 py-0.5 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black ${sizeMap.badge} shadow-sm border border-green-300/40 tracking-wider shrink-0`}>
-              10th
-            </span>
+            {badgeText && (
+              <span className={`rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black ${sizeMap.badge} shadow-xs tracking-wider shrink-0`}>
+                {badgeText}
+              </span>
+            )}
           </div>
-          {showSubtitle && (
-            <span className="text-[10px] text-slate-300 dark:text-slate-400 font-bold tracking-wider uppercase mt-0.5">
-              RBSE Class 10th
+          {showSubtitle && customSubtitle && (
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider truncate mt-0.5">
+              {customSubtitle}
             </span>
           )}
         </div>
@@ -74,3 +81,4 @@ export const ScienceGoatLogo: React.FC<ScienceGoatLogoProps> = ({
     </div>
   );
 };
+

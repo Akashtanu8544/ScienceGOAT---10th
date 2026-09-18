@@ -9,45 +9,55 @@ export const IMPORTANT_QUESTIONS_DATA: ImportantQuestion[] = [
     chapterId: 1,
     type: 'EQUATION',
     question: 'निम्नलिखित रासायनिक समीकरणों को संतुलित कीजिए:\n1. Fe + H₂O → Fe₃O₄ + H₂\n2. HNO₃ + Ca(OH)₂ → Ca(NO₃)₂ + H₂O\n3. NaOH + H₂SO₄ → Na₂SO₄ + H₂O',
+    questionEnglish: 'Balance the following chemical equations:\n1. Fe + H₂O → Fe₃O₄ + H₂\n2. HNO₃ + Ca(OH)₂ → Ca(NO₃)₂ + H₂O\n3. NaOH + H₂SO₄ → Na₂SO₄ + H₂O',
     marks: 3,
     answer: 'संतुलित रासायनिक समीकरण:\n1. 3Fe + 4H₂O → Fe₃O₄ + 4H₂\n2. 2HNO₃ + Ca(OH)₂ → Ca(NO₃)₂ + 2H₂O\n3. 2NaOH + H₂SO₄ → Na₂SO₄ + 2H₂O',
-    repeatedYears: [2024, 2023, 2022, 2020]
+    answerEnglish: 'Balanced chemical equations:\n1. 3Fe + 4H₂O → Fe₃O₄ + 4H₂\n2. 2HNO₃ + Ca(OH)₂ → Ca(NO₃)₂ + 2H₂O\n3. 2NaOH + H₂SO₄ → Na₂SO₄ + 2H₂O',
+    repeatedYears: [2026, 2025, 2024, 2023, 2022]
   },
   {
     id: 'imp_1_2',
     chapterId: 1,
     type: 'SA',
     question: 'संयोजन (Combination) तथा वियोजन (Decomposition) अभिक्रिया किसे कहते हैं? प्रत्येक का एक-एक रासायनिक समीकरण लिखिए।',
+    questionEnglish: 'What are Combination and Decomposition reactions? Write one chemical equation for each.',
     marks: 3,
     answer: '1. संयोजन अभिक्रिया: वह अभिक्रिया जिसमें दो या दो से अधिक अभिकारक मिलकर एक एकल उत्पाद बनाते हैं।\n   उदाहरण: CaO (बिना बुझा चूना) + H₂O → Ca(OH)₂ (बुझा हुआ चूना) + ऊष्मा\n\n2. वियोजन अभिक्रिया: वह अभिक्रिया जिसमें एकल अभिकारक टूटकर दो या अधिक सरल उत्पाद बनाता है।\n   उदाहरण: CaCO₃ (कैल्शियम कार्बोनेट) + ऊष्मा → CaO + CO₂',
-    repeatedYears: [2024, 2023, 2021]
+    answerEnglish: '1. Combination Reaction: A reaction in which two or more reactants combine to form a single product.\n   Example: CaO + H₂O → Ca(OH)₂ + Heat\n\n2. Decomposition Reaction: A reaction in which a single reactant breaks down to yield two or more simpler products.\n   Example: CaCO₃ + Heat → CaO + CO₂',
+    repeatedYears: ['2026 मॉडल', 2024, 2023, 2021]
   },
   {
     id: 'imp_1_3',
     chapterId: 1,
     type: 'SA',
     question: 'विस्थापन (Displacement) एवं द्विविस्थापन (Double Displacement) अभिक्रिया में क्या अंतर है? समीकरणों द्वारा स्पष्ट कीजिए।',
+    questionEnglish: 'What is the difference between Displacement and Double Displacement reactions? Explain with equations.',
     marks: 3,
     answer: '1. विस्थापन अभिक्रिया: इसमें अधिक क्रियाशील तत्व कम क्रियाशील तत्व को उसके यौगिक से विस्थापित कर देता है।\n   उदाहरण: Fe (लोहा) + CuSO₄ (कॉपर सल्फेट) → FeSO₄ + Cu\n\n2. द्विविस्थापन अभिक्रिया: इसमें अभिकारकों के बीच आयनों का आदान-प्रदान होता है और प्रायः अवक्षेप बनता है।\n   उदाहरण: Na₂SO₄ + BaCl₂ → BaSO₄↓ (सफेद अवक्षेप) + 2NaCl',
-    repeatedYears: [2024, 2022, 2019]
+    answerEnglish: '1. Displacement Reaction: More reactive element displaces a less reactive element from its salt solution.\n   Example: Fe + CuSO₄ → FeSO₄ + Cu\n\n2. Double Displacement Reaction: Exchange of ions takes place between reactants, typically forming a precipitate.\n   Example: Na₂SO₄ + BaCl₂ → BaSO₄↓ (White ppt) + 2NaCl',
+    repeatedYears: [2025, 2024, 2022, 2019]
   },
   {
     id: 'imp_1_4',
     chapterId: 1,
     type: 'SA',
     question: 'रेडॉक्स (उपचयन-अपचयन) अभिक्रिया किसे कहते हैं? CuO + H₂ → Cu + H₂O अभिक्रिया में उपचयित तथा अपचयित पदार्थों की पहचान कीजिए।',
+    questionEnglish: 'What is a Redox reaction? Identify oxidized and reduced substances in: CuO + H₂ → Cu + H₂O.',
     marks: 3,
     answer: 'वह अभिक्रिया जिसमें एक अभिकारक का उपचयन (ऑक्सीजन का जुड़ना/H की कमी) और दूसरे अभिकारक का अपचयन (ऑक्सीजन की कमी/H का जुड़ना) साथ-साथ होता है, रेडॉक्स अभिक्रिया कहलाती है।\n\nदी गई अभिक्रिया: CuO + H₂ → Cu + H₂O\n• उपचयित पदार्थ (Oxidized): H₂ (यह H₂O में उपचयित हुआ)\n• अपचयित पदार्थ (Reduced): CuO (यह Cu में अपचयित हुआ)',
-    repeatedYears: [2024, 2023, 2021]
+    answerEnglish: 'A reaction where oxidation (gain of oxygen / loss of hydrogen) and reduction (loss of oxygen / gain of hydrogen) occur simultaneously is called a Redox reaction.\n\nIn: CuO + H₂ → Cu + H₂O\n• Oxidized substance: H₂ (oxidized to H₂O)\n• Reduced substance: CuO (reduced to Cu)',
+    repeatedYears: ['2026 मॉडल', 2024, 2023]
   },
   {
     id: 'imp_1_5',
     chapterId: 1,
     type: 'VSA',
     question: 'लोहे की वस्तुओं को हम पेंट क्यों करते हैं? विकृतगंधिता (Rancidity) से क्या तात्पर्य है?',
+    questionEnglish: 'Why do we paint iron articles? What is meant by rancidity?',
     marks: 2,
     answer: '1. पेंट करने का कारण: पेंट लोहे की सतह को वायु तथा नमी के प्रत्यक्ष संपर्क में आने से रोकता है, जिससे लोहे पर जंग (संक्षारण) नहीं लगता।\n2. विकृतगंधिता: वसायुक्त या तैलीय खाद्य पदार्थ वायु (ऑक्सीजन) के संपर्क में आकर उपचयित हो जाते हैं, जिससे उनका स्वाद व गंध बदल जाती है। इससे बचने के लिए पैकेजिंग में नाइट्रोजन गैस भरी जाती है।',
-    repeatedYears: [2024, 2022]
+    answerEnglish: '1. Why paint iron: Paint prevents contact of iron surface with air and moisture, preventing rusting (corrosion).\n2. Rancidity: Fats and oils get oxidized when exposed to air, altering taste and smell. Flushing with nitrogen gas prevents it.',
+    repeatedYears: [2026, 2024, 2022]
   },
 
   // ==========================================

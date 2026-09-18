@@ -1,6 +1,6 @@
 {
-  "name": "Science GOAT - 10th Science RBSE",
-  "short_name": "Science GOAT 10",
+  "name": "Science GOAT - RBSE Class 10 Science",
+  "short_name": "Science GOAT",
   "id": "com.sciencegoat.class10rbse",
   "start_url": "/",
   "scope": "/",
@@ -12,7 +12,7 @@
     "minimal-ui",
     "browser"
   ],
-  "orientation": "portrait",
+  "orientation": "any",
   "lang": "hi-IN",
   "dir": "ltr",
   "theme_color": "#4f46e5",

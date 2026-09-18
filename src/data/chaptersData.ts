@@ -8,10 +8,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Chemical Reactions and Equations',
     subject: 'chemistry',
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    unitEnglish: 'Unit 1: Chemical Substances - Nature and Behaviour',
     weightage: 6,
     icon3D: '🧪',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc101.pdf',
-    description: 'रासायनिक अभिक्रियाओं के प्रकार, संयोजन, वियोजन, विस्थापन, द्विविस्थापन, अपचयन-उपचयन (रेडॉक्स) तथा समीकरण संतुलित करना।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc101.pdf',
+    description: 'रासायनिक अभिक्रियाओं के प्रकार, संयोजन, वियोजन, विस्थापन, द्विविस्थापन, अपचयन-उपचयन (रेडॉक्स) तथा समीकरण संतुलित करना।',
+    descriptionEnglish: 'Types of chemical reactions, combination, decomposition, displacement, double displacement, redox reactions, and balancing equations.',
+    estimatedReadingMinutes: 16
   },
   {
     id: 2,
@@ -20,10 +24,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Acids, Bases and Salts',
     subject: 'chemistry',
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    unitEnglish: 'Unit 1: Chemical Substances - Nature and Behaviour',
     weightage: 7,
     icon3D: '🧫',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc102.pdf',
-    description: 'pH पैमाना, सूचक, अम्ल-क्षारक के रासायनिक गुण, साधारण नमक, प्लास्टर ऑफ पेरिस, बेकिंग सोडा व धावन सोडा।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc102.pdf',
+    description: 'pH पैमाना, सूचक, अम्ल-क्षारक के रासायनिक गुण, साधारण नमक, प्लास्टर ऑफ पेरिस, बेकिंग सोडा व धावन सोडा।',
+    descriptionEnglish: 'pH scale, indicators, chemical properties of acids and bases, common salt, Plaster of Paris, baking soda, and washing soda.',
+    estimatedReadingMinutes: 18
   },
   {
     id: 3,
@@ -32,10 +40,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Metals and Non-metals',
     subject: 'chemistry',
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    unitEnglish: 'Unit 1: Chemical Substances - Nature and Behaviour',
     weightage: 5,
     icon3D: '⚒️',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc103.pdf',
-    description: 'धातुओं व अधातुओं के भौतिक व रासायनिक गुणधर्म, आयनिक यौगिक, भर्जन व निस्तापन, संक्षारण एवं मिश्रधातु।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc103.pdf',
+    description: 'धातुओं व अधातुओं के भौतिक व रासायनिक गुणधर्म, आयनिक यौगिक, भर्जन व निस्तापन, संक्षारण एवं मिश्रधातु।',
+    descriptionEnglish: 'Physical and chemical properties of metals and non-metals, ionic compounds, roasting and calcination, corrosion and alloys.',
+    estimatedReadingMinutes: 15
   },
   {
     id: 4,
@@ -44,10 +56,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Carbon and its Compounds',
     subject: 'chemistry',
     unit: 'इकाई 1: रासायनिक पदार्थ - प्रकृति एवं व्यवहार',
+    unitEnglish: 'Unit 1: Chemical Substances - Nature and Behaviour',
     weightage: 7,
     icon3D: '💎',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc104.pdf',
-    description: 'सहसंयोजी आबंध, संतृप्त व असंतृप्त हाइड्रोकार्बन, सजातीय श्रेणी, इथेनॉल व एथनोइक अम्ल, साबुन एवं अपमार्जक।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc104.pdf',
+    description: 'सहसंयोजी आबंध, संतृप्त व असंतृप्त हाइड्रोकार्बन, सजातीय श्रेणी, इथेनॉल व एथनोइक अम्ल, साबुन एवं अपमार्जक।',
+    descriptionEnglish: 'Covalent bonding, saturated and unsaturated hydrocarbons, homologous series, ethanol, ethanoic acid, soap and detergents.',
+    estimatedReadingMinutes: 20
   },
   {
     id: 5,
@@ -56,10 +72,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Life Processes',
     subject: 'biology',
     unit: 'इकाई 2: सजीव जगत',
+    unitEnglish: 'Unit 2: World of Living',
     weightage: 8,
     icon3D: '🫀',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc105.pdf',
-    description: 'पोषण (स्वपोषी व विषमपोषी), श्वसन तंत्र, मानव हृदय एवं परिसंचरण तंत्र, मानव उत्सर्जन तंत्र व वृक्काणु (नेफ्रॉन)।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc105.pdf',
+    description: 'पोषण (स्वपोषी व विषमपोषी), श्वसन तंत्र, मानव हृदय एवं परिसंचरण तंत्र, मानव उत्सर्जन तंत्र व वृक्काणु (नेफ्रॉन)।',
+    descriptionEnglish: 'Nutrition (autotrophic & heterotrophic), respiration, human heart & circulatory system, excretory system and structure of nephron.',
+    estimatedReadingMinutes: 22
   },
   {
     id: 6,
@@ -68,10 +88,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Control and Coordination',
     subject: 'biology',
     unit: 'इकाई 2: सजीव जगत',
+    unitEnglish: 'Unit 2: World of Living',
     weightage: 6,
     icon3D: '🧠',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc106.pdf',
-    description: 'तंत्रिका तंत्र, न्यूरॉन की संरचना, प्रतिवर्ती चाप, मानव मस्तिष्क, पादप हार्मोन व मानव अंतःस्रावी ग्रंथियां।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc106.pdf',
+    description: 'तंत्रिका तंत्र, न्यूरॉन की संरचना, प्रतिवर्ती चाप, मानव मस्तिष्क, पादप हार्मोन व मानव अंतःस्रावी ग्रंथियां।',
+    descriptionEnglish: 'Nervous system, structure of neuron, reflex arc, human brain, plant hormones, and endocrine glands in humans.',
+    estimatedReadingMinutes: 16
   },
   {
     id: 7,
@@ -80,10 +104,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'How do Organisms Reproduce?',
     subject: 'biology',
     unit: 'इकाई 2: सजीव जगत',
+    unitEnglish: 'Unit 2: World of Living',
     weightage: 7,
     icon3D: '🌱',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc107.pdf',
-    description: 'अलैंगिक जनन (मुकुलन, विखंडन, पुनरुद्भवन), पुष्पी पौधों में लैंगिक जनन, मानव जनन तंत्र व यौन स्वास्थ्य।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc107.pdf',
+    description: 'अलैंगिक जनन (मुकुलन, विखंडन, पुनरुद्भवन), पुष्पी पौधों में लैंगिक जनन, मानव जनन तंत्र व यौन स्वास्थ्य।',
+    descriptionEnglish: 'Asexual reproduction (budding, fission, regeneration), sexual reproduction in flowering plants, human reproductive system and reproductive health.',
+    estimatedReadingMinutes: 18
   },
   {
     id: 8,
@@ -92,10 +120,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Heredity',
     subject: 'biology',
     unit: 'इकाई 2: सजीव जगत',
+    unitEnglish: 'Unit 2: World of Living',
     weightage: 4,
     icon3D: '🧬',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc108.pdf',
-    description: 'मेंडेल के आनुवंशिकता के नियम (एकसंकर व द्विसंकर संकरण), लिंग निर्धारण एवं आनुवंशिक लक्षण।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc108.pdf',
+    description: 'मेंडेल के आनुवंशिकता के नियम (एकसंकर व द्विसंकर संकरण), लिंग निर्धारण एवं आनुवंशिक लक्षण।',
+    descriptionEnglish: "Mendel's laws of inheritance (monohybrid and dihybrid cross), sex determination in humans, and inherited traits.",
+    estimatedReadingMinutes: 12
   },
   {
     id: 9,
@@ -104,10 +136,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Light - Reflection and Refraction',
     subject: 'physics',
     unit: 'इकाई 3: प्राकृतिक घटनाएं',
+    unitEnglish: 'Unit 3: Natural Phenomena',
     weightage: 8,
     icon3D: '🔦',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc109.pdf',
-    description: 'दर्पण सूत्र, आवर्धन, स्नेल का नियम, लेंस सूत्र, उत्तल व अवतल दर्पण/लेंस द्वारा प्रतिबिंब निर्माण।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc109.pdf',
+    description: 'दर्पण सूत्र, आवर्धन, स्नेल का नियम, लेंस सूत्र, उत्तल व अवतल दर्पण/लेंस द्वारा प्रतिबिंब निर्माण।',
+    descriptionEnglish: 'Mirror formula, magnification, Snell’s law, lens formula, image formation by concave/convex mirrors and spherical lenses.',
+    estimatedReadingMinutes: 20
   },
   {
     id: 10,
@@ -116,10 +152,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Human Eye and Colourful World',
     subject: 'physics',
     unit: 'इकाई 3: प्राकृतिक घटनाएं',
+    unitEnglish: 'Unit 3: Natural Phenomena',
     weightage: 4,
     icon3D: '👁️',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc110.pdf',
-    description: 'मानव नेत्र की संरचना, दृष्टि दोष (निकट व दूर दृष्टि दोष) एवं उनका निवारण, प्रिज्म से प्रकाश का विक्षेपण, इंद्रधनुष।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc110.pdf',
+    description: 'मानव नेत्र की संरचना, दृष्टि दोष (निकट व दूर दृष्टि दोष) एवं उनका निवारण, प्रिज्म से प्रकाश का विक्षेपण, इंद्रधनुष।',
+    descriptionEnglish: 'Structure of the human eye, defects of vision (myopia, hypermetropia, presbyopia) and corrections, refraction through prism, dispersion and rainbow.',
+    estimatedReadingMinutes: 14
   },
   {
     id: 11,
@@ -128,10 +168,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Electricity',
     subject: 'physics',
     unit: 'इकाई 4: विद्युत धारा का प्रभाव',
+    unitEnglish: 'Unit 4: Effects of Current',
     weightage: 7,
     icon3D: '⚡',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc111.pdf',
-    description: 'ओम का नियम (V=IR), प्रतिरोधकों का श्रेणीक्रम व पार्श्वक्रम संयोजन, जूल का तापीय नियम, विद्युत शक्ति (P=VI)।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc111.pdf',
+    description: 'ओम का नियम (V=IR), प्रतिरोधकों का श्रेणीक्रम व पार्श्वक्रम संयोजन, जूल का तापीय नियम, विद्युत शक्ति (P=VI)।',
+    descriptionEnglish: "Ohm's law (V=IR), series and parallel combination of resistors, Joule's law of heating, electric power and energy calculations.",
+    estimatedReadingMinutes: 18
   },
   {
     id: 12,
@@ -140,10 +184,14 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Magnetic Effects of Electric Current',
     subject: 'physics',
     unit: 'इकाई 4: विद्युत धारा का प्रभाव',
+    unitEnglish: 'Unit 4: Effects of Current',
     weightage: 6,
     icon3D: '🧲',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc112.pdf',
-    description: 'चुंबकीय क्षेत्र रेखाएं, दक्षिण-हस्त अंगुष्ठ नियम, परिनालिका, फ्लेमिंग का वामहस्त नियम, घरेलू विद्युत परिपथ।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc112.pdf',
+    description: 'चुंबकीय क्षेत्र रेखाएं, दक्षिण-हस्त अंगुष्ठ नियम, परिनालिका, फ्लेमिंग का वामहस्त नियम, घरेलू विद्युत परिपथ।',
+    descriptionEnglish: "Magnetic field lines, right-hand thumb rule, magnetic field in solenoid, Fleming's left-hand rule, domestic electric circuits.",
+    estimatedReadingMinutes: 16
   },
   {
     id: 13,
@@ -152,9 +200,13 @@ export const CHAPTERS_DATA: Chapter[] = [
     titleEnglish: 'Our Environment',
     subject: 'biology',
     unit: 'इकाई 5: प्राकृतिक संसाधन',
+    unitEnglish: 'Unit 5: Natural Resources',
     weightage: 5,
     icon3D: '🌍',
     pdfUrl: 'https://ncert.nic.in/textbook/pdf/jhsc113.pdf',
-    description: 'पारितंत्र के घटक, आहार श्रृंखला एवं जाल, 10% ऊर्जा प्रवाह का नियम, ओजोन परत का अपक्षय व कचरा प्रबंधन।'
+    pdfUrlEn: 'https://ncert.nic.in/textbook/pdf/jesc113.pdf',
+    description: 'पारितंत्र के घटक, आहार श्रृंखला एवं जाल, 10% ऊर्जा प्रवाह का नियम, ओजोन परत का अपक्षय व कचरा प्रबंधन।',
+    descriptionEnglish: 'Components of ecosystem, food chain and food web, 10 percent energy flow law, ozone layer depletion, and waste management.',
+    estimatedReadingMinutes: 12
   }
 ];

@@ -134,7 +134,7 @@ export class StorageService {
     return p;
   }
 
-  static logReadingTime(chapterKey: number | string, secondsSpent: number): UserProgress {
+  static logReadingTime(chapterKey: number | string, secondsSpent: number, chapterTitle?: string): UserProgress {
     if (secondsSpent <= 0) return this.getProgress();
     const p = this.getProgress();
     if (!p.chapterReadingTime || typeof p.chapterReadingTime !== 'object') {
@@ -143,6 +143,30 @@ export class StorageService {
     const current = p.chapterReadingTime[chapterKey] || 0;
     p.chapterReadingTime[chapterKey] = current + secondsSpent;
     p.totalReadingTimeSeconds = (p.totalReadingTimeSeconds || 0) + secondsSpent;
+
+    // Track daily reading time
+    const today = new Date().toISOString().split('T')[0];
+    if (!p.dailyReadingTime || typeof p.dailyReadingTime !== 'object') {
+      p.dailyReadingTime = {};
+    }
+    p.dailyReadingTime[today] = (p.dailyReadingTime[today] || 0) + secondsSpent;
+
+    // Log session history
+    if (!Array.isArray(p.sessionHistory)) {
+      p.sessionHistory = [];
+    }
+    const numericChapterId = typeof chapterKey === 'number' ? chapterKey : parseInt(String(chapterKey).replace(/\D/g, ''), 10) || 1;
+    p.sessionHistory.unshift({
+      timestamp: Date.now(),
+      date: today,
+      chapterId: numericChapterId,
+      chapterTitle: chapterTitle || `अध्याय ${numericChapterId}`,
+      seconds: secondsSpent,
+    });
+    // Keep last 30 sessions
+    if (p.sessionHistory.length > 30) {
+      p.sessionHistory = p.sessionHistory.slice(0, 30);
+    }
 
     // Bonus points for reading time (1 point per minute)
     const earnedPoints = Math.floor(secondsSpent / 60);

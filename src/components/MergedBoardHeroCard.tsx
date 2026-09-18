@@ -9,8 +9,12 @@ import {
   X,
   Check,
   RotateCcw,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
 } from 'lucide-react';
 import { DAILY_TIPS_DATA, DailyTip } from '../data/dailyTipsData';
+import { CHAPTERS_DATA } from '../data/chaptersData';
 
 interface MergedBoardHeroCardProps {
   isDarkMode: boolean;
@@ -24,6 +28,8 @@ const DEFAULT_EXAM_DATE = '2027-03-22T09:00:00';
 
 export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
   isDarkMode,
+  completedChaptersCount = 0,
+  onSelectOption,
 }) => {
   // --- Daily Tip State ---
   const [currentTip, setCurrentTip] = useState<DailyTip>(DAILY_TIPS_DATA[0]);
@@ -75,7 +81,7 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
         JSON.stringify({ tipIndex: nextIdx, lastFetchedDate: todayStr })
       );
       setIsRefreshingTip(false);
-    }, 300);
+    }, 250);
   };
 
   // --- Exam Countdown State ---
@@ -144,35 +150,146 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
     year: 'numeric',
   });
 
+  const totalChapters = CHAPTERS_DATA.length;
+  const progressPercent = Math.min(100, Math.round((completedChaptersCount / totalChapters) * 100));
+
+  // Subject breakdown
+  const chemTotal = CHAPTERS_DATA.filter((c) => c.subject === 'chemistry').length;
+  const bioTotal = CHAPTERS_DATA.filter((c) => c.subject === 'biology').length;
+  const physTotal = CHAPTERS_DATA.filter((c) => c.subject === 'physics').length;
+
   return (
-    <>
-      {/* Clean Combined Hero Card */}
+    <div className="space-y-3.5">
+      {/* 1. DUAL METRIC SUMMARY CARDS (Directly matching Screen 1 in reference image) */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Left Card: Courses / कुल अध्याय */}
+        <div
+          onClick={() => onSelectOption && onSelectOption('Book')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onSelectOption && onSelectOption('Book')}
+          className={`p-3.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 flex items-center gap-3 ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          {/* Soft Purple Rounded Icon Container */}
+          <div className="w-11 h-11 rounded-2xl bg-indigo-500/15 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <BookOpen className="w-5 h-5 stroke-[2.4]" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums leading-none">
+              {totalChapters}
+            </div>
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">
+              कुल अध्याय (Courses)
+            </div>
+          </div>
+        </div>
+
+        {/* Right Card: Completed / पूर्ण अध्याय */}
+        <div
+          onClick={() => onSelectOption && onSelectOption('PROGRESS')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onSelectOption && onSelectOption('PROGRESS')}
+          className={`p-3.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 flex items-center gap-3 ${
+            isDarkMode ? 'card-3d-dark' : 'card-3d-light'
+          }`}
+        >
+          {/* Soft Teal Rounded Icon Container */}
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <CheckCircle2 className="w-5 h-5 stroke-[2.4]" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums leading-none">
+              {completedChaptersCount}
+            </div>
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">
+              पूर्ण (Completed)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. SEGMENTED MULTI-COLOR LEARNING PROGRESS BAR (Matching Screen 1) */}
       <div
-        className={`relative rounded-3xl p-4 sm:p-5 border shadow-2xl backdrop-blur-2xl transition-all overflow-hidden space-y-3.5 ${
-          isDarkMode
-            ? 'card-3d-dark text-white'
-            : 'card-3d-light text-slate-900'
+        className={`p-4 rounded-3xl border transition-all space-y-2.5 ${
+          isDarkMode ? 'card-3d-dark' : 'card-3d-light'
         }`}
       >
-        {/* Glow Effects */}
-        <div className="absolute -right-10 -top-10 w-36 h-36 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -left-10 -bottom-10 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-xs font-black text-slate-900 dark:text-white tracking-tight">
+              अध्ययन प्रगति (Learning progress)
+            </h3>
+          </div>
+          <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 tabular-nums">
+            {progressPercent}%
+          </span>
+        </div>
 
-        {/* 1. COUNTDOWN TIMER SECTION */}
+        {/* Multi-Colored Segmented Pill Bar */}
+        <div className="w-full bg-slate-100 dark:bg-slate-800/80 rounded-full h-3.5 p-0.5 overflow-hidden flex gap-1 border border-slate-200/80 dark:border-slate-700/80">
+          {/* Chemistry (Sky Blue) */}
+          <div
+            className="h-full bg-gradient-to-r from-sky-400 to-cyan-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(8, (completedChaptersCount > 0 ? (chemTotal / totalChapters) * 100 : 30))}%` }}
+            title="रसायन विज्ञान"
+          />
+          {/* Biology (Emerald Green) */}
+          <div
+            className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(8, (completedChaptersCount > 0 ? (bioTotal / totalChapters) * 100 : 38))}%` }}
+            title="जीव विज्ञान"
+          />
+          {/* Physics (Violet) */}
+          <div
+            className="h-full bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(8, (completedChaptersCount > 0 ? (physTotal / totalChapters) * 100 : 32))}%` }}
+            title="भौतिक विज्ञान"
+          />
+        </div>
+
+        {/* Subject Segment Legend */}
+        <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 pt-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-sky-500" />
+            <span>रसायन ({chemTotal})</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>जीव ({bioTotal})</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-purple-500" />
+            <span>भौतिक ({physTotal})</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. EXAM COUNTDOWN & DAILY TIP */}
+      <div
+        id="hero-countdown-card"
+        className={`relative rounded-3xl p-4 sm:p-5 border transition-all overflow-hidden space-y-3.5 ${
+          isDarkMode ? 'card-3d-dark text-white' : 'card-3d-light text-slate-900'
+        }`}
+      >
+        {/* Countdown Timer Header */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 drop-shadow-[0_2px_4px_rgba(244,63,94,0.4)]" />
-              <span className="text-xs font-black text-slate-800 dark:text-slate-200">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Calendar className="w-4 h-4 text-rose-500 shrink-0" />
+              <span className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">
                 बोर्ड परीक्षा लक्ष्य: {formattedExamDateString}
               </span>
             </div>
             <button
+              type="button"
               onClick={handleOpenModal}
-              className={`p-1 px-2.5 rounded-xl border text-[10px] font-black flex items-center gap-1 transition-all active:translate-y-0.5 shrink-0 ${
+              className={`px-2.5 py-1 rounded-full border text-[10px] font-black flex items-center gap-1 transition-all active:scale-95 shrink-0 ${
                 isDarkMode
-                  ? 'bg-gradient-to-b from-slate-800 to-slate-900 border-t border-l border-slate-700 border-b border-r border-slate-950 text-indigo-300 shadow-md'
-                  : 'bg-gradient-to-b from-white to-slate-100 border-t border-l border-white border-b border-r border-slate-300 text-indigo-700 shadow-sm'
+                  ? 'bg-slate-900 border-slate-700 text-indigo-300 hover:bg-slate-800'
+                  : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
               }`}
             >
               <Settings className="w-3 h-3" />
@@ -181,67 +298,60 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
           </div>
 
           {timeLeft.isPast ? (
-            <div className="p-2.5 text-center rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-300 font-black text-xs">
-              🎉 परीक्षा का समय आ गया है! शुभकामनाएं!
+            <div className="p-2.5 text-center rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 font-black text-xs flex items-center justify-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>परीक्षा का समय आ गया है! शुभकामनाएं!</span>
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-2 text-center">
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
-                  isDarkMode
-                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                  isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 tabular-nums leading-none">
                   {timeLeft.days}
                 </span>
-                <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                   दिन (Days)
                 </span>
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
-                  isDarkMode
-                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                  isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 tabular-nums leading-none">
                   {timeLeft.hours}
                 </span>
-                <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                   घंटे
                 </span>
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
-                  isDarkMode
-                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                  isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none">
+                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 tabular-nums leading-none">
                   {timeLeft.minutes}
                 </span>
-                <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                   मिनट
                 </span>
               </div>
 
               <div
-                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-transform hover:scale-105 ${
-                  isDarkMode
-                    ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-                    : 'bg-white/95 border-indigo-200 shadow-[0_4px_8px_rgba(37,99,235,0.1)]'
+                className={`p-2 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                  isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 leading-none animate-pulse">
+                <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 tabular-nums leading-none animate-pulse">
                   {timeLeft.seconds}
                 </span>
-                <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                   सेकंड
                 </span>
               </div>
@@ -249,36 +359,35 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
           )}
         </div>
 
-        {/* 2. DAILY SCIENCE TIP / MOTIVATION CARD */}
+        {/* Daily Science Motivation / Tip Card */}
         <div
-          className={`p-3 rounded-2xl border backdrop-blur-xl transition-all space-y-1 ${
-            isDarkMode
-              ? 'bg-slate-950/80 border-indigo-500/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-              : 'bg-white/95 border-indigo-200 shadow-[0_4px_10px_rgba(15,23,42,0.06)]'
+          className={`p-3 rounded-2xl border transition-all space-y-1 ${
+            isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-indigo-50/50 border-indigo-100'
           }`}
         >
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 icon-container-3d">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="w-5.5 h-5.5 rounded-lg bg-indigo-500/15 border border-indigo-400/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
                 {currentTip.category === 'quote' ? (
                   <Quote className="w-3 h-3" />
                 ) : (
                   <Lightbulb className="w-3 h-3" />
                 )}
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1 truncate">
                 <span>{currentTip.authorOrTopic || 'दैनिक विज्ञान मंत्र'}</span>
-                <Sparkles className="w-2.5 h-2.5 text-amber-500 animate-pulse" />
+                <Sparkles className="w-2.5 h-2.5 text-amber-500 animate-pulse shrink-0" />
               </span>
             </div>
 
             <button
+              type="button"
               onClick={handleManualRefreshTip}
               title="नया विचार देखें"
-              className={`p-1 rounded-lg border transition-all active:translate-y-0.5 shrink-0 ${
+              className={`p-1 rounded-lg border transition-all active:scale-95 shrink-0 ${
                 isDarkMode
                   ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-indigo-300'
-                  : 'bg-slate-50 hover:bg-white border-indigo-200 text-indigo-600'
+                  : 'bg-white hover:bg-slate-100 border-slate-200 text-indigo-600'
               }`}
             >
               <RefreshCw className={`w-3 h-3 ${isRefreshingTip ? 'animate-spin' : ''}`} />
@@ -299,17 +408,16 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
           <div
             className={`w-full max-w-md p-5 rounded-3xl border shadow-2xl relative space-y-4 ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-700 text-white'
-                : 'bg-white border-slate-200 text-slate-900'
+              isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
             }`}
           >
             <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-sm font-black flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-rose-500" />
-                <span>परीक्षा तिथि सेट करें (Configure Exam Date)</span>
+                <span>परीक्षा तिथि सेट करें</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500"
               >
@@ -317,78 +425,78 @@ export const MergedBoardHeroCard: React.FC<MergedBoardHeroCardProps> = ({
               </button>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                त्वरित विकल्प (Presets):
-              </label>
-              <div className="flex flex-col gap-1.5">
-                {presets.map((p) => (
-                  <button
-                    key={p.date}
-                    onClick={() => handleSaveDate(p.date)}
-                    className={`py-2 px-3 rounded-xl border text-xs font-black text-left transition-all hover:border-rose-500 ${
-                      examDate === p.date
-                        ? 'bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400'
-                        : isDarkMode
-                        ? 'bg-slate-800/80 border-slate-700 text-slate-300'
-                        : 'bg-slate-100 border-slate-200 text-slate-800'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                  अपनी परीक्षा तिथि और समय चुनें:
+                </label>
+                <input
+                  type="datetime-local"
+                  value={tempDateInput}
+                  onChange={(e) => setTempDateInput(e.target.value)}
+                  className={`w-full p-2.5 text-xs rounded-xl font-bold border transition-all ${
+                    isDarkMode
+                      ? 'bg-slate-800 border-slate-700 text-white focus:border-amber-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-indigo-600'
+                  }`}
+                />
+              </div>
+
+              <div>
+                <span className="block text-[11px] font-bold text-slate-500 mb-1.5">
+                  त्वरित प्रीसेट (Quick Presets):
+                </span>
+                <div className="space-y-1.5">
+                  {presets.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setTempDateInput(p.date.slice(0, 16))}
+                      className={`w-full text-left p-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                        isDarkMode
+                          ? 'bg-slate-800/50 hover:bg-slate-800 border-slate-700 text-slate-200'
+                          : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                      }`}
+                    >
+                      <span>{p.label}</span>
+                      <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                कस्टम तिथि एवं समय चुनें:
-              </label>
-              <input
-                type="datetime-local"
-                value={tempDateInput}
-                onChange={(e) => setTempDateInput(e.target.value)}
-                className={`w-full p-2.5 rounded-xl border font-bold text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 ${
-                  isDarkMode
-                    ? 'bg-slate-800 border-slate-700 text-white'
-                    : 'bg-slate-100 border-slate-200 text-slate-900'
-                }`}
-              />
-            </div>
-
-            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
               <button
-                onClick={() => handleSaveDate(DEFAULT_EXAM_DATE)}
-                className="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                type="button"
+                onClick={() => {
+                  handleSaveDate(DEFAULT_EXAM_DATE);
+                }}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border flex items-center gap-1 ${
+                  isDarkMode
+                    ? 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                    : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                }`}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>रीसेट करें</span>
+                <span>डिफ़ॉल्ट</span>
               </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                >
-                  रद्द करें
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (tempDateInput) {
-                      handleSaveDate(new Date(tempDateInput).toISOString());
-                    }
-                  }}
-                  className="px-4 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black text-xs flex items-center gap-1 shadow-md shadow-rose-500/20"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>सेव करें</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (tempDateInput) {
+                    handleSaveDate(`${tempDateInput}:00`);
+                  }
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md hover:from-amber-600 hover:to-amber-700 flex items-center gap-1"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>सहेजें</span>
+              </button>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };

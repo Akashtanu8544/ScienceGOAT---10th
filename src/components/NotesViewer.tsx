@@ -24,7 +24,13 @@ import {
   Circle,
   Lightbulb,
   Zap,
-  HelpCircle
+  HelpCircle,
+  Clock,
+  Timer,
+  FlaskConical,
+  Dna,
+  Calculator,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface NotesViewerProps {
@@ -33,6 +39,7 @@ interface NotesViewerProps {
   initialChapterId?: number;
   onBack: () => void;
   onProgressUpdate: () => void;
+  onOpenQuizTab?: (chapterId?: number) => void;
   isDarkMode: boolean;
 }
 
@@ -48,6 +55,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
   initialChapterId,
   onBack,
   onProgressUpdate,
+  onOpenQuizTab,
   isDarkMode,
 }) => {
   const [subjectFilter, setSubjectFilter] = useState<'chemistry' | 'biology' | 'physics'>('chemistry');
@@ -65,10 +73,46 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
   // Search within current active chapter notes
   const [chapterSearchQuery, setChapterSearchQuery] = useState('');
 
+  // Active reading session seconds counter
+  const [sessionSeconds, setSessionSeconds] = useState(0);
+
   // Chapter completion status state
   const [completedChapters, setCompletedChapters] = useState<number[]>(() => {
     return StorageService.getProgress().completedChapters || [];
   });
+
+  // Track session reading timer for active chapter
+  useEffect(() => {
+    if (!selectedChapterId) {
+      setSessionSeconds(0);
+      return;
+    }
+
+    setSessionSeconds(0);
+    const activeCh = chapters.find((c) => c.id === selectedChapterId);
+    const title = activeCh?.titleHindi || `अध्याय ${selectedChapterId}`;
+
+    let accumulatedSeconds = 0;
+    const interval = setInterval(() => {
+      setSessionSeconds((prev) => prev + 1);
+      accumulatedSeconds += 1;
+
+      // Log progress every 30 seconds
+      if (accumulatedSeconds % 30 === 0) {
+        StorageService.logReadingTime(selectedChapterId, 30, title);
+        onProgressUpdate();
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      const remainingSeconds = accumulatedSeconds % 30;
+      if (remainingSeconds > 0) {
+        StorageService.logReadingTime(selectedChapterId, remainingSeconds, title);
+        onProgressUpdate();
+      }
+    };
+  }, [selectedChapterId]);
 
   // Handle initial chapter selection if passed or updated
   useEffect(() => {
@@ -78,6 +122,8 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
       if (ch) {
         setSubjectFilter(ch.subject);
       }
+    } else {
+      setSelectedChapterId(null);
     }
   }, [initialChapterId, chapters]);
 
@@ -130,7 +176,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
     const isCompleted = completedChapters.includes(activeChapter.id);
 
     return (
-      <div className="space-y-3.5 animate-fadeIn pb-6">
+      <div className="space-y-3.5 animate-fadeIn pb-6 bg-grid-science p-1 rounded-3xl">
         {/* Top Sticky Header Controls Bar */}
         <div
           className={`sticky top-0 z-20 flex items-center justify-between p-3 rounded-2xl border shadow-md backdrop-blur-xl gap-2 ${
@@ -150,12 +196,9 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
             <span className="hidden sm:inline">सूची</span>
           </button>
 
-          <div className="min-w-0 flex-1 text-center">
-            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider block">
-              अध्याय {activeChapter.chapterNumber} • {activeChapter.weightage} अंक
-            </span>
+          <div className="min-w-0 flex-1 text-center px-2">
             <h2
-              className={`text-xs sm:text-sm font-black truncate ${
+              className={`text-xs sm:text-sm font-black leading-snug break-words ${
                 isDarkMode ? 'text-white' : 'text-slate-900'
               }`}
             >
@@ -210,18 +253,24 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
           }`}
         >
           <div className="flex items-start gap-3.5">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-3xl flex items-center justify-center shrink-0 shadow-inner">
-              {activeChapter.icon3D || '📝'}
+            <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0 shadow-inner">
+              {activeChapter.subject === 'chemistry' ? (
+                <FlaskConical className="w-7 h-7 text-sky-500 stroke-[2.2]" />
+              ) : activeChapter.subject === 'biology' ? (
+                <Dna className="w-7 h-7 text-emerald-500 stroke-[2.2]" />
+              ) : (
+                <Zap className="w-7 h-7 text-purple-500 stroke-[2.2]" />
+              )}
             </div>
 
             <div className="flex-1 min-w-0">
-              <h1 className={`text-base sm:text-lg font-black leading-tight ${
+              <h1 className={`text-base sm:text-lg font-black leading-snug break-words ${
                 isDarkMode ? 'text-white' : 'text-slate-900'
               }`}>
-                अध्याय {activeChapter.chapterNumber}: {activeChapter.titleHindi}
+                {activeChapter.titleHindi}
               </h1>
 
-              <p className="text-xs text-indigo-500 dark:text-indigo-400 font-bold mt-0.5">
+              <p className="text-xs text-indigo-500 dark:text-indigo-400 font-bold mt-1">
                 {activeChapter.titleEnglish}
               </p>
             </div>
@@ -231,26 +280,29 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
         {/* Navigation Quick Jump Filter Sub-Tabs */}
         <div className="grid grid-cols-4 gap-1.5 p-1 rounded-2xl border bg-slate-200/50 dark:bg-slate-900/60 border-slate-300/60 dark:border-slate-800 text-xs font-black">
           {[
-            { id: 'all', label: 'सभी', icon: '📚' },
-            { id: 'summary', label: 'सारांश', icon: '📌' },
-            { id: 'keyPoints', label: 'मुख्य बिंदु', icon: '✨' },
-            { id: 'formulas', label: 'सूत्र', icon: '🧮' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`py-2 px-1 rounded-xl transition-all flex items-center justify-center gap-1 active:scale-95 ${
-                activeTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : isDarkMode
-                  ? 'text-slate-300 hover:bg-slate-800/80'
-                  : 'text-slate-700 hover:bg-white/80'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span className="truncate">{tab.label}</span>
-            </button>
-          ))}
+            { id: 'all', label: 'सभी', icon: BookOpen },
+            { id: 'summary', label: 'सारांश', icon: Bookmark },
+            { id: 'keyPoints', label: 'मुख्य बिंदु', icon: Sparkles },
+            { id: 'formulas', label: 'सूत्र', icon: Calculator },
+          ].map((tab) => {
+            const TabIcon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`py-2 px-1 rounded-xl transition-all flex items-center justify-center gap-1 active:scale-95 ${
+                  activeTab === tab.id
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : isDarkMode
+                    ? 'text-slate-300 hover:bg-slate-800/80'
+                    : 'text-slate-700 hover:bg-white/80'
+                }`}
+              >
+                <TabIcon className="w-3.5 h-3.5" />
+                <span className="truncate">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* 1. SECTION: CHAPTER SUMMARY */}
@@ -262,8 +314,8 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xs sm:text-sm font-black text-amber-500 flex items-center gap-1.5">
-                <Lightbulb className="w-4 h-4" />
-                <span>📌 अध्याय सारांश (Chapter Summary)</span>
+                <Bookmark className="w-4 h-4" />
+                <span>अध्याय सारांश (Chapter Summary)</span>
               </h3>
               <button
                 onClick={() => handleCopy(activeNotes.summaryHindi, 'summary')}
@@ -302,7 +354,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
             <div className="flex items-center justify-between">
               <h3 className="text-xs sm:text-sm font-black text-indigo-500 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
-                <span>✨ मुख्य बोर्ड अवधारणाएं व बिंदु (Key Concepts)</span>
+                <span>मुख्य बोर्ड अवधारणाएं व बिंदु (Key Concepts)</span>
               </h3>
               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">
                 {activeNotes.keyPoints.length} मुख्य बिंदु
@@ -363,8 +415,8 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs sm:text-sm font-black text-purple-500 flex items-center gap-1.5">
-                    <Zap className="w-4 h-4" />
-                    <span>🧮 महत्वपूर्ण सूत्र व रासायनिक समीकरण</span>
+                    <Calculator className="w-4 h-4" />
+                    <span>महत्वपूर्ण सूत्र व रासायनिक समीकरण</span>
                   </h3>
                   <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-600 dark:text-purple-300">
                     {activeNotes.formulas.length} समीकरण
@@ -383,7 +435,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-black text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
-                          <span>📌</span>
+                          <Bookmark className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                           <span>{cleanText(item.name)}</span>
                         </h4>
                         <button
@@ -423,7 +475,8 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
                 }`}
               >
                 <h3 className="text-xs sm:text-sm font-black text-teal-500 flex items-center gap-1.5">
-                  🧪 प्रमुख रासायनिक अभिक्रियाएं
+                  <FlaskConical className="w-4 h-4" />
+                  <span>प्रमुख रासायनिक अभिक्रियाएं</span>
                 </h3>
 
                 <div className="space-y-3">
@@ -462,7 +515,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
           <div className="space-y-3.5">
             <h3 className="text-xs sm:text-sm font-black text-indigo-500 flex items-center gap-1.5 px-1">
               <BookOpen className="w-4 h-4" />
-              <span>📖 विस्तृत अध्याय पाठ्य (Detailed Chapter Sections)</span>
+              <span>विस्तृत अध्याय पाठ्य (Detailed Chapter Sections)</span>
             </h3>
 
             {activeNotes.sections.map((sec, secIdx) => (
@@ -509,8 +562,8 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
                 {sec.importantTip && (
                   <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 space-y-1">
                     <div className="flex items-center gap-1.5 font-black text-xs text-amber-600 dark:text-amber-400">
-                      <Flame className="w-4 h-4 text-amber-500" />
-                      <span>🔥 महत्वपूर्ण बोर्ड परीक्षा टिप (Board Exam Tip)</span>
+                      <Flame className="w-4 h-4 text-amber-500 shrink-0" />
+                      <span>महत्वपूर्ण बोर्ड परीक्षा टिप (Board Exam Tip)</span>
                     </div>
                     <p className="text-xs font-semibold leading-relaxed">
                       {cleanText(sec.importantTip)}
@@ -521,8 +574,9 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
                 {/* Diagram Guide Banner */}
                 {sec.diagramTitle && (
                   <div className="p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-900 dark:text-cyan-200 space-y-1">
-                    <div className="font-black text-xs text-cyan-600 dark:text-cyan-400">
-                      🎨 नामांकित चित्र: {cleanText(sec.diagramTitle)}
+                    <div className="flex items-center gap-1.5 font-black text-xs text-cyan-600 dark:text-cyan-400">
+                      <ImageIcon className="w-4 h-4 text-cyan-500 shrink-0" />
+                      <span>नामांकित चित्र: {cleanText(sec.diagramTitle)}</span>
                     </div>
                     {sec.diagramDescription && (
                       <p className="text-xs font-medium">
@@ -609,7 +663,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
 
   // Render Chapter Selection List View (when no chapter is selected)
   return (
-    <div className="space-y-3.5 animate-fadeIn">
+    <div className="space-y-3.5 animate-fadeIn bg-grid-science p-1 rounded-3xl">
       {/* Header Bar */}
       <div
         className={`relative flex items-center justify-between p-3.5 rounded-3xl border shadow-sm backdrop-blur-md gap-2 ${
@@ -629,7 +683,7 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
         </button>
 
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xl">📝</span>
+          <FileText className="w-5 h-5 text-indigo-500 shrink-0 stroke-[2.2]" />
           <div className="min-w-0">
             <h2
               className={`text-sm sm:text-base font-black truncate ${
@@ -650,25 +704,28 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
       {/* Subject Filter Category Tabs */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { id: 'chemistry', label: 'रसायन शास्त्र', icon: '🧪' },
-          { id: 'biology', label: 'जीव विज्ञान', icon: '🫀' },
-          { id: 'physics', label: 'भौतिक शास्त्र', icon: '⚡' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setSubjectFilter(tab.id as any)}
-            className={`py-2 px-2 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
-              subjectFilter === tab.id
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                : isDarkMode
-                ? 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-800'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <span>{tab.icon}</span>
-            <span className="truncate">{tab.label}</span>
-          </button>
-        ))}
+          { id: 'chemistry', label: 'रसायन शास्त्र', icon: FlaskConical },
+          { id: 'biology', label: 'जीव विज्ञान', icon: Dna },
+          { id: 'physics', label: 'भौतिक शास्त्र', icon: Zap },
+        ].map((tab) => {
+          const TabIcon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setSubjectFilter(tab.id as any)}
+              className={`py-2 px-2 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
+                subjectFilter === tab.id
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : isDarkMode
+                  ? 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-800'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <TabIcon className="w-3.5 h-3.5" />
+              <span className="truncate">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Search Input Bar */}
@@ -719,31 +776,40 @@ export const NotesViewer: React.FC<NotesViewerProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-2xl flex items-center justify-center shrink-0 shadow-inner">
-                    {ch.icon3D || '📝'}
+                  <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 shadow-inner">
+                    {ch.subject === 'chemistry' ? (
+                      <FlaskConical className="w-5 h-5 text-sky-500 stroke-[2.2]" />
+                    ) : ch.subject === 'biology' ? (
+                      <Dna className="w-5 h-5 text-emerald-500 stroke-[2.2]" />
+                    ) : (
+                      <Zap className="w-5 h-5 text-purple-500 stroke-[2.2]" />
+                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                      <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400">
-                        अध्याय {ch.chapterNumber} • {ch.weightage} अंक
-                      </span>
-
-                      {isCompleted && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black">
+                    {isCompleted && (
+                      <div className="mb-1">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black">
                           <CheckCircle className="w-3 h-3 text-emerald-500 shrink-0" />
                           <span>पूर्ण</span>
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     <h3
-                      className={`text-xs sm:text-sm font-black truncate ${
+                      className={`text-xs sm:text-sm font-black leading-snug break-words ${
                         isDarkMode ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       {ch.titleHindi}
                     </h3>
+                    <p
+                      className={`text-[11px] font-medium mt-0.5 ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                      }`}
+                    >
+                      {ch.titleEnglish}
+                    </p>
                   </div>
                 </div>
 

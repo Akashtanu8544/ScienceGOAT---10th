@@ -1,49 +1,313 @@
-
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
+    <!-- Cheerful Vibrant 3D Background Gradient -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e1b4b" />
-      <stop offset="50%" stop-color="#312e81" />
-      <stop offset="100%" stop-color="#0f172a" />
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="35%" stop-color="#3B82F6" />
+      <stop offset="70%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
     </linearGradient>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24" />
-      <stop offset="100%" stop-color="#f59e0b" />
+
+    <!-- Warm Glowing Inner Background Radial -->
+    <radialGradient id="sunGlow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.4" />
+      <stop offset="60%" stop-color="#60A5FA" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Squircle Border Highlight -->
+    <linearGradient id="borderGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#FDE047" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#67E8F9" stop-opacity="0.8" />
     </linearGradient>
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#6366f1" />
+
+    <!-- Fluffy Baby Goat Wool Gradient (3D Pearly Soft) -->
+    <linearGradient id="furGrad" x1="30%" y1="10%" x2="70%" y2="90%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="65%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#E2E8F0" />
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="10" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+
+    <!-- Cute Nub Horns (Soft Round Golden Macaroni) -->
+    <linearGradient id="hornGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="40%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Kawaii Eye Iris Gradient -->
+    <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="55%" stop-color="#1E293B" />
+      <stop offset="85%" stop-color="#312E81" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+
+    <!-- Shiny Round Nerdy Glasses Gradient -->
+    <linearGradient id="glassesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="50%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+
+    <linearGradient id="lensReflect" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="40%" stop-color="#BAE6FD" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.05" />
+    </linearGradient>
+
+    <!-- Magic Glowing Science Flask -->
+    <linearGradient id="magicLiquid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A7F3D0" />
+      <stop offset="45%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- 3D Ribbon Banner Gradient -->
+    <linearGradient id="bannerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="45%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Soft 3D Shadow Filters -->
+    <filter id="cuteShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#1E1B4B" flood-opacity="0.35" />
+    </filter>
+
+    <filter id="potionGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#34D399" flood-opacity="0.5" />
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
-  
-  <!-- Outer Glow Ring -->
-  <circle cx="256" cy="230" r="170" fill="none" stroke="url(#cyanGrad)" stroke-width="6" opacity="0.4" />
-  <circle cx="256" cy="230" r="140" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-dasharray="12 12" opacity="0.6" />
+  <!-- 1. ROUNDED SQUIRCLE CANVAS -->
+  <rect width="512" height="512" rx="124" fill="url(#bgGrad)" />
+  <rect width="512" height="512" rx="124" fill="url(#sunGlow)" />
+  <rect x="8" y="8" width="496" height="496" rx="116" fill="none" stroke="url(#borderGlow)" stroke-width="4" opacity="0.75" />
 
-  <!-- Central Atom / Science Symbol -->
-  <g transform="translate(256, 220)">
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(0)" opacity="0.8" />
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(60)" opacity="0.8" />
-    <ellipse rx="120" ry="45" fill="none" stroke="url(#cyanGrad)" stroke-width="6" transform="rotate(120)" opacity="0.8" />
-    
-    <!-- Nucleus -->
-    <circle cx="0" cy="0" r="28" fill="url(#goldGrad)" filter="url(#glow)" />
-    <circle cx="0" cy="0" r="14" fill="#ffffff" />
+  <!-- 2. CUTE DOODLE SCIENCE SPARKLES & STARS -->
+  <!-- Cheerful Yellow 4-point Sparkles -->
+  <g fill="#FEF08A">
+    <!-- Top-Right Sparkle -->
+    <path d="M 415,75 L 421,92 L 438,98 L 421,104 L 415,121 L 409,104 L 392,98 L 409,92 Z" />
+    <!-- Top-Left Sparkle -->
+    <path d="M 95,95 L 100,109 L 114,114 L 100,119 L 95,133 L 90,119 L 76,114 L 90,109 Z" />
+    <!-- Small starlets -->
+    <circle cx="70" cy="220" r="4.5" fill="#BAE6FD" />
+    <circle cx="440" cy="210" r="5" fill="#FDE047" />
+    <circle cx="445" cy="300" r="4" fill="#F472B6" />
+    <circle cx="65" cy="320" r="4" fill="#6EE7B7" />
   </g>
 
-  <!-- Badge / Text "SCIENCE GOAT" -->
-  <rect x="76" y="380" width="360" height="72" rx="36" fill="#0f172a" stroke="url(#goldGrad)" stroke-width="4" />
-  <text x="256" y="425" font-family="'Hind', 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="32" fill="#fbbf24" text-anchor="middle" letter-spacing="2">
-    SCIENCE GOAT 10th
-  </text>
-  <text x="256" y="442" font-family="sans-serif" font-weight="700" font-size="12" fill="#94a3b8" text-anchor="middle">
-    RBSE CLASS 10
-  </text>
+  <!-- Cute Atom Ring Doodle -->
+  <ellipse cx="256" cy="245" rx="205" ry="70" transform="rotate(-28 256 245)" fill="none" stroke="#A5B4FC" stroke-width="4.5" stroke-dasharray="14 10" opacity="0.5" />
+  <circle cx="100" cy="180" r="8" fill="#F472B6" stroke="#FFFFFF" stroke-width="2" />
+  <circle cx="410" cy="195" r="9" fill="#FBBF24" stroke="#FFFFFF" stroke-width="2" />
+
+  <!-- 3. MAIN CUTE 3D BABY GOAT (THE SCIENCE GOAT) -->
+  <g filter="url(#cuteShadow)">
+
+    <!-- A. LITTLE ROUNDED NUB HORNS (Super cute, friendly & stubby) -->
+    <!-- Left Horn -->
+    <g>
+      <path d="M 175,148 C 158,110 134,102 118,112 C 104,122 114,142 136,150 C 152,156 166,164 172,174 Z" 
+            fill="url(#hornGrad)" stroke="#78350F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <!-- Horn Ridge Rings -->
+      <path d="M 132,126 C 137,133 140,138 138,142" stroke="#B45309" stroke-width="3" stroke-linecap="round" fill="none" />
+      <path d="M 148,140 C 153,147 156,152 153,156" stroke="#B45309" stroke-width="3" stroke-linecap="round" fill="none" />
+      <!-- Specular shine -->
+      <path d="M 126,116 C 142,112 156,126 164,144" stroke="#FEF08A" stroke-width="2.5" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- Right Horn -->
+    <g>
+      <path d="M 337,148 C 354,110 378,102 394,112 C 408,122 398,142 376,150 C 360,156 346,164 340,174 Z" 
+            fill="url(#hornGrad)" stroke="#78350F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <!-- Horn Ridge Rings -->
+      <path d="M 380,126 C 375,133 372,138 374,142" stroke="#B45309" stroke-width="3" stroke-linecap="round" fill="none" />
+      <path d="M 364,140 C 359,147 356,152 359,156" stroke="#B45309" stroke-width="3" stroke-linecap="round" fill="none" />
+      <!-- Specular shine -->
+      <path d="M 386,116 C 370,112 356,126 348,144" stroke="#FEF08A" stroke-width="2.5" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- B. FLOPPY SOFT ROUND EARS (With rosy pink interior) -->
+    <!-- Left Ear -->
+    <g>
+      <path d="M 160,205 C 105,198 62,230 58,260 C 55,278 72,286 92,274 C 120,256 148,245 165,236 Z" 
+            fill="#FFFFFF" stroke="#334155" stroke-width="4.5" stroke-linejoin="round" />
+      <!-- Inner Pink Ear -->
+      <path d="M 85,258 C 105,242 130,238 145,232 C 140,242 118,255 95,268 C 88,272 82,266 85,258 Z" 
+            fill="#FDA4AF" />
+    </g>
+
+    <!-- Right Ear -->
+    <g>
+      <path d="M 352,205 C 407,198 450,230 454,260 C 457,278 440,286 420,274 C 392,256 364,245 347,236 Z" 
+            fill="#FFFFFF" stroke="#334155" stroke-width="4.5" stroke-linejoin="round" />
+      <!-- Inner Pink Ear -->
+      <path d="M 427,258 C 407,242 382,238 367,232 C 372,242 394,255 417,268 C 424,272 430,266 427,258 Z" 
+            fill="#FDA4AF" />
+    </g>
+
+    <!-- C. CHUBBY ADORABLE HEAD & BODY BASE -->
+    <!-- Cute Scientist Lab Coat Collar / Shoulders -->
+    <path d="M 160,370 C 170,350 200,345 256,345 C 312,345 342,350 352,370 C 370,405 385,445 385,445 L 127,445 C 127,445 142,405 160,370 Z" 
+          fill="#F1F5F9" stroke="#334155" stroke-width="5" />
+    <!-- Lab Coat V-neck & Blue Tie -->
+    <path d="M 215,355 L 256,410 L 297,355 Z" fill="#E2E8F0" stroke="#334155" stroke-width="4" />
+    <path d="M 248,368 L 264,368 L 268,415 L 256,424 L 244,415 Z" fill="#3B82F6" stroke="#1D4ED8" stroke-width="3" />
+
+    <!-- Round Chubby Baby Goat Head -->
+    <path d="M 165,185 C 190,145 322,145 347,185 C 375,230 375,310 348,348 C 320,385 192,385 164,348 C 137,310 137,230 165,185 Z" 
+          fill="url(#furGrad)" stroke="#334155" stroke-width="5.5" stroke-linejoin="round" />
+
+    <!-- Fluffy Wool Puff / Cloud Curls on Forehead (Super cute!) -->
+    <g fill="#FFFFFF" stroke="#334155" stroke-width="4">
+      <circle cx="232" cy="158" r="16" />
+      <circle cx="256" cy="148" r="19" />
+      <circle cx="280" cy="158" r="16" />
+      <circle cx="244" cy="168" r="13" />
+      <circle cx="268" cy="168" r="13" />
+    </g>
+
+    <!-- D. BIG SPARKLING KAWAII EYES (Large, soulful, extremely cute!) -->
+    <!-- Left Eye -->
+    <g>
+      <ellipse cx="205" cy="235" rx="26" ry="32" fill="url(#eyeGrad)" stroke="#0F172A" stroke-width="3" />
+      <!-- Soft Violet/Blue reflection at bottom of iris -->
+      <path d="M 187,246 C 192,260 218,260 223,246 C 218,253 192,253 187,246 Z" fill="#818CF8" />
+      <!-- Giant Sparkle Highlight -->
+      <circle cx="198" cy="222" r="10" fill="#FFFFFF" />
+      <!-- Secondary Small Sparkle -->
+      <circle cx="215" cy="242" r="4.5" fill="#FFFFFF" />
+      <circle cx="195" cy="245" r="2.5" fill="#FFFFFF" />
+      <!-- Cute Curved Eyelash / Brow -->
+      <path d="M 182,198 C 195,190 215,192 226,202" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- Right Eye -->
+    <g>
+      <ellipse cx="307" cy="235" rx="26" ry="32" fill="url(#eyeGrad)" stroke="#0F172A" stroke-width="3" />
+      <!-- Soft Violet/Blue reflection at bottom of iris -->
+      <path d="M 289,246 C 294,260 320,260 325,246 C 320,253 294,253 289,246 Z" fill="#818CF8" />
+      <!-- Giant Sparkle Highlight -->
+      <circle cx="300" cy="222" r="10" fill="#FFFFFF" />
+      <!-- Secondary Small Sparkle -->
+      <circle cx="317" cy="242" r="4.5" fill="#FFFFFF" />
+      <circle cx="297" cy="245" r="2.5" fill="#FFFFFF" />
+      <!-- Cute Curved Eyelash / Brow -->
+      <path d="M 286,202 C 297,192 317,190 330,198" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- E. ROUND NERDY PROFESSOR GLASSES (Cute, stylish, warm golden frames) -->
+    <!-- Left Rim & Lens -->
+    <circle cx="205" cy="235" r="38" fill="url(#lensReflect)" stroke="url(#glassesGrad)" stroke-width="6" />
+    <path d="M 180,210 C 195,202 210,205 218,212" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.8" fill="none" />
+
+    <!-- Bridge -->
+    <path d="M 243,230 C 248,222 264,222 269,230" stroke="url(#glassesGrad)" stroke-width="6" stroke-linecap="round" fill="none" />
+    <!-- Center Bolt -->
+    <circle cx="256" cy="224" r="3.5" fill="#FEF08A" />
+
+    <!-- Right Rim & Lens -->
+    <circle cx="307" cy="235" r="38" fill="url(#lensReflect)" stroke="url(#glassesGrad)" stroke-width="6" />
+    <path d="M 282,210 C 297,202 312,205 320,212" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.8" fill="none" />
+
+    <!-- Glasses Frame Temples (Go to ears) -->
+    <path d="M 167,235 L 148,230 M 345,235 L 364,230" stroke="url(#glassesGrad)" stroke-width="5" stroke-linecap="round" />
+
+    <!-- F. ROSY BLUSH CHEEKS & SWEET NOSE / SMILE -->
+    <!-- Pink Rosy Cheeks (Kawaii blush lines) -->
+    <g fill="#FB7185" opacity="0.6">
+      <ellipse cx="160" cy="285" rx="16" ry="10" />
+      <ellipse cx="352" cy="285" rx="16" ry="10" />
+    </g>
+    <!-- Cute blush stripes -->
+    <path d="M 152,284 L 160,288 M 162,284 L 170,288 M 344,284 L 352,288 M 354,284 L 362,288" 
+          stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" opacity="0.65" />
+
+    <!-- Cute Soft Snout / Nose Pad -->
+    <ellipse cx="256" cy="282" rx="28" ry="17" fill="#FCE7F3" stroke="#F472B6" stroke-width="3" />
+    <!-- Soft little pink heart nose -->
+    <path d="M 256,277 C 252,272 246,273 246,278 C 246,283 256,288 256,288 C 256,288 266,283 266,278 C 266,273 260,272 256,277 Z" 
+          fill="#EC4899" />
+
+    <!-- Cheerful Cat / Kawaii Smile mouth (:3 style) -->
+    <path d="M 244,289 C 244,297 252,298 256,293 C 260,298 268,297 268,289" 
+          stroke="#334155" stroke-width="3.5" stroke-linecap="round" fill="none" />
+
+    <!-- Little Cute Pink Tongue peeking -->
+    <path d="M 252,295 C 252,303 260,303 260,295 Z" fill="#FB7185" stroke="#334155" stroke-width="2.5" />
+
+    <!-- Adorable Little White Beard Tuft (Soft baby tuft, not old!) -->
+    <path d="M 248,322 C 250,336 253,342 256,342 C 259,342 262,336 264,322 Z" 
+          fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+
+    <!-- G. 3D ROUND MAGIC POTION FLASK (Held cheerfully in front) -->
+    <g transform="translate(198, 320)" filter="url(#potionGlow)">
+      <!-- Cute Round Bottom Flask Body -->
+      <circle cx="58" cy="76" r="36" fill="#F0FDF4" stroke="#334155" stroke-width="4.5" opacity="0.95" />
+      
+      <!-- Flask Neck -->
+      <rect x="47" y="16" width="22" height="28" rx="4" fill="#F0FDF4" stroke="#334155" stroke-width="4.5" />
+      <ellipse cx="58" cy="16" rx="15" ry="5" fill="#E2E8F0" stroke="#334155" stroke-width="4" />
+
+      <!-- Glowing Bubbly Liquid -->
+      <path d="M 24,76 C 24,95 39,110 58,110 C 77,110 92,95 92,76 C 92,72 84,74 76,71 C 68,68 64,74 58,72 C 50,70 42,76 34,73 C 28,71 24,73 24,76 Z" 
+            fill="url(#magicLiquid)" />
+
+      <!-- Cute Liquid Waves & Highlight -->
+      <ellipse cx="58" cy="74" rx="24" ry="6" fill="#A7F3D0" opacity="0.8" />
+      <!-- Glass highlight arc -->
+      <path d="M 34,60 A 30 30 0 0 1 78,50" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.75" />
+    </g>
+
+    <!-- Baby Goat Cute Little White Paws / Hooves holding flask -->
+    <!-- Left Paw -->
+    <ellipse cx="225" cy="392" rx="14" ry="11" transform="rotate(-15 225 392)" fill="#FFFFFF" stroke="#334155" stroke-width="4" />
+    <path d="M 221,396 L 223,388" stroke="#334155" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- Right Paw -->
+    <ellipse cx="287" cy="392" rx="14" ry="11" transform="rotate(15 287 392)" fill="#FFFFFF" stroke="#334155" stroke-width="4" />
+    <path d="M 291,396 L 289,388" stroke="#334155" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- Floating Cute Magical Bubbles & Sparkles from Flask -->
+    <circle cx="264" cy="308" r="7.5" fill="#34D399" stroke="#334155" stroke-width="2.5" />
+    <circle cx="262" cy="306" r="2.5" fill="#FFFFFF" />
+
+    <circle cx="286" cy="296" r="6" fill="#FDE047" stroke="#334155" stroke-width="2" />
+    <circle cx="284" cy="294" r="2" fill="#FFFFFF" />
+
+    <circle cx="236" cy="294" r="5" fill="#38BDF8" stroke="#334155" stroke-width="2" />
+    <circle cx="235" cy="293" r="1.8" fill="#FFFFFF" />
+
+    <!-- Little 4-point sparkle over potion -->
+    <path d="M 276,270 L 279,278 L 287,281 L 279,284 L 276,292 L 273,284 L 265,281 L 273,278 Z" fill="#FDE047" />
+  </g>
+
+  <!-- 4. 3D GOLDEN CURVED BANNER: "SCIENCE GOAT" -->
+  <g transform="translate(116, 436)" filter="url(#cuteShadow)">
+    <!-- Back ribbon fold shadows -->
+    <path d="M -12,24 L 20,6 L 20,38 Z" fill="#B45309" stroke="#78350F" stroke-width="3" />
+    <path d="M 292,24 L 260,6 L 260,38 Z" fill="#B45309" stroke="#78350F" stroke-width="3" />
+
+    <!-- Front Shiny Golden Plate -->
+    <rect x="14" y="0" width="252" height="42" rx="21" fill="url(#bannerGrad)" stroke="#78350F" stroke-width="4.5" />
+
+    <!-- Top glossy reflection highlight -->
+    <path d="M 28,7 L 252,7" stroke="#FEF08A" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Text: SCIENCE GOAT with cute clean font -->
+    <text x="140" y="27" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Comic Sans MS', sans-serif" 
+          font-size="19" 
+          font-weight="900" 
+          text-anchor="middle" 
+          letter-spacing="1.5"
+          fill="#451A03">
+      SCIENCE GOAT
+    </text>
+  </g>
+
 </svg>
