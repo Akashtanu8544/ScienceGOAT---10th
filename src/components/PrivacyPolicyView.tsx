@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, CheckCircle2, Copy, ExternalLink, Mail, Lock, Eye, BookOpen, Smartphone, FileText } from 'lucide-react';
+import { Shield, ArrowLeft, Mail, Lock, Eye, BookOpen, Smartphone, FileText } from 'lucide-react';
 
 interface PrivacyPolicyViewProps {
   onBack: () => void;
@@ -7,19 +7,7 @@ interface PrivacyPolicyViewProps {
 }
 
 export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, isDarkMode }) => {
-  const [copied, setCopied] = useState(false);
   const [lang, setLang] = useState<'hi' | 'en'>('hi');
-
-  const privacyUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/privacy.html`
-    : 'https://sciencegoat---10th.mobographie.workers.dev/privacy.html';
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(privacyUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    });
-  };
 
   return (
     <div className="space-y-4 animate-fadeIn pb-12">
@@ -54,64 +42,6 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, is
           >
             English
           </button>
-        </div>
-      </div>
-
-      {/* Google Play Console Ready URL Card */}
-      <div className="p-4 rounded-3xl bg-gradient-to-br from-indigo-900/90 via-slate-900 to-purple-950 text-white border border-indigo-500/40 shadow-xl relative overflow-hidden">
-        <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
-        <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 text-amber-400">
-            <Shield className="w-6 h-6" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase font-black tracking-widest text-indigo-300">
-              Google Play Console Store Listing Link
-            </div>
-            <h3 className="text-sm font-black text-white mt-0.5">
-              गोपनीयता नीति यूआरएल (Privacy Policy URL)
-            </h3>
-            <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-              गूगल प्ले कंसोल में "Privacy Policy URL" फील्ड में नीचे दिए गए लिंक को पेस्ट करें:
-            </p>
-
-            <div className="mt-3 p-2.5 rounded-2xl bg-slate-950/80 border border-indigo-500/30 flex items-center justify-between gap-2">
-              <span className="text-[11px] font-mono font-bold text-amber-300 truncate select-all">
-                {privacyUrl}
-              </span>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={handleCopyLink}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-all ${
-                    copied
-                      ? 'bg-emerald-500 text-white'
-                      : 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-                  }`}
-                >
-                  {copied ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      कॉपी हो गया!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      कॉपी करें
-                    </>
-                  )}
-                </button>
-                <a
-                  href="/privacy.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
-                  title="ओपन गोपनीयता पृष्ठ"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

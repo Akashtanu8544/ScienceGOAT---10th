@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Share2, Copy, Check, Smartphone, X } from 'lucide-react';
+import { Share2, Copy, Check, MessageCircle, X } from 'lucide-react';
 import { ScienceGoatLogo } from './ScienceGoatLogo';
 
 interface ShareModalProps {
@@ -9,22 +9,38 @@ interface ShareModalProps {
 
 export const ShareModal: React.FC<ShareModalProps> = ({ onClose, isDarkMode = false }) => {
   const [copied, setCopied] = useState(false);
-  const appUrl = window.location.href;
+
+  const shareText = `🧪 *Science GOAT - Class 10 Science (RBSE / NCERT)*\n\nराजस्थान बोर्ड 10वीं विज्ञान का सर्वश्रेष्ठ ऐप! नोट्स, क्विज़, पिछले वर्षों के बोर्ड पेपर, वीडियो लेक्चर एवं डिजिटल पुस्तक निःशुल्क पढ़ें!`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(appUrl);
+    const fullText = `${shareText}\n\n${window.location.href}`;
+    navigator.clipboard.writeText(fullText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const whatsappText = encodeURIComponent(
-    `🧪 *Science GOAT - 10 (RBSE कक्षा 10 विज्ञान - 100% निशुल्क मोबाइल ऐप)*\n\nराजस्थान बोर्ड 10वीं विज्ञान का सर्वश्रेष्ठ ऐप! नोट्स, क्विज़, पिछले 5 सालों के बोर्ड पेपर, वीडियो लेक्चर एवं डिजिटल पुस्तक निःशुल्क पढ़ें!\n\nअभी खोलें: ${appUrl}`
-  );
+  const handleNativeShare = async () => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Science GOAT - 10th Science',
+          text: shareText,
+          url: window.location.href,
+        });
+      } catch {
+        // User cancelled or share failed, fallback
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText}\n\n${window.location.href}`)}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
       <div
-        className={`relative w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 border ${
+        className={`relative w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 border ${
           isDarkMode
             ? 'bg-slate-900 border-slate-800 text-white'
             : 'bg-white border-slate-200 text-slate-900'
@@ -43,7 +59,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, isDarkMode = fa
                 Science GOAT शेयर करें
               </h3>
               <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                अपने सहपाठियों के साथ शेयर करें
+                सहपाठियों व मित्रों के साथ साझा करें
               </p>
             </div>
           </div>
@@ -59,67 +75,54 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, isDarkMode = fa
           </button>
         </div>
 
-        {/* Quick Share Links */}
-        <div className="space-y-2.5">
+        {/* Share Action Buttons */}
+        <div className="space-y-2.5 pt-1">
+          {/* Native Share Button */}
+          {typeof navigator !== 'undefined' && 'share' in navigator && (
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>शेयर करें (Share App)</span>
+            </button>
+          )}
+
+          {/* WhatsApp Direct Share */}
           <a
-            href={`https://api.whatsapp.com/send?text=${whatsappText}`}
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="w-full py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
           >
-            <span>💬 WhatsApp पर ग्रुप्स में शेयर करें</span>
+            <MessageCircle className="w-4 h-4 fill-white" />
+            <span>WhatsApp पर शेयर करें</span>
           </a>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              readOnly
-              value={appUrl}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-xs border focus:outline-none truncate ${
-                isDarkMode
-                  ? 'bg-slate-950 text-slate-300 border-slate-800'
-                  : 'bg-slate-50 text-slate-800 border-slate-200'
-              }`}
-            />
-            <button
-              onClick={handleCopy}
-              className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-md flex items-center gap-1 shrink-0 active:scale-95"
-            >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? 'कॉपी हुआ!' : 'कॉपी करें'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Add to Home Screen / Mobile App Guide */}
-        <div
-          className={`p-4 rounded-2xl border space-y-2.5 text-xs ${
-            isDarkMode
-              ? 'bg-slate-950 border-slate-800'
-              : 'bg-slate-50 border-slate-200'
-          }`}
-        >
-          <div className="flex items-center gap-2 font-extrabold text-amber-500">
-            <Smartphone className="w-4 h-4" />
-            <span>मोबाइल होम स्क्रीन पर ऐप आइकॉन कैसे जोड़ें?</span>
-          </div>
-          <ol
-            className={`leading-relaxed list-decimal list-inside space-y-1 font-medium ${
-              isDarkMode ? 'text-slate-300' : 'text-slate-700'
+          {/* Copy Share Text */}
+          <button
+            type="button"
+            onClick={handleCopy}
+            className={`w-full py-3 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all border active:scale-95 ${
+              copied
+                ? 'bg-emerald-500 text-white border-emerald-600'
+                : isDarkMode
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
             }`}
           >
-            <li>Chrome ब्राउज़र में ऊपर दिए गए <strong>तीन बिंदु (⋮)</strong> पर क्लिक करें।</li>
-            <li><strong>'Add to Home screen' (होम स्क्रीन में जोड़ें)</strong> चुनें।</li>
-            <li>अब यह ऐप आपके मोबाइल में बिना इंटरनेट के भी सीधे ऐप की तरह खुलेगा!</li>
-          </ol>
+            {copied ? <Check className="w-4 h-4 stroke-[3]" /> : <Copy className="w-4 h-4" />}
+            <span>{copied ? 'ऐप आमंत्रण कॉपी हो गया!' : 'शेयर मैसेज कॉपी करें (Copy)'}</span>
+          </button>
         </div>
 
         <button
           onClick={onClose}
           className={`w-full py-2.5 rounded-xl font-bold text-xs transition-colors ${
             isDarkMode
-              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+              ? 'bg-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
           बंद करें
@@ -128,3 +131,4 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, isDarkMode = fa
     </div>
   );
 };
+
